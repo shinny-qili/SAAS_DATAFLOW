@@ -1,0 +1,7 @@
+# 先忽略整个 inerface 目录
+inerface/*
+workdir/*
+# 再把必须保留的文件/目录“反忽略”
+!inerface/erp-app.html
+!inerface/vendor/
+!workdir/prototype.html

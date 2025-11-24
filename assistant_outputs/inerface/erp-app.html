@@ -1,0 +1,4675 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>国产 ERP 常用组件库与模板示例</title>
+  <link rel="stylesheet" href="https://unpkg.com/antd@5.14.2/dist/reset.css" />
+  <link rel="stylesheet" href="https://unpkg.com/antd@5.14.2/dist/antd.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #1677ff;
+      --erp-gray-100: #f7f8fa;
+      --erp-gray-200: #eef0f5;
+      --erp-gray-300: #d9dee8;
+      --erp-gray-500: #8a94a6;
+      --erp-gray-700: #4b5565;
+      --erp-bg-light: #f4f6fb;
+      --erp-bg-dark: #1d232f;
+      --header-height: 60px;
+      --tabs-height: 42px;
+      font-feature-settings: "tnum";
+    }
+
+    html, body, #root {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--erp-bg-light);
+      color: #1f2430;
+      overflow: hidden;
+    }
+
+    .erp-header {
+      position: relative;
+      z-index: 100;
+      height: var(--header-height);
+      min-height: var(--header-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(244, 246, 251, 0.95);
+      border-bottom: 1px solid rgba(140, 156, 187, 0.3);
+      backdrop-filter: blur(12px);
+      flex-shrink: 0;
+      overflow: visible;
+    }
+
+    .erp-header .erp-top-menu {
+      height: auto;
+      min-height: auto;
+      background: transparent;
+      border-bottom: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .erp-top-menu-item {
+      padding: 6px 14px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-size: 13px;
+      color: #4b5565;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .erp-top-menu-item:hover {
+      background: rgba(22, 119, 255, 0.08);
+      color: var(--primary-color);
+    }
+
+    .erp-top-menu-item.active {
+      background: var(--primary-color);
+      color: #fff;
+    }
+
+    .erp-header.dark {
+      background: rgba(29, 35, 47, 0.92);
+      border-bottom-color: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.32);
+    }
+
+    .erp-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      min-width: 0;
+    }
+
+    .erp-logo-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-color), #409eff);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 6px 16px rgba(22, 119, 255, 0.3);
+    }
+
+    .erp-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .erp-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      justify-content: center;
+      line-height: 1.5;
+    }
+
+    .erp-title .name {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: #1f2430;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.5;
+      max-width: 250px;
+    }
+
+    .erp-title .desc {
+      font-size: 10px;
+      color: #7a8499;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.4;
+      max-width: 250px;
+    }
+
+    .erp-main-layout {
+      height: calc(100vh - var(--header-height));
+      display: flex;
+      overflow: hidden;
+    }
+
+    .erp-tabs-bar {
+      height: var(--tabs-height);
+      min-height: var(--tabs-height);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(140, 156, 187, 0.25);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .erp-tabs-bar.dark {
+      background: rgba(29, 35, 47, 0.88);
+      border-bottom-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .erp-content {
+      padding: 8px 9px 12px;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(244, 246, 251, 0.92) 40%, rgba(244, 246, 251, 0.92) 100%);
+    }
+
+    .erp-content.dark {
+      background: radial-gradient(circle at 0 0, rgba(64, 158, 255, 0.18), transparent 45%), var(--erp-bg-dark);
+      color: #edf1ff;
+    }
+
+    .erp-placeholder {
+      height: 320px;
+      border-radius: 18px;
+      border: 1px dashed rgba(22, 119, 255, 0.3);
+      background: rgba(22, 119, 255, 0.05);
+      display: grid;
+      place-items: center;
+      color: rgba(22, 119, 255, 0.7);
+      font-size: 16px;
+    }
+
+    .erp-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .erp-toolbar .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .erp-component-layout {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+    }
+
+    .erp-component-tree {
+      width: 240px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      border: 1px solid rgba(22, 119, 255, 0.08);
+      box-shadow: 0 12px 30px rgba(22, 119, 255, 0.05);
+    }
+
+    .erp-component-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .erp-component-card {
+      position: relative;
+      border-radius: 12px;
+      border: 1px solid rgba(22, 119, 255, 0.08);
+      padding: 16px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 220px;
+      box-shadow: 0 10px 24px rgba(22, 119, 255, 0.06);
+    }
+
+    .erp-component-card .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .erp-component-card .card-meta {
+      font-size: 12px;
+      color: var(--erp-gray-500);
+      line-height: 1.4;
+    }
+
+    .erp-component-card .card-footer {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(22, 119, 255, 0.12);
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .erp-density-switcher {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(22, 119, 255, 0.08);
+      border: 1px solid rgba(22, 119, 255, 0.12);
+    }
+
+    .erp-density-pill {
+      padding: 2px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--erp-gray-500);
+      transition: all 0.2s ease;
+    }
+
+    .erp-density-pill.active {
+      background: var(--primary-color);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(22, 119, 255, 0.24);
+    }
+
+    .erp-tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      border-radius: 999px;
+      background: rgba(22, 119, 255, 0.1);
+      color: #1f4aa0;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .erp-kanban-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .erp-kanban-grid .span-3 {
+      grid-column: span 3;
+    }
+
+    .erp-kanban-grid .span-4 {
+      grid-column: span 4;
+    }
+
+    .erp-kanban-grid .span-6 {
+      grid-column: span 6;
+    }
+
+    @media (max-width: 1440px) {
+      .erp-kanban-grid .span-3,
+      .erp-kanban-grid .span-4 {
+        grid-column: span 6;
+      }
+      .erp-kanban-grid .span-6 {
+        grid-column: span 12;
+      }
+    }
+
+    .erp-approval-flow {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 1px solid rgba(22, 119, 255, 0.15);
+      background: rgba(22, 119, 255, 0.08);
+      overflow-x: auto;
+    }
+
+    .erp-approval-node {
+      min-width: 160px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(22, 119, 255, 0.08);
+      box-shadow: 0 10px 20px rgba(22, 119, 255, 0.08);
+    }
+
+    .erp-approval-node .status {
+      font-size: 12px;
+      color: var(--erp-gray-500);
+    }
+
+    .erp-approval-arrow {
+      font-size: 18px;
+      color: var(--primary-color);
+    }
+
+    .erp-info-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 8px;
+      border-radius: 8px;
+      background: rgba(22, 119, 255, 0.1);
+      color: #1953c5;
+      font-size: 12px;
+    }
+
+    .erp-pinned-card {
+      border-radius: 14px;
+      border: 1px solid rgba(22, 119, 255, 0.12);
+      background: rgba(255, 255, 255, 0.96);
+      padding: 18px;
+      box-shadow: 0 16px 32px rgba(22, 119, 255, 0.08);
+    }
+
+    .erp-section {
+      margin-bottom: 20px;
+    }
+
+    .erp-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .erp-section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .erp-section-title .icon {
+      color: var(--primary-color);
+    }
+
+    .erp-badge {
+      position: absolute;
+      top: 12px;
+      right: -45px;
+      padding: 4px 48px;
+      font-size: 11px;
+      background: linear-gradient(135deg, rgba(22, 119, 255, 0.85), rgba(64, 158, 255, 0.9));
+      color: #fff;
+      transform: rotate(45deg);
+      box-shadow: 0 10px 24px rgba(22, 119, 255, 0.25);
+      letter-spacing: 1px;
+    }
+
+    .erp-permission-tag {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      background: rgba(22, 119, 255, 0.1);
+      border: 1px solid rgba(22, 119, 255, 0.18);
+      color: #1f4aa0;
+    }
+
+    .erp-card-flex {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .erp-quick-hints {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .erp-quick-hints .hint {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(22, 119, 255, 0.08);
+      border: 1px solid rgba(22, 119, 255, 0.12);
+      font-size: 12px;
+      color: #1f4aa0;
+    }
+
+    .erp-card-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: rgba(80, 188, 97, 0.12);
+      color: #1d7b30;
+    }
+
+    .dark .erp-component-tree,
+    .dark .erp-component-card,
+    .dark .erp-pinned-card {
+      background: rgba(32, 38, 50, 0.94);
+      border-color: rgba(64, 158, 255, 0.18);
+      box-shadow: 0 16px 32px rgba(8, 16, 28, 0.6);
+      color: #edf1ff;
+    }
+
+    .dark .erp-component-card .card-meta {
+      color: rgba(194, 205, 232, 0.8);
+    }
+
+    .dark .erp-approval-flow {
+      background: rgba(64, 158, 255, 0.18);
+      border-color: rgba(64, 158, 255, 0.28);
+    }
+
+    .dark .erp-approval-node {
+      background: rgba(20, 28, 42, 0.9);
+      color: #edf1ff;
+    }
+
+    .dark .erp-info-chip {
+      background: rgba(64, 158, 255, 0.18);
+      color: #a7c5ff;
+    }
+
+    .dark .erp-density-switcher {
+      background: rgba(64, 158, 255, 0.18);
+      border-color: rgba(64, 158, 255, 0.26);
+    }
+
+    .dark .erp-quick-hints .hint {
+      background: rgba(64, 158, 255, 0.16);
+      border-color: rgba(64, 158, 255, 0.24);
+      color: #c5dcff;
+    }
+
+    .erp-column-editor-modal .ant-modal-body {
+      padding: 20px;
+    }
+
+    .erp-column-editor-content {
+      display: flex;
+      gap: 20px;
+      min-height: 400px;
+      max-height: 600px;
+    }
+
+    .erp-column-editor-panel {
+      flex: 1;
+      border: 1px solid #e8e8e8;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .erp-column-editor-panel-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .erp-column-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .erp-column-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      border-radius: 4px;
+      transition: background 0.2s;
+      cursor: move;
+    }
+
+    .erp-column-item:hover {
+      background: #f5f5f5;
+    }
+
+    .erp-column-item.dragging {
+      opacity: 0.5;
+      background: #e6f7ff;
+    }
+
+    .erp-column-item.drag-over {
+      border-top: 2px solid #1677ff;
+      background: #f0f9ff;
+    }
+
+    .erp-column-item-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .erp-column-item-drag {
+      cursor: move;
+      color: #1677ff;
+      font-size: 16px;
+    }
+
+    .erp-column-width-input {
+      width: 80px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="./vendor/babel.min.js"></script>
+  <script>
+    (function () {
+      const libs = [
+        {
+          name: "React",
+          test: () => !!window.React,
+          urls: [
+            "https://unpkg.com/react@18.2.0/umd/react.development.js",
+            "https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js",
+            "./vendor/react.development.js"
+          ]
+        },
+        {
+          name: "ReactDOM",
+          test: () => !!window.ReactDOM,
+          urls: [
+            "https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js",
+            "https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js",
+            "./vendor/react-dom.development.js"
+          ]
+        },
+        {
+          name: "dayjs",
+          test: () => !!window.dayjs,
+          urls: [
+            "https://unpkg.com/dayjs@1.11.11/dayjs.min.js",
+            "https://cdn.jsdelivr.net/npm/dayjs@1.11.11/dayjs.min.js",
+            "./vendor/dayjs.min.js"
+          ]
+        },
+        {
+          name: "dayjs customParseFormat",
+          test: () => !!window.dayjs_plugin_customParseFormat,
+          urls: [
+            "https://unpkg.com/dayjs@1.11.11/plugin/customParseFormat.js",
+            "https://cdn.jsdelivr.net/npm/dayjs@1.11.11/plugin/customParseFormat.js",
+            "./vendor/dayjs-plugin-customParseFormat.js"
+          ]
+        },
+        {
+          name: "Ant Design",
+          test: () => !!window.antd,
+          urls: [
+            "https://unpkg.com/antd@5.14.2/dist/antd.min.js",
+            "https://cdn.jsdelivr.net/npm/antd@5.14.2/dist/antd.min.js",
+            "./vendor/antd.min.js"
+          ]
+        },
+        {
+          name: "@ant-design/icons",
+          test: () => !!window.icons,
+          urls: [
+            "https://unpkg.com/@ant-design/icons@5.2.6/dist/index.umd.js",
+            "https://cdn.jsdelivr.net/npm/@ant-design/icons@5.2.6/dist/index.umd.js",
+            "./vendor/ant-design-icons.umd.js"
+          ]
+        },
+        {
+          name: "ECharts",
+          test: () => !!window.echarts,
+          urls: [
+            "https://unpkg.com/echarts@5.5.0/dist/echarts.min.js",
+            "https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js",
+            "./vendor/echarts.min.js"
+          ]
+        }
+      ];
+
+      const loadScript = (url) =>
+        new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = url;
+          script.async = false;
+          script.crossOrigin = "anonymous";
+          script.onload = () => resolve();
+          script.onerror = () => reject(new Error(`加载失败：${url}`));
+          document.head.appendChild(script);
+        });
+
+      (async () => {
+        for (const lib of libs) {
+          if (lib.test()) {
+            continue;
+          }
+          let loaded = false;
+          for (const url of lib.urls) {
+            try {
+              await loadScript(url);
+              if (lib.test()) {
+                loaded = true;
+                break;
+              }
+            } catch (error) {
+              console.warn(`[Nebula ERP] ${lib.name} 加载失败，尝试下一镜像：${error.message}`);
+            }
+          }
+          if (!loaded) {
+            const message = `${lib.name} 依赖加载失败，请确认网络可访问 CDN，或将对应文件放置在当前目录的 vendor/ 文件夹内。`;
+            console.error(message);
+            const tip = document.createElement("div");
+            tip.style.cssText = "padding:32px;font-family:'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;color:#1f2430;max-width:640px;margin:80px auto;";
+            tip.innerHTML = `<h2 style="margin-bottom:16px;color:#1677FF;">依赖加载失败</h2><p style="margin-bottom:12px;">${message}</p><p>如需离线使用，可在 <code>assistant_outputs/inerface/vendor/</code> 目录放置对应 JS 文件，然后刷新页面。</p>`;
+            document.body.innerHTML = "";
+            document.body.appendChild(tip);
+            return;
+          }
+        }
+
+        window.__nebulaDepsReady = true;
+        console.info("[Nebula ERP] 所有依赖加载完成。");
+        window.dispatchEvent(new Event("nebula:deps-ready"));
+      })();
+    })();
+  </script>
+
+  <script type="text/babel">
+    const startNebulaApp = () => {
+      if (!(window.React && window.ReactDOM && window.antd && window.icons)) {
+        console.error("必要的前端依赖未加载成功，请检查网络或通过本地 HTTP 服务访问该页面。");
+        return;
+      }
+
+      console.info("[Nebula ERP] 启动 React 应用…", {
+        react: React?.version,
+        antd: antd?.version,
+        iconsLoaded: !!window.icons
+      });
+
+      const {
+        Layout,
+        Menu,
+        Tabs,
+        Space,
+        Input,
+        InputNumber,
+        Button,
+        Avatar,
+        Badge,
+        Dropdown,
+        ConfigProvider,
+        theme,
+        Segmented,
+        Switch,
+        Select,
+        Tooltip,
+        Tree,
+        Card,
+        Tag,
+        Divider,
+        Table,
+        Form,
+        Drawer,
+        DatePicker,
+        TimePicker,
+        Cascader,
+        TreeSelect,
+        Transfer,
+        Slider,
+        Rate,
+        Upload,
+        Modal,
+        Result,
+        Empty,
+        Skeleton,
+        Statistic,
+        Progress,
+        Descriptions,
+        Timeline,
+        Steps,
+        Collapse,
+        Alert,
+        Popover,
+        Radio,
+        Checkbox,
+        List,
+        ColorPicker,
+        Breadcrumb,
+        Anchor,
+        Typography,
+        message,
+        notification
+      } = antd;
+
+      const { Header, Sider, Content } = Layout;
+      const { Paragraph, Text } = Typography;
+      const icons = window.icons;
+
+      const { useState, useMemo, useEffect, useCallback, useRef } = React;
+
+      if (window.dayjs && window.dayjs_plugin_customParseFormat) {
+        dayjs.extend(window.dayjs_plugin_customParseFormat);
+      }
+
+      const missingComponents = Object.entries({
+        Anchor,
+        ColorPicker,
+        Tree,
+        TreeSelect,
+        Transfer,
+        Collapse,
+        Timeline,
+        Descriptions
+      }).filter(([, comp]) => !comp);
+
+      if (missingComponents.length) {
+        console.warn("[Nebula ERP] 以下组件在当前 antd UMD 包中缺失，将使用降级占位：", missingComponents.map(([name]) => name).join(", "));
+      }
+
+      const AnchorFallback = ({ items = [] }) => (
+        <Space direction="vertical" size={4}>
+          {items.map((item) => (
+            <Tag key={item.key || item.title}>{item.title}</Tag>
+          ))}
+          <Alert type="warning" showIcon message="Anchor 组件当前不可用" />
+        </Space>
+      );
+
+      const ColorPickerFallback = ({ defaultValue }) => (
+        <Input
+          type="color"
+          defaultValue={typeof defaultValue === "string" ? defaultValue : "#1677FF"}
+          style={{ width: "100%" }}
+          readOnly
+        />
+      );
+
+      const SafeAnchor = Anchor || AnchorFallback;
+      const SafeColorPicker = ColorPicker || ColorPickerFallback;
+      const fallbackAlert = (name, payload) => (
+        <Alert
+          type="warning"
+          showIcon
+          message={`${name} 组件当前不可用`}
+          description={
+            payload ? (
+              <div style={{ maxHeight: 160, overflow: "auto", fontFamily: "JetBrains Mono, monospace", fontSize: 12 }}>
+                {typeof payload === "string" ? payload : JSON.stringify(payload, null, 2)}
+              </div>
+            ) : "当前环境缺少该组件的可用实现，已使用提示替代。"
+          }
+        />
+      );
+
+      const SafeTree = Tree || ((props) => fallbackAlert("Tree", props.treeData));
+      const SafeTreeSelect = TreeSelect || ((props) => fallbackAlert("TreeSelect", props.treeData));
+      const SafeTransfer = Transfer || ((props) => fallbackAlert("Transfer", props.dataSource));
+
+      const SafeCollapse = Collapse || (({ items = [], children }) => {
+        const panels = items.length
+          ? items
+          : React.Children.toArray(children || []).map((child, idx) => ({
+              key: child?.key ?? idx,
+              label: child?.props?.label || `Panel ${idx + 1}`,
+              children: child?.props?.children
+            }));
+        return (
+          <Space direction="vertical" style={{ width: "100%" }}>
+            {panels.map((panel) => (
+              <Card key={panel.key} title={panel.label}>
+                {panel.children}
+              </Card>
+            ))}
+          </Space>
+        );
+      });
+
+      const SafeTimeline = Timeline || (({ items = [], children }) => {
+        const entries = items.length
+          ? items
+          : React.Children.toArray(children || []).map((child, idx) => ({
+              key: child?.key ?? idx,
+              color: child?.props?.color,
+              children: child?.props?.children
+            }));
+        return (
+          <Space direction="vertical" style={{ width: "100%" }}>
+            {entries.map((entry, idx) => (
+              <Tag key={entry.key ?? idx} color={entry.color || "blue"}>
+                {entry.children}
+              </Tag>
+            ))}
+          </Space>
+        );
+      });
+
+      const renderDescriptions = (props) => {
+        if (Descriptions) {
+          return <Descriptions {...props} />;
+        }
+        const entries = props.items || [];
+        return (
+          <Card size={props.size || "small"} bordered={props.bordered ?? true}>
+            <Space direction="vertical" style={{ width: "100%" }}>
+              {entries.map((entry, idx) => (
+                <Space key={entry.key || idx} style={{ width: "100%", justifyContent: "space-between" }}>
+                  <Text strong>{entry.label}</Text>
+                  <span>{entry.children}</span>
+                </Space>
+              ))}
+            </Space>
+          </Card>
+        );
+      };
+
+      const renderIcon = (name, extraProps = {}) => {
+        const IconComp = icons?.[name];
+        if (IconComp) {
+          return <IconComp {...extraProps} />;
+        }
+        const { style, ...rest } = extraProps;
+        return (
+          <span
+            {...rest}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 16,
+              height: 16,
+              fontSize: 12,
+              color: "#1677FF",
+              ...style
+            }}
+          >
+            ●
+          </span>
+        );
+      };
+
+    const createPaginationConfig = (overrides = {}) => ({
+      pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: ['10', '20', '50', '100'],
+      showQuickJumper: {
+        goButton: <Button size="small">前往</Button>
+      },
+      showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条 / 共 ${total} 条`,
+      ...overrides
+    });
+
+    const MODAL_TEXTS = {
+      okText: "确认",
+      cancelText: "取消"
+    };
+
+      const copyToClipboard = async (text) => {
+        if (navigator.clipboard && window.isSecureContext) {
+          try {
+            await navigator.clipboard.writeText(text);
+            return true;
+          } catch (error) {
+            console.warn("[Nebula ERP] navigator.clipboard 写入失败，尝试降级方案。", error);
+          }
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        let copied = false;
+        try {
+          copied = document.execCommand("copy");
+        } catch (error) {
+          console.warn("[Nebula ERP] document.execCommand('copy') 执行失败。", error);
+          copied = false;
+        } finally {
+          document.body.removeChild(textarea);
+        }
+        return copied;
+      };
+
+      const renderComment = ({ author, content, datetime }) => (
+        <Card size="small" bordered>
+          <Space align="start">
+            <Avatar>{author?.slice(0, 1) || "U"}</Avatar>
+            <Space direction="vertical" size={4}>
+              <Text strong>{author || "匿名用户"}</Text>
+              <Text type="secondary" style={{ fontSize: 12 }}>{datetime || "-"}</Text>
+              <Paragraph style={{ marginBottom: 0 }}>{content || "暂无内容"}</Paragraph>
+            </Space>
+          </Space>
+        </Card>
+      );
+
+      const APP_NAME = "Nebula ERP";
+      const PRIMARY_COLOR = "#1677FF";
+
+      const i18n = {
+      "zh-CN": {
+        appTitle: `${APP_NAME} · 国产 ERP 常用组件库与模板示例`,
+        searchPlaceholder: "搜索功能 / 单据 / 客户",
+        notifications: "通知中心",
+        help: "帮助中心",
+        tenant: "租户",
+        role: "角色",
+        tenantOption: "华东工厂",
+        roleAdmin: "管理员",
+        roleBuyer: "采购员",
+        roleGuest: "访客",
+        density: "密度",
+        compact: "紧凑",
+        default: "默认",
+        light: "浅色",
+        dark: "深色",
+        language: "语言",
+        zhCN: "简体中文",
+        enUS: "English",
+        componentLibrary: "组件库",
+        templates: "模板页",
+        dashboard: "看板总览",
+        settings: "系统设置",
+        readme: "查看使用说明",
+        infoDensityTip: "密度切换将影响全局组件尺寸",
+        infoThemeTip: "浅色 / 深色主题实时切换",
+        infoLangTip: "界面文案支持中英文切换",
+        componentSearch: "搜索组件名称或关键字",
+        componentCategory: "组件分类",
+        componentUsage: "用途",
+        componentProperties: "常用属性",
+        preview: "预览",
+        viewConfig: "查看配置",
+        copySnippet: "复制示例",
+        componentDensity: "密度",
+        componentTheme: "主题",
+        componentLanguage: "语言",
+        componentMock: "Mock 数据",
+        listPage: "列表页",
+        detailPage: "详情页",
+        editPage: "编辑页",
+        approvePage: "审批页",
+        quickSearchPlaceholder: "输入关键词：单号/供应商/仓库…",
+        columnSettings: "列设置",
+        refresh: "刷新",
+        import: "导入",
+        export: "导出",
+        print: "打印",
+        create: "新建",
+        batchActions: "批量操作",
+        enable: "启用",
+        disable: "禁用",
+        delete: "删除",
+        advancedFilter: "高级筛选",
+        saveView: "保存视图",
+        saveAs: "另存视图",
+        apply: "应用",
+        reset: "重置",
+        savedViews: "保存的视图",
+        todoToday: "今日待办",
+        todoApproval: "待审任务",
+        todoAlerts: "异常预警",
+        kpiPurchase: "本月采购额",
+        kpiSupplier: "核心供应商占比",
+        kpiOnTime: "准时交付率",
+        trendTitle: "近 30 天采购趋势",
+        supplierTitle: "供应商集中度",
+        goDashboard: "返回看板",
+        permissionDemo: "权限演示",
+        approvalFlow: "审批流轨迹",
+        attachments: "附件管理",
+        relatedDocs: "关联单据",
+        comments: "评论 / @",
+        auditLog: "审计日志",
+        mockLabel: "Mock",
+        approvalAgree: "同意",
+        approvalReject: "驳回",
+        approvalTransfer: "转办",
+        approvalAddSign: "加签",
+        approvalOpinion: "审批意见",
+        approvalAttachment: "强制附件",
+        autoSave: "草稿自动保存",
+        keyboardShortcuts: "快捷键",
+        simulatedService: "内存服务模拟 CRUD",
+        statusDraft: "草稿",
+        statusSubmitted: "已提交",
+        statusApproved: "已审核",
+        statusClosed: "已关闭",
+        resultSuccess: "操作成功",
+        resultError: "发生错误，请稍后重试",
+        helpDocs: "使用说明",
+        densityCompact: "紧凑",
+        densityDefault: "默认",
+        version: "版本",
+        chartToday: "今日",
+        chartYesterday: "昨日",
+        chartWeek: "近 7 天",
+        loadMore: "加载更多",
+        notificationsEmpty: "暂无待办"
+      },
+      "en-US": {
+        appTitle: `${APP_NAME} · CN ERP Components & Templates`,
+        searchPlaceholder: "Search module / document / customer",
+        notifications: "Notifications",
+        help: "Help",
+        tenant: "Tenant",
+        role: "Role",
+        tenantOption: "East China Plant",
+        roleAdmin: "Administrator",
+        roleBuyer: "Buyer",
+        roleGuest: "Guest",
+        density: "Density",
+        compact: "Compact",
+        default: "Default",
+        light: "Light",
+        dark: "Dark",
+        language: "Language",
+        zhCN: "简体中文",
+        enUS: "English",
+        componentLibrary: "Component Library",
+        templates: "Templates",
+        dashboard: "Dashboard",
+        settings: "Settings",
+        readme: "Open README",
+        infoDensityTip: "Density toggle applies globally",
+        infoThemeTip: "Live light / dark theme switching",
+        infoLangTip: "UI texts support zh/en",
+        componentSearch: "Search components",
+        componentCategory: "Category",
+        componentUsage: "Usage",
+        componentProperties: "Props",
+        preview: "Preview",
+        viewConfig: "View config",
+        copySnippet: "Copy snippet",
+        componentDensity: "Density",
+        componentTheme: "Theme",
+        componentLanguage: "Language",
+        componentMock: "Mock data",
+        listPage: "List",
+        detailPage: "Detail",
+        editPage: "Edit",
+        approvePage: "Approval",
+        quickSearchPlaceholder: "Keyword: No./Supplier/Warehouse…",
+        columnSettings: "Column settings",
+        refresh: "Refresh",
+        import: "Import",
+        export: "Export",
+        print: "Print",
+        create: "Create",
+        batchActions: "Bulk actions",
+        enable: "Enable",
+        disable: "Disable",
+        delete: "Delete",
+        advancedFilter: "Advanced filter",
+        saveView: "Save view",
+        saveAs: "Save as view",
+        apply: "Apply",
+        reset: "Reset",
+        savedViews: "Saved views",
+        todoToday: "Today tasks",
+        todoApproval: "Approvals",
+        todoAlerts: "Alerts",
+        kpiPurchase: "Purchase volume",
+        kpiSupplier: "Core supplier ratio",
+        kpiOnTime: "On-time rate",
+        trendTitle: "30-day Purchase Trend",
+        supplierTitle: "Supplier Concentration",
+        goDashboard: "Back to dashboard",
+        permissionDemo: "Permission demo",
+        approvalFlow: "Approval flow",
+        attachments: "Attachments",
+        relatedDocs: "Related docs",
+        comments: "Comments / Mentions",
+        auditLog: "Audit log",
+        mockLabel: "Mock",
+        approvalAgree: "Approve",
+        approvalReject: "Reject",
+        approvalTransfer: "Transfer",
+        approvalAddSign: "Add sign",
+        approvalOpinion: "Approval comment",
+        approvalAttachment: "Required attachment",
+        autoSave: "Auto save draft",
+        keyboardShortcuts: "Shortcuts",
+        simulatedService: "In-memory CRUD service",
+        statusDraft: "Draft",
+        statusSubmitted: "Submitted",
+        statusApproved: "Approved",
+        statusClosed: "Closed",
+        resultSuccess: "Operation succeeded",
+        resultError: "Error, try later",
+        helpDocs: "README",
+        densityCompact: "Compact",
+        densityDefault: "Default",
+        version: "Version",
+        chartToday: "Today",
+        chartYesterday: "Yesterday",
+        chartWeek: "Last 7 days",
+        loadMore: "Load more",
+        notificationsEmpty: "No notifications"
+      }
+    };
+
+    const purchaseMock = [
+      {
+        id: "PO2025-0001",
+        status: "draft",
+        supplier: { id: "SUP-001", name: "上海宏达贸易有限公司" },
+        bizDate: "2025-11-10",
+        currency: "CNY",
+        taxRate: 13,
+        buyer: { id: "U-1001", name: "张伟" },
+        department: { id: "D-010", name: "采购部" },
+        warehouse: { id: "W-001", name: "上海一号仓" },
+        amount: 100 * 0.85 + 30 * 22.5,
+        remark: "待确认合同条款",
+        createdAt: "2025-11-10 17:20",
+        lines: [
+          { sku: "MAT-0001", name: "不锈钢螺丝 M5", spec: "M5*20", uom: "袋", qty: 100, price: 0.85, taxRate: 13 },
+          { sku: "MAT-0002", name: "铝型材 4040", spec: "4040", uom: "根", qty: 30, price: 22.5, taxRate: 13 }
+        ],
+        attachments: [],
+        related: { requisitionId: "PR2025-0123" }
+      },
+      {
+        id: "PO2025-0002",
+        status: "submitted",
+        supplier: { id: "SUP-002", name: "苏州华创电子材料有限公司" },
+        bizDate: "2025-11-11",
+        currency: "CNY",
+        taxRate: 13,
+        buyer: { id: "U-1001", name: "张伟" },
+        department: { id: "D-010", name: "采购部" },
+        warehouse: { id: "W-002", name: "苏州成品仓" },
+        amount: 23000.5,
+        remark: "紧急补货",
+        createdAt: "2025-11-11 09:30",
+        lines: [
+          { sku: "MAT-0005", name: "工业控制板", spec: "V2.1", uom: "块", qty: 35, price: 550, taxRate: 13 }
+        ],
+        attachments: [{ name: "合同扫描件.pdf", size: "1.2MB" }],
+        related: { requisitionId: "PR2025-0140" }
+      },
+      {
+        id: "PO2025-0003",
+        status: "approved",
+        supplier: { id: "SUP-003", name: "南京晨光冶金有限公司" },
+        bizDate: "2025-11-12",
+        currency: "CNY",
+        taxRate: 13,
+        buyer: { id: "U-1002", name: "李强" },
+        department: { id: "D-010", name: "采购部" },
+        warehouse: { id: "W-001", name: "上海一号仓" },
+        amount: 19450,
+        remark: "",
+        createdAt: "2025-11-12 14:05",
+        lines: [
+          { sku: "MAT-0101", name: "不锈钢板 304", spec: "2mm", uom: "吨", qty: 2, price: 6500, taxRate: 13 },
+          { sku: "MAT-0110", name: "焊丝 ER308L", spec: "1.2mm", uom: "箱", qty: 10, price: 150, taxRate: 13 }
+        ],
+        attachments: [],
+        related: { requisitionId: "PR2025-0110" }
+      }
+    ];
+
+    const approvalMock = {
+      billId: "PO2025-0001",
+      nodes: [
+        { id: "N1", name: "提交", type: "start", status: "done", comment: "草稿提交" },
+        { id: "N2", name: "部门负责人", type: "approve", status: "done", assignees: [{ id: "U-2001", name: "李娜" }], comment: "同意" },
+        { id: "N3", name: "财务复核", type: "approve", status: "pending", assignees: [{ id: "U-3002", name: "王强" }] }
+      ],
+      actions: ["approve", "reject", "transfer", "addSign"]
+    };
+
+    const permissionsByRole = {
+      admin: {
+        canCreate: true,
+        canEdit: true,
+        canApprove: true,
+        hiddenActions: []
+      },
+      buyer: {
+        canCreate: true,
+        canEdit: true,
+        canApprove: false,
+        hiddenActions: ["closeDoc", "voidDoc"]
+      },
+      guest: {
+        canCreate: false,
+        canEdit: false,
+        canApprove: false,
+        hiddenActions: ["submit", "closeDoc", "voidDoc"]
+      }
+    };
+
+    const TABLE_SELECTOR_DATA = [
+      { key: "line-1", sku: "MAT-0001", name: "不锈钢螺丝 M5", qty: 100, price: 0.85 },
+      { key: "line-2", sku: "MAT-0002", name: "铝型材 4040", qty: 30, price: 22.5 },
+      { key: "line-3", sku: "MAT-0101", name: "不锈钢板 304", qty: 2, price: 6500 },
+      { key: "line-4", sku: "MAT-0201", name: "铜棒 C2680", qty: 12, price: 180 },
+    ];
+
+    const TableModalSelectorPreview = () => {
+      const [open, setOpen] = useState(false);
+      const [search, setSearch] = useState("");
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+      const filteredData = useMemo(() => {
+        const keyword = search.trim().toLowerCase();
+        if (!keyword) return TABLE_SELECTOR_DATA;
+        return TABLE_SELECTOR_DATA.filter((item) =>
+          `${item.sku}${item.name}`.toLowerCase().includes(keyword)
+        );
+      }, [search]);
+
+      const columns = [
+        { title: "物料编码", dataIndex: "sku", width: 140 },
+        { title: "名称", dataIndex: "name" },
+        { title: "可用数量", dataIndex: "qty", width: 120 },
+        { title: "含税单价", dataIndex: "price", width: 120, render: (v) => `¥${v}` }
+      ];
+
+      return (
+        <>
+          <Button type="primary" onClick={() => setOpen(true)}>选择物料明细</Button>
+          <Modal
+            {...MODAL_TEXTS}
+            title="添加物料明细"
+            width={720}
+            open={open}
+            onOk={() => {
+              message.success(`已选择 ${selectedRowKeys.length} 条记录`);
+              setOpen(false);
+            }}
+            onCancel={() => setOpen(false)}
+          >
+            <Space direction="vertical" style={{ width: "100%" }} size="middle">
+              <Input.Search
+                allowClear
+                placeholder="搜索物料编码 / 名称"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <Table
+                rowSelection={{
+                  selectedRowKeys,
+                  onChange: setSelectedRowKeys
+                }}
+                columns={columns}
+                dataSource={filteredData}
+            pagination={createPaginationConfig()}
+                scroll={{ y: 240 }}
+              />
+            </Space>
+          </Modal>
+        </>
+      );
+    };
+
+    const SpotBrandExposurePreview = () => {
+      const initialBrands = [
+        { id: 1, name: "品牌A", category: "铜", mainPortState: "true", platformState: "invalid", futures: [{ code: "CU2401", exposure: 0.8 }, { code: "CU2402", exposure: 0.2 }] },
+        { id: 2, name: "品牌B", category: "铝", mainPortState: "invalid", platformState: "true", futures: [{ code: "AL2401", exposure: 1.0 }] },
+        { id: 3, name: "品牌C", category: "镍", mainPortState: "false", platformState: "invalid", futures: [] }
+      ];
+      const [brands, setBrands] = useState(initialBrands);
+      const [modalOpen, setModalOpen] = useState(false);
+      const [currentBrand, setCurrentBrand] = useState(null);
+      const [form] = Form.useForm();
+
+      const handleConfigure = (record) => {
+        setCurrentBrand(record);
+        form.setFieldsValue({
+          mainPortState: record.mainPortState || "true",
+          platformState: record.platformState || "invalid",
+          futures: record.futures?.length ? record.futures : [{ code: "", exposure: 0 }]
+        });
+        setModalOpen(true);
+      };
+
+      const handleSave = () => {
+        form.validateFields().then((values) => {
+          const futures = (values.futures || [])
+            .filter((item) => item?.code)
+            .map((item) => ({ code: item.code.trim(), exposure: Number(item.exposure) || 0 }));
+          const { mainPortState = "invalid", platformState = "invalid" } = values;
+          setBrands((prev) => prev.map((item) => (item.id === currentBrand.id
+            ? { ...item, futures, mainPortState, platformState }
+            : item
+          )));
+          setModalOpen(false);
+          message.success("敞口配置已更新");
+        });
+      };
+
+      const columns = [
+        { title: "品牌", dataIndex: "name", width: 140 },
+        { title: "品类", dataIndex: "category", width: 120 },
+        {
+          title: "是否主港",
+          dataIndex: "mainPortState",
+          width: 120,
+          render: (value) => {
+            if (value === "true") return "是";
+            if (value === "false") return "否";
+            return "Invalid";
+          }
+        },
+        {
+          title: "是否平台价",
+          dataIndex: "platformState",
+          width: 140,
+          render: (value) => {
+            if (value === "true") return "是";
+            if (value === "false") return "否";
+            return "Invalid";
+          }
+        },
+        {
+          title: "期货敞口",
+          dataIndex: "futures",
+          render: (futures = []) => {
+            if (!futures.length) {
+              return <Text type="secondary">未配置</Text>;
+            }
+            return (
+              <Space direction="vertical" size={2}>
+                {futures.map((item, idx) => (
+                  <div key={`${item.code}-${idx}`}>
+                    <strong>{item.code}</strong>
+                    <Text type="secondary" style={{ marginLeft: 8 }}>
+                      敞口 {Number(item.exposure || 0).toFixed(2)}
+                    </Text>
+                  </div>
+                ))}
+              </Space>
+            );
+          }
+        },
+        {
+          title: "操作",
+          width: 140,
+          render: (_, record) => (
+            <Button type="link" onClick={() => handleConfigure(record)}>
+              配置敞口
+            </Button>
+          )
+        }
+      ];
+
+      return (
+        <>
+          <Table
+            size="small"
+            rowKey="id"
+            pagination={false}
+            dataSource={brands}
+            columns={columns}
+          />
+          <Modal
+            {...MODAL_TEXTS}
+            title={`配置 ${currentBrand?.name || ""} 的敞口`}
+            open={modalOpen}
+            onOk={handleSave}
+            onCancel={() => setModalOpen(false)}
+            width={520}
+          >
+            <Form form={form} layout="vertical" preserve={false}>
+              <Form.Item label="是否主港" name="mainPortState">
+                <Select
+                  options={[
+                    { value: "invalid", label: "Invalid（继承）" },
+                    { value: "true", label: "是" },
+                    { value: "false", label: "否" }
+                  ]}
+                  onChange={(value) => {
+                    if (value !== "invalid") {
+                      form.setFieldsValue({ platformState: "invalid" });
+                    } else if ((form.getFieldValue("platformState") || "invalid") === "invalid") {
+                      form.setFieldsValue({ platformState: "true" });
+                    }
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="是否平台价" name="platformState">
+                <Select
+                  options={[
+                    { value: "invalid", label: "Invalid（继承）" },
+                    { value: "true", label: "是" },
+                    { value: "false", label: "否" }
+                  ]}
+                  onChange={(value) => {
+                    if (value !== "invalid") {
+                      form.setFieldsValue({ mainPortState: "invalid" });
+                    } else if ((form.getFieldValue("mainPortState") || "invalid") === "invalid") {
+                      form.setFieldsValue({ mainPortState: "true" });
+                    }
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="是否主港" name="mainPortState" initialValue={currentBrand?.mainPortState}>
+                <Select
+                  options={[
+                    { value: "invalid", label: "Invalid（继承）" },
+                    { value: "true", label: "是" },
+                    { value: "false", label: "否" }
+                  ]}
+                  onChange={(value) => {
+                    if (value !== "invalid") {
+                      form.setFieldsValue({ platformState: "invalid" });
+                    } else if ((form.getFieldValue("platformState") || "invalid") === "invalid") {
+                      form.setFieldsValue({ platformState: "true" });
+                    }
+                  }}
+                />
+              </Form.Item>
+              <Form.Item label="是否平台价" name="platformState" initialValue={currentBrand?.platformState}>
+                <Select
+                  options={[
+                    { value: "invalid", label: "Invalid（继承）" },
+                    { value: "true", label: "是" },
+                    { value: "false", label: "否" }
+                  ]}
+                  onChange={(value) => {
+                    if (value !== "invalid") {
+                      form.setFieldsValue({ mainPortState: "invalid" });
+                    } else if ((form.getFieldValue("mainPortState") || "invalid") === "invalid") {
+                      form.setFieldsValue({ mainPortState: "true" });
+                    }
+                  }}
+                />
+              </Form.Item>
+              <Form.List name="futures">
+                {(fields, { add, remove }) => (
+                  <Space direction="vertical" style={{ width: "100%" }}>
+                    {fields.map((field) => (
+                      <Space key={field.key} align="baseline" style={{ width: "100%" }}>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, "code"]}
+                          fieldKey={[field.fieldKey, "code"]}
+                          label="期货品种"
+                          rules={[{ required: true, message: "请输入期货品种代码" }]}
+                        >
+                          <Input placeholder="如 CU2401" style={{ width: 160 }} />
+                        </Form.Item>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, "exposure"]}
+                          fieldKey={[field.fieldKey, "exposure"]}
+                          label="敞口系数"
+                          rules={[{ required: true, message: "请输入敞口系数" }]}
+                        >
+                          <InputNumber min={0} max={5} step={0.01} style={{ width: 140 }} />
+                        </Form.Item>
+                        {fields.length > 1 && (
+                          <Button
+                            type="text"
+                            danger
+                            icon={renderIcon("DeleteOutlined")}
+                            onClick={() => remove(field.name)}
+                          />
+                        )}
+                      </Space>
+                    ))}
+                    <Button
+                      type="dashed"
+                      icon={renderIcon("PlusOutlined")}
+                      onClick={() => add({ code: "", exposure: 0 })}
+                      block
+                    >
+                      新增期货品种
+                    </Button>
+                  </Space>
+                )}
+              </Form.List>
+            </Form>
+          </Modal>
+        </>
+      );
+    };
+
+    const componentSnippets = {
+      topbar: `import { Layout, Space, Input, Badge, Button, Avatar } from 'antd';
+import { BellOutlined } from '@ant-design/icons';
+
+const TopBarExample = () => (
+  <Layout.Header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px' }}>
+    <Space>
+      <Avatar>N</Avatar>
+      <span>Nebula ERP</span>
+    </Space>
+    <Space>
+      <Input.Search allowClear placeholder="搜索功能 / 单据 / 客户" style={{ width: 200 }} />
+      <Badge count={3}>
+        <Button type="text" icon={<BellOutlined />} />
+      </Badge>
+      <Avatar>ZW</Avatar>
+    </Space>
+  </Layout.Header>
+);`,
+      sider: `import { Layout, Menu } from 'antd';
+import { AppstoreOutlined, ShoppingCartOutlined, DatabaseOutlined } from '@ant-design/icons';
+
+const SiderExample = () => (
+  <Layout style={{ minHeight: 180 }}>
+    <Layout.Sider width={180}>
+      <Menu
+        mode="inline"
+        items={[
+          { key: 'dashboard', icon: <AppstoreOutlined />, label: '看板总览' },
+          { key: 'purchase', icon: <ShoppingCartOutlined />, label: '采购管理' },
+          { key: 'inventory', icon: <DatabaseOutlined />, label: '库存中心' },
+        ]}
+      />
+    </Layout.Sider>
+    <Layout.Content style={{ padding: 16 }}>内容区</Layout.Content>
+  </Layout>
+);`,
+      worktabs: `import { Tabs, Alert, Badge, Empty } from 'antd';
+
+const WorkTabsExample = () => (
+  <Tabs
+    type="editable-card"
+    defaultActiveKey="po"
+    items={[
+      { key: 'dashboard', label: '看板', closable: false, children: <Empty description="看板内容" /> },
+      { key: 'po', label: <span><Badge color="blue" dot />采购订单</span>, children: <Alert type="info" showIcon message="并行处理多个单据" /> },
+      { key: 'supplier', label: '供应商档案', children: <Empty description="供应商档案" /> },
+    ]}
+  />
+);`,
+      breadcrumb: `import { Breadcrumb, Alert } from 'antd';
+import { RightOutlined } from '@ant-design/icons';
+
+const BreadcrumbExample = () => (
+  <>
+    <Breadcrumb
+      separator={<RightOutlined style={{ fontSize: 10 }} />}
+      items={[
+        { title: '采购管理' },
+        { title: '采购订单' },
+        { title: 'PO2025-0001' },
+      ]}
+    />
+    <Alert type="info" showIcon message="面包屑支持路径收藏" style={{ marginTop: 8 }} />
+  </>
+);`,
+      steps: `import { Steps } from 'antd';
+
+const StepsExample = () => (
+  <Steps
+    current={1}
+    items={[
+      { title: '草稿', description: '张伟' },
+      { title: '已提交', description: '2025-11-10' },
+      { title: '部门审核' },
+      { title: '财务复核' },
+      { title: '已关闭' },
+    ]}
+  />
+);`,
+      anchor: `import { Anchor } from 'antd';
+
+const AnchorExample = () => (
+  <Anchor
+    affix={false}
+    items={[
+      { key: 'base', href: '#base', title: '基础信息' },
+      { key: 'lines', href: '#lines', title: '明细' },
+      { key: 'attachments', href: '#attachments', title: '附件' },
+    ]}
+  />
+);`,
+      'mobile-workbench': `import { Card, Avatar, Space, Tag, Button, Alert } from 'antd';
+
+const MobileWorkbenchExample = () => {
+  const user = { name: '张三', roles: ['交易员', '业务经理'] };
+  const workbenches = [
+    { key: 'instruction', title: '指令工作台', description: '查看并处理待办指令，支持快速确认。', fromRole: '交易员' },
+    { key: 'biz-report', title: '经营报表', description: '在手机端查看关键指标与敞口情况。', fromRole: '业务经理' }
+  ];
+
+  return (
+    <Space direction="vertical" style={{ width: '100%' }}>
+      <Card>
+        <Space align="center" size={16}>
+          <Avatar size={48}>{user.name.slice(-1)}</Avatar>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 600 }}>{user.name}</div>
+            <Space wrap>
+              {user.roles.map(role => (
+                <Tag color="blue" key={role}>{role}</Tag>
+              ))}
+            </Space>
+          </div>
+        </Space>
+        <Alert
+          style={{ marginTop: 12 }}
+          type="info"
+          showIcon
+          message="移动端只保留个人工作台，复杂操作请前往桌面版。"
+        />
+      </Card>
+      {workbenches.map(item => (
+        <Card key={item.key} title={item.title} extra={<Tag color="geekblue">{item.fromRole}</Tag>}>
+          <p style={{ minHeight: 40, color: '#4b5565' }}>{item.description}</p>
+          <Space>
+            <Button type="primary">进入工作台</Button>
+            <Button>前往桌面版</Button>
+          </Space>
+        </Card>
+      ))}
+    </Space>
+  );
+};`,
+      'input-basic': `import { Input } from 'antd';
+
+const InputExample = () => (
+  <Input allowClear placeholder="请输入供应商名称" />
+);`,
+      'input-number': `import { InputNumber } from 'antd';
+
+const InputNumberExample = () => (
+  <InputNumber min={0} style={{ width: 160 }} placeholder="数量" />
+);`,
+      'search-select': `import { Select } from 'antd';
+
+const SupplierSelect = () => (
+  <Select
+    showSearch
+    allowClear
+    placeholder="选择供应商"
+    options={[
+      { value: 'SUP-001', label: '上海宏达贸易有限公司' },
+      { value: 'SUP-002', label: '苏州华创电子材料有限公司' },
+    ]}
+  />
+);`,
+      treeselect: `import { TreeSelect } from 'antd';
+
+const OrgTreeSelect = () => (
+  <TreeSelect
+    treeDefaultExpandAll
+    style={{ width: 240 }}
+    placeholder="选择部门"
+    treeData={[
+      { title: '总部', value: 'D-000', children: [{ title: '采购部', value: 'D-010' }, { title: '财务部', value: 'D-020' }] },
+    ]}
+  />
+);`,
+      cascader: `import { Cascader } from 'antd';
+
+const RegionCascader = () => (
+  <Cascader
+    style={{ width: 240 }}
+    placeholder="选择省市区"
+    options={[
+      { value: 'shanghai', label: '上海', children: [{ value: 'pudong', label: '浦东新区' }, { value: 'minhang', label: '闵行区' }] },
+    ]}
+  />
+);`,
+      transfer: `import { Transfer } from 'antd';
+
+const MenuTransfer = () => (
+  <Transfer
+    dataSource={[
+      { key: 'dashboard', title: '看板总览' },
+      { key: 'purchase', title: '采购订单' },
+      { key: 'supplier', title: '供应商档案' },
+      { key: 'report', title: '采购报表' },
+    ]}
+    targetKeys={['purchase']}
+    render={(item) => item.title}
+    listStyle={{ width: 160, height: 200 }}
+  />
+);`,
+      daterange: `import { DatePicker } from 'antd';
+
+const DateRangeExample = () => <DatePicker.RangePicker style={{ width: 260 }} />;`,
+      timerange: `import { TimePicker } from 'antd';
+
+const TimeRangeExample = () => <TimePicker.RangePicker format="HH:mm" />;`,
+      'checkbox-radio': `import { Space, Radio, Checkbox } from 'antd';
+
+const StatusFilter = () => (
+  <Space direction="vertical">
+    <Radio.Group defaultValue="draft">
+      <Radio.Button value="draft">草稿</Radio.Button>
+      <Radio.Button value="submitted">已提交</Radio.Button>
+      <Radio.Button value="approved">已审核</Radio.Button>
+    </Radio.Group>
+    <Checkbox.Group options={['审批通过', '含附件', '超额采购']} defaultValue={['审批通过']} />
+  </Space>
+);`,
+      switch: `import { Switch } from 'antd';
+
+const SwitchExample = () => <Switch checkedChildren="启用" unCheckedChildren="停用" defaultChecked />;`,
+      slider: `import { Slider } from 'antd';
+
+const SliderExample = () => <Slider range defaultValue={[20, 60]} />;`,
+      taginput: `import { Select } from 'antd';
+
+const TagsInput = () => (
+  <Select
+    mode="tags"
+    style={{ width: '100%' }}
+    placeholder="输入标签"
+    options={[{ value: '重点' }, { value: '核心' }]}
+  />
+);`,
+      colorpicker: `import { ColorPicker } from 'antd';
+
+const ColorPickerExample = () => <ColorPicker defaultValue="#1677FF" showText />;`,
+      rate: `import { Rate } from 'antd';
+
+const RateExample = () => <Rate allowHalf defaultValue={4.5} />;`,
+      upload: `import { Upload, message } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
+
+const FileUpload = () => (
+  <Upload.Dragger beforeUpload={() => false} onChange={() => message.success('已添加到上传队列')}>
+    <p className="ant-upload-drag-icon">
+      <InboxOutlined />
+    </p>
+    <p className="ant-upload-text">点击或拖拽上传附件</p>
+  </Upload.Dragger>
+);`,
+      'dynamic-form': `import { Form, Input, Button, Space } from 'antd';
+
+const DynamicFormExample = () => {
+  const [form] = Form.useForm();
+  return (
+    <Form form={form} layout="vertical">
+      <Form.Item label="客户分类" name="category" required>
+        <Input placeholder="请输入分类" />
+      </Form.Item>
+      <Space>
+        <Button type="dashed">新增字段</Button>
+        <Button danger>删除字段</Button>
+      </Space>
+    </Form>
+  );
+};`,
+      table: `import { Table } from 'antd';
+
+const columns = [
+  { title: '单号', dataIndex: 'id', width: 140, fixed: 'left' },
+  { title: '供应商', dataIndex: ['supplier', 'name'], width: 200 },
+  { title: '金额', dataIndex: 'amount', align: 'right', render: (value) => value.toLocaleString() },
+];
+
+const dataSource = [
+  { id: 'PO2025-0001', supplier: { name: '上海宏达贸易有限公司' }, amount: 12500 },
+];
+
+const TableExample = () => <Table dataSource={dataSource} columns={columns} rowKey="id" bordered />;
+`,
+      tree: `import { Tree } from 'antd';
+
+const treeData = [
+  { title: '总部', key: '0', children: [{ title: '采购部', key: '0-0' }, { title: '财务部', key: '0-1' }] },
+  { title: '华东工厂', key: '1', children: [{ title: '仓储中心', key: '1-0' }, { title: '质控部', key: '1-1' }] },
+];
+
+const TreeExample = () => <Tree defaultExpandAll treeData={treeData} />;
+`,
+      card: `import { Card, Statistic, Progress, Space, Tag } from 'antd';
+
+const CardExample = () => (
+  <Card>
+    <Statistic title="本月采购额" prefix="¥" value={853420} precision={2} />
+    <Space style={{ marginTop: 12 }}>
+      <Tag color="green">+12.5% 环比</Tag>
+      <Tag color="blue">核心物料</Tag>
+    </Space>
+    <Progress percent={78} strokeColor="#1677FF" />
+  </Card>
+);`,
+      descriptions: `import { Descriptions } from 'antd';
+
+const DescriptionExample = () => (
+  <Descriptions bordered size="small" column={2}>
+    <Descriptions.Item label="单号">PO2025-0001</Descriptions.Item>
+    <Descriptions.Item label="供应商">上海宏达贸易有限公司</Descriptions.Item>
+    <Descriptions.Item label="业务日期">2025-11-10</Descriptions.Item>
+    <Descriptions.Item label="币种">CNY</Descriptions.Item>
+  </Descriptions>
+);`,
+      collapse: `import { Collapse } from 'antd';
+
+const CollapseExample = () => (
+  <Collapse
+    items={[
+      { key: 'base', label: '基础信息', children: <p>合同类型：框架协议</p> },
+      { key: 'logs', label: '审批日志', children: <p>李娜 2025-11-10 同意</p> },
+    ]}
+  />
+);`,
+      timeline: `import { Timeline } from 'antd';
+
+const TimelineExample = () => (
+  <Timeline
+    items={[
+      { color: 'green', children: '2025-11-10 09:20 张伟 提交' },
+      { color: 'blue', children: '2025-11-10 10:02 财务复核 待处理' },
+    ]}
+  />
+);`,
+      drawer: `import { Drawer, Form, Input, Space, Button } from 'antd';
+import { useState } from 'react';
+
+const DrawerExample = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>高级筛选</Button>
+      <Drawer title="高级筛选" width={360} open={open} onClose={() => setOpen(false)}>
+        <Form layout="vertical">
+          <Form.Item label="供应商">
+            <Input placeholder="请输入供应商名称" />
+          </Form.Item>
+          <Space>
+            <Button type="primary">应用</Button>
+            <Button onClick={() => setOpen(false)}>关闭</Button>
+          </Space>
+        </Form>
+      </Drawer>
+    </>
+  );
+};`,
+      modal: `import { Modal, Button } from 'antd';
+import { useState } from 'react';
+
+const ModalExample = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>打开模态框</Button>
+      <Modal
+        title="确认关闭单据？"
+        open={open}
+        onOk={() => setOpen(false)}
+        onCancel={() => setOpen(false)}
+      >
+        关闭后不可编辑，可重新打开。
+      </Modal>
+    </>
+  );
+};`,
+      notification: `import { Button, notification } from 'antd';
+
+const NotificationExample = () => (
+  <Button
+    type="primary"
+    onClick={() => notification.success({ message: '采购订单已审批通过', description: 'PO2025-0003 已完成审批流程。' })}
+  >
+    触发通知
+  </Button>
+);`,
+      popover: `import { Popover, Button, Space } from 'antd';
+
+const PopoverExample = () => (
+  <Popover content={<Space direction="vertical"><Button type="link">收藏</Button><Button type="link">分享</Button></Space>} title="快速操作">
+    <Button>悬停查看</Button>
+  </Popover>
+);`,
+      skeleton: `import { Skeleton } from 'antd';
+
+const SkeletonExample = () => <Skeleton active paragraph={{ rows: 4 }} />;
+`,
+      empty: `import { Empty } from 'antd';
+
+const EmptyExample = () => <Empty description="暂无数据，请调整筛选条件。" />;
+`,
+      result: `import { Result, Button } from 'antd';
+
+const ResultExample = () => (
+  <Result
+    status="success"
+    title="提交成功"
+    subTitle="单据已推送至审批流程。"
+    extra={<Button type="primary">返回列表</Button>}
+  />
+);`,
+      'approval-track': `import { Steps } from 'antd';
+
+const ApprovalTrack = ({ data }) => (
+  <Steps
+    items={data.nodes.map((node) => ({
+      title: node.name,
+      description: node.comment,
+      status: node.status === 'done' ? 'finish' : node.status === 'pending' ? 'process' : 'wait',
+    }))}
+  />
+);`,
+      'line-edit-table': `import { Table, InputNumber, Typography } from 'antd';
+import { useState } from 'react';
+
+const LineEditTable = () => {
+  const [rows, setRows] = useState([
+    { key: 1, sku: 'MAT-0001', qty: 100, price: 0.85, taxRate: 13 },
+  ]);
+
+  const updateRow = (key, field, value) => {
+    setRows((prev) => prev.map((row) => (row.key === key ? { ...row, [field]: value } : row)));
+  };
+
+  const columns = [
+    { title: '物料编码', dataIndex: 'sku' },
+    {
+      title: '数量',
+      dataIndex: 'qty',
+      render: (value, record) => (
+        <InputNumber min={0} value={value} onChange={(val) => updateRow(record.key, 'qty', Number(val) || 0)} />
+      ),
+    },
+    {
+      title: '单价',
+      dataIndex: 'price',
+      render: (value, record) => (
+        <InputNumber min={0} value={value} onChange={(val) => updateRow(record.key, 'price', Number(val) || 0)} />
+      ),
+    },
+    {
+      title: '含税金额',
+      dataIndex: 'amount',
+      render: (_, record) => {
+        const amount = record.qty * record.price;
+        const tax = amount * (record.taxRate / 100);
+        return <Typography.Text>{(amount + tax).toFixed(2)}</Typography.Text>;
+      },
+    },
+  ];
+
+  return <Table columns={columns} dataSource={rows} pagination={false} />;
+};`,
+      'import-export': `import { Space, Alert, Input, Button, message } from 'antd';
+import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
+
+const ImportExportExample = () => (
+  <Space direction="vertical" style={{ width: '100%' }}>
+    <Alert type="info" showIcon message="支持 CSV / XLSX / 粘贴示例数据" />
+    <Input.TextArea rows={3} defaultValue="sku,qty,price&#10;MAT-0001,100,0.85" />
+    <Space>
+      <Button icon={<UploadOutlined />} onClick={() => message.success('模拟导入成功')}>导入</Button>
+      <Button icon={<DownloadOutlined />} onClick={() => message.success('已导出当前条件')}>导出</Button>
+    </Space>
+  </Space>
+);`,
+      attachment: `import { List, Avatar, Button } from 'antd';
+import { PaperClipOutlined } from '@ant-design/icons';
+
+const AttachmentList = () => (
+  <List
+    itemLayout="horizontal"
+    dataSource={[
+      { name: '采购合同.pdf', size: '1.2MB' },
+      { name: '质检报告.jpg', size: '860KB' },
+    ]}
+    renderItem={(item) => (
+      <List.Item actions={[<Button type="link">预览</Button>, <Button type="link">下载</Button>]}>
+        <List.Item.Meta
+          avatar={<Avatar icon={<PaperClipOutlined />} />}
+          title={item.name}
+          description={item.size}
+        />
+      </List.Item>
+    )}
+  />
+);`,
+      comment: `import { List, Avatar } from 'antd';
+
+const CommentList = () => (
+  <List
+    dataSource={[
+      { author: '李娜', content: '已审核，请财务确认发票。', datetime: '1 小时前' },
+      { author: '王强', content: '@张伟 请补充合同附件。', datetime: '3 小时前' },
+    ]}
+    renderItem={(item) => (
+      <List.Item>
+        <Avatar style={{ marginRight: 8 }}>{item.author.slice(0, 1)}</Avatar>
+        <div>
+          <div style={{ fontWeight: 600 }}>{item.author}</div>
+          <div>{item.content}</div>
+          <div style={{ fontSize: 12, color: '#999' }}>{item.datetime}</div>
+        </div>
+      </List.Item>
+    )}
+  />
+);`,
+      audit: `import { Timeline } from 'antd';
+
+const AuditTimeline = () => (
+  <Timeline
+    mode="left"
+    items={[
+      { label: '字段', children: '张伟 2025-11-10 修改税率 9% → 13%' },
+      { label: '系统', children: '系统自动计算含税金额 1234.50 → 1394.98' },
+    ]}
+  />
+);`,
+      'linked-doc': `import { Tabs, Empty } from 'antd';
+
+const LinkedDocTabs = () => (
+  <Tabs
+    size="small"
+    items={[
+      { key: 'po', label: '采购订单', children: 'PO2025-0001' },
+      { key: 'gr', label: '到货单', children: 'GR2025-0045' },
+      { key: 'invoice', label: '应付发票', children: <Empty description="待生成" /> },
+    ]}
+  />
+);`,
+      'org-picker': `import { TreeSelect } from 'antd';
+
+const OrgPicker = () => (
+  <TreeSelect
+    style={{ width: 260 }}
+    placeholder="选择审批人"
+    treeData={[
+      { title: '总部', value: 'dept-root', selectable: false, children: [{ title: '采购部 / 张伟', value: 'U-1001' }, { title: '部门负责人 / 李娜', value: 'U-2001' }] },
+    ]}
+    showSearch
+  />
+);`,
+      'warehouse-picker': `import { Select } from 'antd';
+
+const WarehousePicker = () => (
+  <Select
+    showSearch
+    style={{ width: 260 }}
+    placeholder="选择仓库/库位"
+    options={[
+      { label: '上海一号仓 / A-01-01', value: 'SH-W1-A0101' },
+      { label: '上海一号仓 / B-02-03', value: 'SH-W1-B0203' },
+      { label: '苏州成品仓 / 成品区', value: 'SZ-W2-FG' },
+    ]}
+  />
+);`,
+      'product-picker': `import { Alert } from 'antd';
+
+const ProductPickerNote = () => (
+  <Alert type="info" showIcon message="物料选择器可结合分类树 + 表格 + 搜索，在弹窗中演示。" />
+);`,
+      'region-picker': `import { Cascader } from 'antd';
+
+const RegionPicker = () => (
+  <Cascader
+    placeholder="选择地区"
+    options={[
+      { value: 'CN', label: '中国', children: [{ value: 'SH', label: '上海' }, { value: 'JS', label: '江苏' }] },
+      { value: 'US', label: '美国', children: [{ value: 'CA', label: '加州' }, { value: 'TX', label: '德州' }] },
+    ]}
+  />
+);`,
+      'kpi-card': `import { Card, Statistic, Space, Tag } from 'antd';
+
+const KPICard = () => (
+  <Card>
+    <Statistic title="本月采购额" prefix="¥" value={853420} precision={2} />
+    <Space style={{ marginTop: 12 }}>
+      <Tag color="green">+12% 环比</Tag>
+      <Tag color="blue">核心供应商 12 家</Tag>
+    </Space>
+  </Card>
+);`,
+      'bar-line': `import { Card } from 'antd';
+import ReactECharts from 'echarts-for-react';
+
+const option = {
+  tooltip: { trigger: 'axis' },
+  legend: { data: ['采购额', '订单数'] },
+  xAxis: { type: 'category', data: ['10-16', '10-18', '10-20', '10-22'] },
+  yAxis: [{ type: 'value' }, { type: 'value' }],
+  series: [
+    { name: '采购额', type: 'bar', data: [120, 132, 101, 134] },
+    { name: '订单数', type: 'line', yAxisIndex: 1, data: [12, 18, 9, 16] },
+  ],
+};
+
+const BarLineChart = () => (
+  <Card title="近 30 天采购趋势">
+    <ReactECharts option={option} style={{ height: 240 }} />
+  </Card>
+);`,
+      pie: `import { Card } from 'antd';
+import ReactECharts from 'echarts-for-react';
+
+const option = {
+  tooltip: { trigger: 'item' },
+  legend: { orient: 'vertical', left: 'left' },
+  series: [
+    {
+      name: '供应商占比',
+      type: 'pie',
+      radius: '70%',
+      data: [
+        { value: 45, name: '上海宏达' },
+        { value: 25, name: '苏州华创' },
+        { value: 15, name: '南京晨光' },
+        { value: 10, name: '杭州远航' },
+        { value: 5, name: '其他' },
+      ],
+    },
+  ],
+};
+
+const PieChart = () => (
+  <Card title="供应商集中度">
+    <ReactECharts option={option} style={{ height: 240 }} />
+  </Card>
+);`,
+      'role-permission': `import { Space, Alert, Tag } from 'antd';
+
+const RolePermissionDemo = () => (
+  <Space direction="vertical">
+    <Alert type="info" showIcon message="切换顶部角色可体验按钮级控制" />
+    <Space>
+      <Tag color="blue">管理员</Tag>
+      <Tag color="green">采购员</Tag>
+      <Tag>访客</Tag>
+    </Space>
+  </Space>
+);`,
+      'tenant-switcher': `import { Alert } from 'antd';
+
+const TenantSwitcherNote = () => (
+  <Alert type="success" showIcon message="支持多租户隔离，切换租户将刷新数据与权限。" />
+);`,
+      'table-modal-selector': [
+        "import { Button, Modal, Table, Input, Space, message } from 'antd';",
+        "import { useMemo, useState } from 'react';",
+        "",
+        "const dataSource = [",
+        "  { key: 'line-1', sku: 'MAT-0001', name: '不锈钢螺丝 M5', qty: 100, price: 0.85 },",
+        "  { key: 'line-2', sku: 'MAT-0002', name: '铝型材 4040', qty: 30, price: 22.5 },",
+        "  { key: 'line-3', sku: 'MAT-0101', name: '不锈钢板 304', qty: 2, price: 6500 },",
+        "];",
+        "",
+        "const TableModalSelector = () => {",
+        "  const [open, setOpen] = useState(false);",
+        "  const [search, setSearch] = useState('');",
+        "  const [selectedRowKeys, setSelectedRowKeys] = useState([]);",
+        "",
+        "  const filteredData = useMemo(",
+        "    () =>",
+        "      dataSource.filter((item) =>",
+        "        `${item.sku}${item.name}`.toLowerCase().includes(search.trim().toLowerCase()),",
+        "      ),",
+        "    [search],",
+        "  );",
+        "",
+        "  const columns = [",
+        "    { title: '物料编码', dataIndex: 'sku', width: 140 },",
+        "    { title: '名称', dataIndex: 'name' },",
+        "    { title: '可用数量', dataIndex: 'qty', width: 120 },",
+        "    { title: '含税单价', dataIndex: 'price', width: 120, render: (v) => `¥${v}` },",
+        "  ];",
+        "",
+        "  return (",
+        "    <>",
+        "      <Button type='primary' onClick={() => setOpen(true)}>选择物料明细</Button>",
+        "      <Modal",
+        "        title='添加物料明细'",
+        "        width={720}",
+        "        open={open}",
+        "        okText='确认'",
+        "        cancelText='取消'",
+        "        onOk={() => {",
+        "          message.success(`已选择 ${selectedRowKeys.length} 条记录`);",
+        "          setOpen(false);",
+        "        }}",
+        "        onCancel={() => setOpen(false)}",
+        "      >",
+        "        <Space direction='vertical' style={{ width: '100%' }} size='middle'>",
+        "          <Input.Search",
+        "            allowClear",
+        "            placeholder='搜索物料编码 / 名称'",
+        "            value={search}",
+        "            onChange={(e) => setSearch(e.target.value)}",
+        "          />",
+        "          <Table",
+        "            rowSelection={{",
+        "              selectedRowKeys,",
+        "              onChange: setSelectedRowKeys,",
+        "            }}",
+        "            columns={columns}",
+        "            dataSource={filteredData}",
+        "            pagination={createPaginationConfig()}",
+        "            scroll={{ y: 240 }}",
+        "          />",
+        "        </Space>",
+        "      </Modal>",
+        "    </>",
+        "  );",
+        "};",
+      ].join('\\n'),
+      'one-to-many-select': [
+        "import { Form, Select, Table } from 'antd';",
+        "import { useState } from 'react';",
+        "",
+        "// 一对多选择与表格示例",
+        "const OneToManySelectExample = () => {",
+        "  const [form] = Form.useForm();",
+        "",
+        "  const roles = [",
+        "    { id: 1, name: '交易员' },",
+        "    { id: 2, name: '制单员' },",
+        "  ];",
+        "",
+        "  const persons = [",
+        "    { id: 1, name: '张三' },",
+        "    { id: 2, name: '李四' },",
+        "    { id: 3, name: '王五' },",
+        "  ];",
+        "",
+        "  const dataSource = [",
+        "    { id: 1, roleName: '交易员', personNames: ['张三', '李四'], description: '负责期货交易操作' },",
+        "    { id: 2, roleName: '制单员', personNames: ['王五'], description: '负责合同制单' },",
+        "  ];",
+        "",
+        "  const columns = [",
+        "    { title: '角色', dataIndex: 'roleName', width: 150 },",
+        "    {",
+        "      title: '姓名',",
+        "      dataIndex: 'personNames',",
+        "      width: 300,",
+        "      render: (value, record) => {",
+        "        const personNames = value || record?.personNames || [];",
+        "        if (!Array.isArray(personNames) || personNames.length === 0) {",
+        "          return <span style={{ color: '#999' }}>-</span>;",
+        "        }",
+        "        return (",
+        "          <div style={{ lineHeight: '1.8', whiteSpace: 'normal' }}>",
+        "            {personNames.map((name, index) => (",
+        "              <div key={index} style={{ marginBottom: index < personNames.length - 1 ? '4px' : '0' }}>",
+        "                {name}",
+        "              </div>",
+        "            ))}",
+        "          </div>",
+        "        );",
+        "      }",
+        "    },",
+        "    { title: '角色解释', dataIndex: 'description', width: 250 }",
+        "  ];",
+        "",
+        "  return (",
+        "    <Space direction='vertical' style={{ width: '100%' }}>",
+        "      <Form form={form} layout='vertical'>",
+        "        <Form.Item label='角色' name='roleId' required>",
+        "          <Select placeholder='请选择角色'>",
+        "            {roles.map(role => (",
+        "              <Select.Option key={role.id} value={role.id}>{role.name}</Select.Option>",
+        "            ))}",
+        "          </Select>",
+        "        </Form.Item>",
+        "        <Form.Item label='人员' name='personIds' required>",
+        "          <Select",
+        "            mode='multiple'",
+        "            placeholder='请选择人员（可多选）'",
+        "            showSearch",
+        "            filterOption={(input, option) =>",
+        "              (option?.children ?? '').toLowerCase().includes(input.toLowerCase())",
+        "            }",
+        "          >",
+        "            {persons.map(person => (",
+        "              <Select.Option key={person.id} value={person.id}>{person.name}</Select.Option>",
+        "            ))}",
+        "          </Select>",
+        "        </Form.Item>",
+        "      </Form>",
+        "      <Table",
+        "        columns={columns}",
+        "        dataSource={dataSource}",
+        "        rowKey='id'",
+        "        pagination={false}",
+        "        size='small'",
+        "      />",
+        "    </Space>",
+        "  );",
+        "};",
+      ].join('\\n'),
+      'spot-brand-exposure': [
+        "import { Table, Button, Form, Input, InputNumber, Modal, Select, Space, Typography, message } from 'antd';",
+        "import { useState } from 'react';",
+        "",
+        "const SpotBrandExposure = () => {",
+        "  const initialBrands = [",
+        "    { id: 1, name: '品牌A', category: '铜', mainPortState: 'true', platformState: 'invalid', futures: [{ code: 'CU2401', exposure: 0.8 }] },",
+        "    { id: 2, name: '品牌B', category: '铝', mainPortState: 'invalid', platformState: 'true', futures: [{ code: 'AL2401', exposure: 1.0 }] },",
+        "    { id: 3, name: '品牌C', category: '镍', mainPortState: 'false', platformState: 'invalid', futures: [] }",
+        "  ];",
+        "  const [brands, setBrands] = useState(initialBrands);",
+        "  const [open, setOpen] = useState(false);",
+        "  const [currentBrand, setCurrentBrand] = useState(null);",
+        "  const [form] = Form.useForm();",
+        "",
+        "  const handleConfigure = (record) => {",
+        "    setCurrentBrand(record);",
+        "    form.setFieldsValue({",
+        "      mainPortState: record.mainPortState || 'true',",
+        "      platformState: record.platformState || 'invalid',",
+        "      futures: record.futures?.length ? record.futures : [{ code: '', exposure: 0 }]",
+        "    });",
+        "    setOpen(true);",
+        "  };",
+        "",
+        "  const handleSave = () => {",
+        "    form.validateFields().then((values) => {",
+        "      const futures = (values.futures || [])",
+        "        .filter((item) => item?.code)",
+        "        .map((item) => ({ code: item.code.trim(), exposure: Number(item.exposure) || 0 }));",
+        "      const { mainPortState = 'invalid', platformState = 'invalid' } = values;",
+        "      setBrands((prev) => prev.map((item) => item.id === currentBrand.id ? { ...item, futures, mainPortState, platformState } : item));",
+        "      setOpen(false);",
+        "      message.success('敞口配置已更新');",
+        "    });",
+        "  };",
+        "",
+        "  const columns = [",
+        "    { title: '品牌', dataIndex: 'name', width: 120 },",
+        "    { title: '品类', dataIndex: 'category', width: 120 },",
+        "    { title: '是否主港', dataIndex: 'mainPortState', width: 120, render: (v) => v === 'true' ? '是' : v === 'false' ? '否' : 'Invalid' },",
+        "    { title: '是否平台价', dataIndex: 'platformState', width: 140, render: (v) => v === 'true' ? '是' : v === 'false' ? '否' : 'Invalid' },",
+        "    {",
+        "      title: '期货敞口',",
+        "      dataIndex: 'futures',",
+        "      render: (futures = []) => futures.length ? futures.map((item) => `${item.code}（敞口 ${item.exposure}）`).join(' / ') : <Typography.Text type='secondary'>未配置</Typography.Text>",
+        "    },",
+        "    { title: '操作', width: 120, render: (_, record) => <Button type='link' onClick={() => handleConfigure(record)}>配置敞口</Button> }",
+        "  ];",
+        "",
+        "  return (",
+        "    <>",
+        "      <Table rowKey='id' size='small' pagination={false} columns={columns} dataSource={brands} />",
+        "      <Modal",
+        "        title={`配置 ${currentBrand?.name || ''} 的期货敞口`}",
+        "        open={open}",
+        "        okText='确认'",
+        "        cancelText='取消'",
+        "        onOk={handleSave}",
+        "        onCancel={() => setOpen(false)}",
+        "        width={520}",
+        "      >",
+        "        <Form form={form} layout='vertical' preserve={false}>",
+        "          <Form.Item label='是否主港' name='mainPortState'>",
+        "            <Select",
+        "              options={[",
+        "                { value: 'invalid', label: 'Invalid（继承）' },",
+        "                { value: 'true', label: '是' },",
+        "                { value: 'false', label: '否' }",
+        "              ]}",
+        "              onChange={(value) => {",
+        "                if (value !== 'invalid') {",
+        "                  form.setFieldsValue({ platformState: 'invalid' });",
+        "                } else if ((form.getFieldValue('platformState') || 'invalid') === 'invalid') {",
+        "                  form.setFieldsValue({ platformState: 'true' });",
+        "                }",
+        "              }}",
+        "            />",
+        "          </Form.Item>",
+        "          <Form.Item label='是否平台价' name='platformState'>",
+        "            <Select",
+        "              options={[",
+        "                { value: 'invalid', label: 'Invalid（继承）' },",
+        "                { value: 'true', label: '是' },",
+        "                { value: 'false', label: '否' }",
+        "              ]}",
+        "              onChange={(value) => {",
+        "                if (value !== 'invalid') {",
+        "                  form.setFieldsValue({ mainPortState: 'invalid' });",
+        "                } else if ((form.getFieldValue('mainPortState') || 'invalid') === 'invalid') {",
+        "                  form.setFieldsValue({ mainPortState: 'true' });",
+        "                }",
+        "              }}",
+        "            />",
+        "          </Form.Item>",
+        "          <Form.List name='futures'>",
+        "            {(fields, { add, remove }) => (",
+        "              <Space direction='vertical' style={{ width: '100%' }}>",
+        "                {fields.map((field) => (",
+        "                  <Space key={field.key} align='baseline'>",
+        "                    <Form.Item",
+        "                      {...field}",
+        "                      name={[field.name, 'code']}",
+        "                      fieldKey={[field.fieldKey, 'code']}",
+        "                      label='期货品种'",
+        "                      rules={[{ required: true, message: '请输入期货品种代码' }]}",
+        "                    >",
+        "                      <Input placeholder='如 CU2401' style={{ width: 160 }} />",
+        "                    </Form.Item>",
+        "                    <Form.Item",
+        "                      {...field}",
+        "                      name={[field.name, 'exposure']}",
+        "                      fieldKey={[field.fieldKey, 'exposure']}",
+        "                      label='敞口系数'",
+        "                      rules={[{ required: true, message: '请输入敞口系数' }]}",
+        "                    >",
+        "                      <InputNumber min={0} max={5} step={0.01} style={{ width: 140 }} />",
+        "                    </Form.Item>",
+        "                    {fields.length > 1 && (",
+        "                      <Button type='text' danger onClick={() => remove(field.name)}>删除</Button>",
+        "                    )}",
+        "                  </Space>",
+        "                ))}",
+        "                <Button type='dashed' onClick={() => add({ code: '', exposure: 0 })} block>",
+        "                  新增期货品种",
+        "                </Button>",
+        "              </Space>",
+        "            )}",
+        "          </Form.List>",
+        "        </Form>",
+        "      </Modal>",
+        "    </>",
+        "  );",
+        "};"
+      ].join('\\n'),
+    };
+
+    const componentCatalog = [
+      {
+        key: "layout",
+        title: { "zh-CN": "布局与导航", "en-US": "Layout & Navigation" },
+        children: [
+          { key: "topbar", name: { "zh-CN": "顶栏布局", "en-US": "Top Bar" }, usage: { "zh-CN": "展示 Logo、搜索、快捷操作", "en-US": "Show logo, search and quick actions" }, props: "主题切换 / 多租户 / 通知" },
+          { key: "sider", name: { "zh-CN": "侧边导航", "en-US": "Side Menu" }, usage: { "zh-CN": "模块菜单分组", "en-US": "Grouped module menu" }, props: "折叠 / 权限控制" },
+          { key: "worktabs", name: { "zh-CN": "工作台页签", "en-US": "Workspace Tabs" }, usage: { "zh-CN": "多单据并行处理", "en-US": "Multi document workspace" }, props: "可关闭 / 固定 / 状态" },
+          { key: "breadcrumb", name: { "zh-CN": "面包屑", "en-US": "Breadcrumb" }, usage: { "zh-CN": "显示路径", "en-US": "Show path" }, props: "可点击 / 快速返回" },
+          { key: "steps", name: { "zh-CN": "步骤条", "en-US": "Steps" }, usage: { "zh-CN": "流程状态", "en-US": "Process status" }, props: "状态色 / 描述" },
+          { key: "anchor", name: { "zh-CN": "页内锚点", "en-US": "Anchor" }, usage: { "zh-CN": "长页面导航", "en-US": "In-page navigation" }, props: "自动高亮" },
+          { key: "mobile-workbench", name: { "zh-CN": "移动工作台", "en-US": "Mobile Workbench" }, usage: { "zh-CN": "移动端角色定制入口", "en-US": "Role-based mobile entry" }, props: "角色映射 / 卡片入口 / Drawer 引导" }
+        ]
+      },
+      {
+        key: "input",
+        title: { "zh-CN": "数据录入", "en-US": "Data Input" },
+        children: [
+          { key: "input-basic", name: { "zh-CN": "输入框", "en-US": "Input" }, usage: { "zh-CN": "文本录入", "en-US": "Text input" }, props: "前缀 / 校验" },
+          { key: "input-number", name: { "zh-CN": "数字输入", "en-US": "InputNumber" }, usage: { "zh-CN": "数量金额", "en-US": "Qty amount" }, props: "最小值 / 千分位" },
+          { key: "search-select", name: { "zh-CN": "搜索选择", "en-US": "Search Select" }, usage: { "zh-CN": "供应商选择", "en-US": "Supplier select" }, props: "可搜索 / 多选" },
+          { key: "treeselect", name: { "zh-CN": "下拉树", "en-US": "TreeSelect" }, usage: { "zh-CN": "组织/仓库", "en-US": "Org/Warehouse" }, props: "懒加载" },
+          { key: "cascader", name: { "zh-CN": "级联选择", "en-US": "Cascader" }, usage: { "zh-CN": "地区/分类", "en-US": "Region/category" }, props: "多级" },
+          { key: "transfer", name: { "zh-CN": "穿梭框", "en-US": "Transfer" }, usage: { "zh-CN": "角色菜单分配", "en-US": "Role menu assign" }, props: "搜索 / 批量" },
+          { key: "daterange", name: { "zh-CN": "日期范围", "en-US": "Date Range" }, usage: { "zh-CN": "时间筛选", "en-US": "Date filter" }, props: "快捷选项" },
+          { key: "timerange", name: { "zh-CN": "时间范围", "en-US": "Time Range" }, usage: { "zh-CN": "排程", "en-US": "Scheduling" }, props: "24 小时" },
+          { key: "checkbox-radio", name: { "zh-CN": "单选/多选", "en-US": "Radio/Checkbox" }, usage: { "zh-CN": "状态筛选", "en-US": "Status filter" }, props: "按钮样式" },
+          { key: "switch", name: { "zh-CN": "开关", "en-US": "Switch" }, usage: { "zh-CN": "启用禁用", "en-US": "Toggle enable" }, props: "加载状态" },
+          { key: "slider", name: { "zh-CN": "滑块", "en-US": "Slider" }, usage: { "zh-CN": "范围选择", "en-US": "Range choose" }, props: "刻度" },
+          { key: "taginput", name: { "zh-CN": "标签输入", "en-US": "TagInput" }, usage: { "zh-CN": "关键词", "en-US": "Keyword" }, props: "自动去重" },
+          { key: "colorpicker", name: { "zh-CN": "颜色选择器", "en-US": "ColorPicker" }, usage: { "zh-CN": "主题", "en-US": "Theme" }, props: "预设色" },
+          { key: "rate", name: { "zh-CN": "评分", "en-US": "Rate" }, usage: { "zh-CN": "供应商评级", "en-US": "Supplier rating" }, props: "半星" },
+          { key: "upload", name: { "zh-CN": "上传", "en-US": "Upload" }, usage: { "zh-CN": "附件", "en-US": "Attachment" }, props: "拖拽" },
+          { key: "dynamic-form", name: { "zh-CN": "动态表单", "en-US": "Dynamic Form" }, usage: { "zh-CN": "可增删字段", "en-US": "Dynamic fields" }, props: "跨字段校验" }
+        ]
+      },
+      {
+        key: "display",
+        title: { "zh-CN": "数据展示", "en-US": "Data Display" },
+        children: [
+          { key: "table", name: { "zh-CN": "表格（高级）", "en-US": "Advanced Table" }, usage: { "zh-CN": "列表页", "en-US": "List page" }, props: "多选 / 列显隐 / 合计 / 单元格点击" },
+          { key: "tree", name: { "zh-CN": "树 / 树表", "en-US": "Tree" }, usage: { "zh-CN": "组织/物料", "en-US": "Org/Material" }, props: "虚拟滚动" },
+          { key: "card", name: { "zh-CN": "卡片", "en-US": "Card" }, usage: { "zh-CN": "指标", "en-US": "KPI" }, props: "工具条" },
+          { key: "descriptions", name: { "zh-CN": "描述列表", "en-US": "Descriptions" }, usage: { "zh-CN": "详情页", "en-US": "Detail" }, props: "多列" },
+          { key: "collapse", name: { "zh-CN": "折叠面板", "en-US": "Collapse" }, usage: { "zh-CN": "分组信息", "en-US": "Grouped info" }, props: "手风琴" },
+          { key: "timeline", name: { "zh-CN": "时间轴", "en-US": "Timeline" }, usage: { "zh-CN": "审批日志", "en-US": "Approval log" }, props: "状态色" },
+          { key: "drawer", name: { "zh-CN": "抽屉", "en-US": "Drawer" }, usage: { "zh-CN": "高级筛选", "en-US": "Advanced filter" }, props: "嵌套表单" },
+          { key: "modal", name: { "zh-CN": "模态框", "en-US": "Modal" }, usage: { "zh-CN": "确认操作", "en-US": "Confirm" }, props: "强制确认" },
+          { key: "notification", name: { "zh-CN": "通知消息", "en-US": "Notification" }, usage: { "zh-CN": "系统提醒", "en-US": "System notify" }, props: "自动关闭" },
+          { key: "popover", name: { "zh-CN": "气泡提示", "en-US": "Popover" }, usage: { "zh-CN": "上下文操作", "en-US": "Context action" }, props: "自定义内容" },
+          { key: "skeleton", name: { "zh-CN": "骨架屏", "en-US": "Skeleton" }, usage: { "zh-CN": "加载占位", "en-US": "Loading" }, props: "表格 / 表单" },
+          { key: "empty", name: { "zh-CN": "空状态", "en-US": "Empty" }, usage: { "zh-CN": "无数据提示", "en-US": "Empty state" }, props: "引导操作" },
+          { key: "result", name: { "zh-CN": "结果页", "en-US": "Result" }, usage: { "zh-CN": "成功/失败", "en-US": "Result page" }, props: "额外操作" }
+        ]
+      },
+      {
+        key: "biz",
+        title: { "zh-CN": "业务常用", "en-US": "Business Widgets" },
+        children: [
+          { key: "approval-track", name: { "zh-CN": "审批流轨迹", "en-US": "Approval Flow" }, usage: { "zh-CN": "展示节点状态", "en-US": "Show nodes" }, props: "支持驳回/加签" },
+          { key: "line-edit-table", name: { "zh-CN": "行编辑明细表", "en-US": "Line Edit Table" }, usage: { "zh-CN": "数量金额联动", "en-US": "Qty price linkage" }, props: "自动计算税额" },
+          { key: "import-export", name: { "zh-CN": "导入导出", "en-US": "Import/Export" }, usage: { "zh-CN": "CSV/XLSX 模拟", "en-US": "CSV/XLSX mock" }, props: "模板下载" },
+          { key: "attachment", name: { "zh-CN": "附件管理", "en-US": "Attachments" }, usage: { "zh-CN": "上传预览", "en-US": "Upload preview" }, props: "批量下载" },
+          { key: "comment", name: { "zh-CN": "评论与 @", "en-US": "Comments" }, usage: { "zh-CN": "协同沟通", "en-US": "Collaboration" }, props: "Mention" },
+          { key: "audit", name: { "zh-CN": "变更记录", "en-US": "Audit Log" }, usage: { "zh-CN": "字段对比", "en-US": "Field diff" }, props: "时间线" },
+          { key: "linked-doc", name: { "zh-CN": "关联单据联查", "en-US": "Linked Docs" }, usage: { "zh-CN": "上下游跳转", "en-US": "Drill through" }, props: "Tab/Drawer" },
+          { key: "org-picker", name: { "zh-CN": "组织/岗位选择器", "en-US": "Org Picker" }, usage: { "zh-CN": "选择组织员工", "en-US": "Org employees" }, props: "搜索 / 分级" },
+          { key: "warehouse-picker", name: { "zh-CN": "仓库/库位", "en-US": "Warehouse Picker" }, usage: { "zh-CN": "库存选择", "en-US": "Inventory" }, props: "多级过滤" },
+          { key: "product-picker", name: { "zh-CN": "物料选择器", "en-US": "Material Picker" }, usage: { "zh-CN": "商品选择", "en-US": "Product selection" }, props: "树+表格" },
+          { key: "region-picker", name: { "zh-CN": "地区选择", "en-US": "Region Picker" }, usage: { "zh-CN": "省市区", "en-US": "Region" }, props: "多语言" },
+          { key: "table-modal-selector", name: { "zh-CN": "表格弹窗选择", "en-US": "Table Modal Selector" }, usage: { "zh-CN": "在弹窗中筛选并多选明细", "en-US": "Select multiple rows within dialog" }, props: "搜索/多选/回填" },
+          { key: "one-to-many-select", name: { "zh-CN": "一对多选择与表格", "en-US": "One-to-Many Select & Table" }, usage: { "zh-CN": "角色人员关系、一对多数据展示", "en-US": "Role-person relationship, one-to-many display" }, props: "多选下拉 / 多行显示" },
+          { key: "spot-brand-exposure", name: { "zh-CN": "现货品牌期货敞口", "en-US": "Spot Brand Exposure" }, usage: { "zh-CN": "品牌对应多个期货品种及敞口设置", "en-US": "Map brand to multiple futures with exposure" }, props: "多品种 / Form.List / Modal / 三态选择" }
+        ]
+      },
+      {
+        key: "chart",
+        title: { "zh-CN": "可视化", "en-US": "Visualization" },
+        children: [
+          { key: "kpi-card", name: { "zh-CN": "KPI 卡片", "en-US": "KPI Card" }, usage: { "zh-CN": "指标展示", "en-US": "KPI display" }, props: "环比 / 同比" },
+          { key: "bar-line", name: { "zh-CN": "柱状/折线图", "en-US": "Bar & Line" }, usage: { "zh-CN": "趋势分析", "en-US": "Trend analysis" }, props: "双轴" },
+          { key: "pie", name: { "zh-CN": "饼图", "en-US": "Pie Chart" }, usage: { "zh-CN": "占比分析", "en-US": "Distribution" }, props: "内外环" }
+        ]
+      },
+      {
+        key: "permission",
+        title: { "zh-CN": "权限与多租户", "en-US": "Permission & Tenant" },
+        children: [
+          { key: "role-permission", name: { "zh-CN": "角色权限示例", "en-US": "Role Permissions" }, usage: { "zh-CN": "按钮级控制", "en-US": "Button level control" }, props: "隐藏 vs 禁用" },
+          { key: "tenant-switcher", name: { "zh-CN": "租户切换器", "en-US": "Tenant Switcher" }, usage: { "zh-CN": "多租户隔离", "en-US": "Tenant isolation" }, props: "Mock 数据" }
+        ]
+      }
+    ];
+
+    const notificationMock = [
+      { id: "N-1", title: "PO2025-0002 待审批", time: "10:30", type: "approval" },
+      { id: "N-2", title: "库存低于安全线：铝型材 4040", time: "09:20", type: "alert" },
+      { id: "N-3", title: "华东工厂新增 3 条待办", time: "昨天", type: "task" }
+    ];
+
+    const formatCurrency = (value) => `¥ ${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    const ApprovalFlowPreview = ({ data, t }) => {
+      if (!data) return null;
+      return (
+        <div className="erp-approval-flow">
+          {data.nodes.map((node, index) => (
+            <React.Fragment key={node.id}>
+              <div className="erp-approval-node">
+                <strong>{node.name}</strong>
+                <span className="status">{node.status}</span>
+                {node.assignees && (
+                  <Space wrap size={4}>
+                    {node.assignees.map((user) => (
+                      <Tag color={index < 1 ? "green" : "blue"} key={user.id}>{user.name}</Tag>
+                    ))}
+                  </Space>
+                )}
+                {node.comment && <Text type="secondary" style={{ fontSize: 12 }}>{node.comment}</Text>}
+              </div>
+              {index < data.nodes.length - 1 && renderIcon("RightOutlined", { className: "erp-approval-arrow" })}
+            </React.Fragment>
+          ))}
+        </div>
+      );
+    };
+
+    const LineEditTablePreview = ({ density }) => {
+      const [rows, setRows] = useState([
+        { key: 1, sku: "MAT-0001", name: "不锈钢螺丝", qty: 100, price: 0.85, taxRate: 13 },
+        { key: 2, sku: "MAT-0002", name: "铝型材 4040", qty: 30, price: 22.5, taxRate: 13 }
+      ]);
+
+      const updateRow = (key, field, value) => {
+        setRows((prev) =>
+          prev.map((row) => row.key === key ? { ...row, [field]: value } : row)
+        );
+      };
+
+      const columns = [
+        { title: "物料编码", dataIndex: "sku", width: 120, fixed: "left" },
+        { title: "名称", dataIndex: "name", width: 160 },
+        {
+          title: "数量",
+          dataIndex: "qty",
+          width: 100,
+          render: (value, record) => (
+            <InputNumber
+              min={0}
+              value={value}
+              size={density === "compact" ? "small" : "middle"}
+              onChange={(val) => updateRow(record.key, "qty", Number(val) || 0)}
+            />
+          )
+        },
+        {
+          title: "单价",
+          dataIndex: "price",
+          width: 110,
+          render: (value, record) => (
+            <InputNumber
+              min={0}
+              value={value}
+              size={density === "compact" ? "small" : "middle"}
+              onChange={(val) => updateRow(record.key, "price", Number(val) || 0)}
+            />
+          )
+        },
+        {
+          title: "税率",
+          dataIndex: "taxRate",
+          width: 90,
+          render: (value, record) => (
+            <InputNumber
+              min={0}
+              max={100}
+              value={value}
+              formatter={(v) => `${v}%`}
+              parser={(v) => Number(v.replace("%", ""))}
+              size={density === "compact" ? "small" : "middle"}
+              onChange={(val) => updateRow(record.key, "taxRate", Number(val) || 0)}
+            />
+          )
+        },
+        {
+          title: "含税金额",
+          dataIndex: "amount",
+          width: 150,
+          align: "right",
+          render: (_, record) => {
+            const amount = record.qty * record.price;
+            const taxAmount = amount * (record.taxRate / 100);
+            return <Text>{formatCurrency(amount + taxAmount)}</Text>;
+          }
+        }
+      ];
+
+      const summary = rows.reduce((acc, row) => {
+        const amount = row.qty * row.price;
+        const taxAmount = amount * (row.taxRate / 100);
+        return {
+          qty: acc.qty + row.qty,
+          amount: acc.amount + amount,
+          tax: acc.tax + taxAmount
+        };
+      }, { qty: 0, amount: 0, tax: 0 });
+
+      return (
+        <Card size="small" bordered={false} bodyStyle={{ padding: 0 }}>
+          <Table
+            size={density === "compact" ? "small" : "middle"}
+            pagination={false}
+            columns={columns}
+            dataSource={rows}
+            scroll={{ x: 720 }}
+            summary={() => (
+              <Table.Summary.Row>
+                <Table.Summary.Cell index={0} colSpan={2}><strong>合计</strong></Table.Summary.Cell>
+                <Table.Summary.Cell index={2}><strong>{summary.qty}</strong></Table.Summary.Cell>
+                <Table.Summary.Cell index={3} />
+                <Table.Summary.Cell index={4}><strong>{summary.tax.toFixed(2)} (税)</strong></Table.Summary.Cell>
+                <Table.Summary.Cell index={5}><strong>{formatCurrency(summary.amount + summary.tax)}</strong></Table.Summary.Cell>
+              </Table.Summary.Row>
+            )}
+          />
+        </Card>
+      );
+    };
+
+    const ChartCard = ({ title, subtitle, option, themeMode }) => {
+      const ref = useRef(null);
+
+      useEffect(() => {
+        if (!ref.current) return;
+        let chart = echarts.getInstanceByDom(ref.current);
+        if (chart) {
+          chart.dispose();
+        }
+        chart = echarts.init(ref.current, null, { renderer: "canvas", useDirtyRect: true });
+        chart.setOption(option);
+        const resizeObserver = new ResizeObserver(() => chart.resize());
+        resizeObserver.observe(ref.current);
+        return () => {
+          resizeObserver.disconnect();
+          chart.dispose();
+        };
+      }, [option, themeMode]);
+
+      return (
+        <Card title={title} size="small" extra={subtitle}>
+          <div style={{ height: 240 }} ref={ref} />
+        </Card>
+      );
+    };
+
+    // 通用的列管理Hook
+    const useColumnManager = (pageKey, allColumnDefinitions, defaultVisibleColumns, options = {}) => {
+      const { onRowSelect, onCellClick } = options;
+      
+      const [visibleColumns, setVisibleColumns] = useState(() => {
+        const saved = localStorage.getItem(`${pageKey}-columns`);
+        if (saved) {
+          try {
+            return JSON.parse(saved);
+          } catch (e) {
+            return defaultVisibleColumns;
+          }
+        }
+        return defaultVisibleColumns;
+      });
+
+      const [columnEditorVisible, setColumnEditorVisible] = useState(false);
+
+      useEffect(() => {
+        localStorage.setItem(`${pageKey}-columns`, JSON.stringify(visibleColumns));
+      }, [visibleColumns, pageKey]);
+
+      const handleColumnSave = (columns) => {
+        setVisibleColumns(columns);
+        setColumnEditorVisible(false);
+        message.success('列设置已保存');
+      };
+
+      const handleColumnRestoreDefault = () => {
+        setVisibleColumns(defaultVisibleColumns);
+        setColumnEditorVisible(false);
+        message.success('已恢复默认列设置');
+      };
+
+      // 构建表格列，添加序号列
+      const tableColumns = useMemo(() => {
+        return [
+          {
+            title: '序号',
+            key: 'index',
+            width: 80,
+            fixed: 'left',
+            render: (_, __, index) => index + 1
+          },
+          ...visibleColumns.map(col => {
+            const def = allColumnDefinitions.find(d => d.key === col.key);
+            const columnDef = {
+              ...def,
+              ...col,
+              width: col.width || def?.width || 150,
+              // 确保 render 函数从原始定义中保留
+              render: def?.render || col.render
+            };
+            
+            // 处理单元格点击行为
+            const isClickable = def?.clickable === true || col.clickable === true;
+            const hasCustomClick = def?.onCellClick || onCellClick;
+            
+            if (isClickable && hasCustomClick) {
+              // 可操作类：点击弹出详情对话框
+              columnDef.onCell = (record) => ({
+                onClick: (e) => {
+                  // 如果点击的是单元格内的按钮、链接等交互元素，不触发
+                  if (e.target.tagName === 'BUTTON' || 
+                      e.target.tagName === 'A' || 
+                      e.target.closest('button') || 
+                      e.target.closest('a') ||
+                      e.target.closest('.ant-btn') ||
+                      e.target.closest('.ant-tag') ||
+                      e.target.closest('.ant-input') ||
+                      e.target.closest('.ant-select')) {
+                    return;
+                  }
+                  // 调用自定义点击处理函数
+                  const clickHandler = def?.onCellClick || onCellClick;
+                  if (clickHandler) {
+                    clickHandler(record, e);
+                  }
+                },
+                style: { cursor: 'pointer' }
+              });
+            } else if (!isClickable && onRowSelect) {
+              // 不可操作类：点击选中行
+              columnDef.onCell = (record) => ({
+                onClick: (e) => {
+                  // 如果点击的是单元格内的按钮、链接等交互元素，不触发选中
+                  if (e.target.tagName === 'BUTTON' || 
+                      e.target.tagName === 'A' || 
+                      e.target.closest('button') || 
+                      e.target.closest('a') ||
+                      e.target.closest('.ant-btn') ||
+                      e.target.closest('.ant-tag') ||
+                      e.target.closest('.ant-input') ||
+                      e.target.closest('.ant-select')) {
+                    return;
+                  }
+                  // 选中该行
+                  if (record && record.id !== undefined) {
+                    onRowSelect([record.id]);
+                  }
+                },
+                style: { cursor: 'pointer' }
+              });
+            }
+            
+            return columnDef;
+          })
+        ];
+      }, [visibleColumns, allColumnDefinitions, onRowSelect, onCellClick]);
+
+      return {
+        visibleColumns,
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions,
+        defaultVisibleColumns,
+        setVisibleColumns
+      };
+    };
+
+    // 列编辑器组件
+    const ColumnEditor = ({ allColumns, visibleColumns, onSave, onCancel, onRestoreDefault }) => {
+      const [localVisibleColumns, setLocalVisibleColumns] = useState([...visibleColumns]);
+      const [widthInputs, setWidthInputs] = useState({});
+      const [draggedIndex, setDraggedIndex] = useState(null);
+      const [dragOverIndex, setDragOverIndex] = useState(null);
+      
+      useEffect(() => {
+        const widths = {};
+        localVisibleColumns.forEach(col => {
+          widths[col.key] = col.width || 150;
+        });
+        setWidthInputs(widths);
+      }, [localVisibleColumns]);
+
+      const handleToggleColumn = (columnKey) => {
+        const column = allColumns.find(c => c.key === columnKey);
+        if (!column) return;
+        
+        const isVisible = localVisibleColumns.some(c => c.key === columnKey);
+        if (isVisible) {
+          setLocalVisibleColumns(localVisibleColumns.filter(c => c.key !== columnKey));
+        } else {
+          setLocalVisibleColumns([...localVisibleColumns, { ...column, width: column.width || 150 }]);
+        }
+      };
+
+      const handleSelectAll = (checked) => {
+        if (checked) {
+          setLocalVisibleColumns(allColumns.map(col => ({ ...col, width: col.width || 150 })));
+        } else {
+          setLocalVisibleColumns([]);
+        }
+      };
+
+      const handleRemoveColumn = (columnKey) => {
+        setLocalVisibleColumns(localVisibleColumns.filter(c => c.key !== columnKey));
+      };
+
+      const handleWidthChange = (columnKey, width) => {
+        setWidthInputs({ ...widthInputs, [columnKey]: width });
+        setLocalVisibleColumns(localVisibleColumns.map(col => 
+          col.key === columnKey ? { ...col, width } : col
+        ));
+      };
+
+      const handleDragStart = (e, index) => {
+        const target = e.target;
+        if (target.tagName === 'BUTTON' || 
+            target.closest('button') || 
+            target.closest('.erp-column-item-actions')) {
+          e.preventDefault();
+          return false;
+        }
+        setDraggedIndex(index);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', index.toString());
+        if (e.currentTarget) {
+          e.currentTarget.style.opacity = '0.5';
+        }
+      };
+
+      const handleDragEnd = (e) => {
+        e.currentTarget.style.opacity = '1';
+        setDraggedIndex(null);
+        setDragOverIndex(null);
+      };
+
+      const handleDragOver = (e, index) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'move';
+        if (draggedIndex !== null && draggedIndex !== index) {
+          setDragOverIndex(index);
+        }
+      };
+
+      const handleDragLeave = (e) => {
+        e.preventDefault();
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX;
+        const y = e.clientY;
+        if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+          setDragOverIndex(null);
+        }
+      };
+
+      const handleDrop = (e, dropIndex) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (draggedIndex === null || draggedIndex === dropIndex) {
+          setDragOverIndex(null);
+          return;
+        }
+
+        const newColumns = [...localVisibleColumns];
+        const [moved] = newColumns.splice(draggedIndex, 1);
+        newColumns.splice(dropIndex, 0, moved);
+        setLocalVisibleColumns(newColumns);
+        setDraggedIndex(null);
+        setDragOverIndex(null);
+      };
+
+      const handleSave = () => {
+        const finalColumns = localVisibleColumns.map(col => ({
+          ...col,
+          width: widthInputs[col.key] || col.width || 150
+        }));
+        onSave(finalColumns);
+      };
+
+      const allSelected = localVisibleColumns.length === allColumns.length;
+      const someSelected = localVisibleColumns.length > 0 && localVisibleColumns.length < allColumns.length;
+
+      return (
+        <Modal
+          {...MODAL_TEXTS}
+          title="设置自定义列"
+          open={true}
+          onCancel={onCancel}
+          width={800}
+          className="erp-column-editor-modal"
+          footer={[
+            <Button key="cancel" onClick={onCancel}>取消</Button>,
+            <Button key="restore" onClick={onRestoreDefault}>恢复默认</Button>,
+            <Button key="confirm" type="primary" onClick={handleSave}>确认</Button>
+          ]}
+        >
+          <div className="erp-column-editor-content">
+            <div className="erp-column-editor-panel">
+              <div className="erp-column-editor-panel-title">请选择列表中要展示的信息</div>
+              <div className="erp-column-list">
+                <div className="erp-column-item">
+                  <Checkbox
+                    checked={allSelected}
+                    indeterminate={someSelected}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                  >
+                    全选
+                  </Checkbox>
+                </div>
+                {allColumns.map(column => {
+                  const isChecked = localVisibleColumns.some(c => c.key === column.key);
+                  return (
+                    <div key={column.key} className="erp-column-item">
+                      <Checkbox
+                        checked={isChecked}
+                        onChange={() => handleToggleColumn(column.key)}
+                      >
+                        {column.title}
+                      </Checkbox>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="erp-column-editor-panel">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div className="erp-column-editor-panel-title">当前选定的字段</div>
+                <Button size="small" onClick={() => setLocalVisibleColumns([])}>清空</Button>
+              </div>
+              <div className="erp-column-list">
+                {localVisibleColumns.map((column, index) => (
+                  <div
+                    key={column.key}
+                    className={`erp-column-item ${draggedIndex === index ? 'dragging' : ''} ${dragOverIndex === index ? 'drag-over' : ''}`}
+                    draggable={true}
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, index)}
+                  >
+                    <span style={{ userSelect: 'none', flex: 1 }}>{column.title}</span>
+                    <div 
+                      className="erp-column-item-actions" 
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        const parent = e.currentTarget.closest('.erp-column-item');
+                        if (parent) {
+                          parent.draggable = false;
+                          setTimeout(() => {
+                            parent.draggable = true;
+                          }, 100);
+                        }
+                      }}
+                      style={{ pointerEvents: 'auto' }}
+                    >
+                      <Button
+                        size="small"
+                        type="text"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const currentWidth = widthInputs[column.key] || column.width || 150;
+                          let tempWidth = currentWidth;
+                          Modal.confirm({
+                            title: `设置"${column.title}"列宽`,
+                            content: (
+                              <div style={{ marginTop: 16 }}>
+                                <InputNumber
+                                  style={{ width: '100%' }}
+                                  min={50}
+                                  max={500}
+                                  defaultValue={currentWidth}
+                                  onChange={(val) => {
+                                    if (val !== null) {
+                                      tempWidth = val;
+                                    }
+                                  }}
+                                  addonAfter="px"
+                                />
+                              </div>
+                            ),
+                            onOk: () => {
+                              handleWidthChange(column.key, tempWidth);
+                              message.success('列宽已更新');
+                            }
+                          });
+                        }}
+                        style={{ padding: '0 4px' }}
+                      >
+                        宽度设置
+                      </Button>
+                      <Button
+                        size="small"
+                        type="text"
+                        danger
+                        icon={renderIcon('DeleteOutlined')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveColumn(column.key);
+                        }}
+                        style={{ padding: '0 4px' }}
+                      />
+                      <span 
+                        className="erp-column-item-drag" 
+                        title="拖拽排序（点击并拖动整行）" 
+                        style={{ cursor: 'move', fontSize: 16, userSelect: 'none', padding: '4px' }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                      >
+                        {renderIcon('MenuOutlined') || '⋮⋮'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {localVisibleColumns.length === 0 && (
+                  <div style={{ textAlign: 'center', color: '#999', padding: '40px 0' }}>
+                    暂无选定的字段
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </Modal>
+      );
+    };
+
+    const ComponentPreviewRenderer = ({ itemKey, density = "compact", themeMode = "light", t = (value) => value }) => {
+      const [modal, contextHolder] = Modal.useModal();
+
+      const previews = useMemo(() => ({
+        topbar: (
+          <Layout style={{ borderRadius: 6, overflow: "hidden", border: "1px solid rgba(22,119,255,0.12)" }}>
+            <Header style={{ padding: "0 16px", background: "linear-gradient(90deg,#1677ff,#409eff)", height: 44, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <Space align="center">
+                <Avatar size={32}>NE</Avatar>
+                <span style={{ fontWeight: 600 }}>Nebula ERP</span>
+              </Space>
+              <Space>
+                <Input.Search size="small" placeholder={t("searchPlaceholder")} style={{ width: 200 }} />
+                <Badge count={3}><Button size="small" icon={renderIcon("BellOutlined")} /></Badge>
+                <Avatar size={28}>ZW</Avatar>
+              </Space>
+            </Header>
+          </Layout>
+        ),
+        sider: (
+          <Layout style={{ minHeight: 180, borderRadius: 8, overflow: "hidden", border: "1px solid rgba(22,119,255,0.12)" }}>
+            <Sider width={160} theme="light">
+              <Menu
+                mode="inline"
+                defaultSelectedKeys={["dashboard"]}
+                items={[
+                  { key: "dashboard", icon: renderIcon("AppstoreOutlined"), label: t("dashboard") },
+                  { key: "purchase", icon: renderIcon("ShoppingCartOutlined"), label: "采购管理" },
+                  { key: "inventory", icon: renderIcon("DatabaseOutlined"), label: "库存中心" }
+                ]}
+              />
+            </Sider>
+            <Layout>
+              <Content style={{ padding: 12 }}>
+                <Breadcrumb items={[{ title: "采购管理" }, { title: "采购订单" }]} />
+                <div style={{ marginTop: 12, background: "rgba(22,119,255,0.05)", borderRadius: 8, padding: 12 }}>
+                  <Skeleton active paragraph={{ rows: 2 }} title={false} />
+                </div>
+              </Content>
+            </Layout>
+          </Layout>
+        ),
+        worktabs: (
+          <Tabs
+            size="small"
+            type="editable-card"
+            defaultActiveKey="po"
+            items={[
+              { key: "dashboard", label: <span>{renderIcon("AppstoreOutlined", { style: { marginRight: 6 } })}{t("dashboard")}</span>, closable: false, children: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t("dashboard")} /> },
+              { key: "po", label: <span><Badge color="blue" dot />PO2025-0002</span>, children: <Alert type="info" showIcon message="支持多页签并行处理单据" /> },
+              { key: "supplier", label: "供应商档案", children: <Skeleton active paragraph={{ rows: 3 }} title={false} /> }
+            ]}
+          />
+        ),
+        breadcrumb: (
+          <Space direction="vertical">
+            <Breadcrumb
+              separator={renderIcon("RightOutlined", { style: { fontSize: 10 } })}
+              items={[
+                { title: "采购管理" },
+                { title: "采购订单" },
+                { title: <Tag color="blue">PO2025-0001</Tag> }
+              ]}
+            />
+            <Alert type="info" showIcon message="面包屑支持快速返回和路径收藏。" />
+          </Space>
+        ),
+        steps: (
+          <Steps
+            current={1}
+            items={[
+              { title: "草稿", description: "张伟" },
+              { title: "已提交", description: "2025-11-10" },
+              { title: "部门审核" },
+              { title: "财务复核" },
+              { title: "已关闭" }
+            ]}
+          />
+        ),
+        anchor: (
+          <SafeAnchor
+            affix={false}
+            items={[
+              { key: "base", href: "#base", title: "基础信息" },
+              { key: "lines", href: "#lines", title: "明细" },
+              { key: "attachments", href: "#attachments", title: "附件" }
+            ]}
+          />
+        ),
+        "mobile-workbench": (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <Card>
+              <Space align="center" size={16}>
+                <Avatar size={48}>张</Avatar>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 600 }}>张三</div>
+                  <Space wrap>
+                    <Tag color="blue">交易员</Tag>
+                    <Tag color="green">业务经理</Tag>
+                  </Space>
+                </div>
+              </Space>
+              <Alert
+                style={{ marginTop: 12 }}
+                type="info"
+                showIcon
+                message="移动端仅展示角色相关的工作台入口。"
+                description="复杂操作请前往桌面端。"
+              />
+              <Button block style={{ marginTop: 12 }}>{t("desktopVersion") || "前往桌面版"}</Button>
+            </Card>
+            <Card title="指令工作台" extra={<Tag color="geekblue">交易员</Tag>} style={{ borderRadius: 12 }}>
+              <Space direction="vertical" style={{ width: "100%" }}>
+                <Text type="secondary">查看指令待办，快速确认执行结果。</Text>
+                <Space>
+                  <Button type="primary">进入工作台</Button>
+                  <Button>桌面处理</Button>
+                </Space>
+              </Space>
+            </Card>
+            <Card title="经营报表" extra={<Tag color="blue">业务经理</Tag>} style={{ borderRadius: 12 }}>
+              <Space direction="vertical" style={{ width: "100%" }}>
+                <Text type="secondary">在手机端查看关键指标与敞口数据。</Text>
+                <Space>
+                  <Button type="primary">查看报表</Button>
+                  <Button>桌面查看</Button>
+                </Space>
+              </Space>
+            </Card>
+          </div>
+        ),
+        "input-basic": <Input placeholder="请输入供应商" allowClear />,
+        "input-number": <InputNumber min={0} style={{ width: "100%" }} addonAfter="件" defaultValue={10} />,
+        "search-select": (
+          <Select
+            showSearch
+            placeholder="选择供应商"
+            style={{ width: "100%" }}
+            options={[
+              { value: "SUP-001", label: "上海宏达贸易有限公司" },
+              { value: "SUP-002", label: "苏州华创电子材料有限公司" }
+            ]}
+          />
+        ),
+        treeselect: (
+          <SafeTreeSelect
+            treeDefaultExpandAll
+            style={{ width: "100%" }}
+            placeholder="选择组织"
+            treeData={[
+              { title: "总部", value: "D-000", children: [{ title: "采购部", value: "D-010" }, { title: "财务部", value: "D-020" }] }
+            ]}
+          />
+        ),
+        cascader: (
+          <Cascader
+            style={{ width: "100%" }}
+            placeholder="省 / 市 / 区"
+            options={[
+              { value: "shanghai", label: "上海", children: [{ value: "pudong", label: "浦东新区" }, { value: "minhang", label: "闵行区" }] }
+            ]}
+          />
+        ),
+        transfer: (
+          <SafeTransfer
+            dataSource={[
+              { key: "dashboard", title: "看板总览" },
+              { key: "purchase", title: "采购订单" },
+              { key: "supplier", title: "供应商档案" },
+              { key: "report", title: "采购报表" }
+            ]}
+            showSearch
+            targetKeys={["purchase"]}
+            render={(item) => item.title}
+            listStyle={{ width: 130, height: 180 }}
+          />
+        ),
+        daterange: <DatePicker.RangePicker style={{ width: "100%" }} />,
+        timerange: <TimePicker.RangePicker style={{ width: "100%" }} format="HH:mm" />,
+        "checkbox-radio": (
+          <Space direction="vertical">
+            <Radio.Group defaultValue="draft">
+              <Radio.Button value="draft">{t("statusDraft")}</Radio.Button>
+              <Radio.Button value="submitted">{t("statusSubmitted")}</Radio.Button>
+              <Radio.Button value="approved">{t("statusApproved")}</Radio.Button>
+            </Radio.Group>
+            <Checkbox.Group options={["审批通过", "含附件", "超额采购"]} defaultValue={["审批通过"]} />
+          </Space>
+        ),
+        switch: <Switch checkedChildren="启用" unCheckedChildren="停用" defaultChecked />,
+        slider: <Slider range defaultValue={[20, 60]} />,
+        taginput: <Select mode="tags" style={{ width: "100%" }} placeholder="输入标签" options={[{ value: "重点" }, { value: "核心" }]} />,
+        colorpicker: <SafeColorPicker defaultValue={PRIMARY_COLOR} showText format="hex" />,
+        rate: <Rate allowHalf defaultValue={4.5} />,
+        upload: (
+          <Upload.Dragger multiple beforeUpload={() => false}>
+            <p className="ant-upload-drag-icon">
+              {renderIcon("UploadOutlined", { style: { fontSize: 28, color: PRIMARY_COLOR } })}
+            </p>
+            <p className="ant-upload-text">点击或拖拽上传附件</p>
+          </Upload.Dragger>
+        ),
+        "dynamic-form": (
+          <DynamicFormPreview density={density} />
+        ),
+        table: (
+          <Table
+            size={density === "compact" ? "small" : "middle"}
+            pagination={false}
+            dataSource={purchaseMock}
+            rowKey="id"
+            bordered
+            columns={[
+              { title: "单号", dataIndex: "id", width: 140, fixed: "left" },
+              { title: "状态", dataIndex: "status", width: 100, filters: [{ text: t("statusDraft"), value: "draft" }, { text: t("statusSubmitted"), value: "submitted" }, { text: t("statusApproved"), value: "approved" }] },
+              { title: "供应商", dataIndex: ["supplier", "name"], width: 200 },
+              { title: "业务日期", dataIndex: "bizDate", width: 120 },
+              { title: "金额", dataIndex: "amount", width: 120, align: "right", render: (value) => formatCurrency(value) },
+              { title: "采购员", dataIndex: ["buyer", "name"], width: 110 },
+              { title: "仓库", dataIndex: ["warehouse", "name"], width: 160 },
+              { title: "备注", dataIndex: "remark", ellipsis: true }
+            ]}
+            scroll={{ x: 960 }}
+            summary={() => (
+              <Table.Summary.Row>
+                <Table.Summary.Cell index={0} colSpan={4}><strong>合计</strong></Table.Summary.Cell>
+                <Table.Summary.Cell index={4} align="right"><strong>{formatCurrency(purchaseMock.reduce((acc, cur) => acc + cur.amount, 0))}</strong></Table.Summary.Cell>
+                <Table.Summary.Cell index={5} />
+                <Table.Summary.Cell index={6} />
+                <Table.Summary.Cell index={7} />
+              </Table.Summary.Row>
+            )}
+          />
+        ),
+        tree: (
+          <SafeTree
+            defaultExpandAll
+            treeData={[
+              { title: "总部", key: "0", children: [{ title: "采购部", key: "0-0" }, { title: "财务部", key: "0-1" }] },
+              { title: "华东工厂", key: "1", children: [{ title: "仓储中心", key: "1-0" }, { title: "质控部", key: "1-1" }] }
+            ]}
+          />
+        ),
+        card: (
+          <Card bordered bodyStyle={{ padding: 16 }}>
+            <Statistic title={t("kpiPurchase")} prefix="¥" value={853420} precision={2} />
+            <Divider />
+            <Space>
+              <Tag color="green">+12.5% 环比</Tag>
+              <Tag color="blue">核心物料</Tag>
+            </Space>
+            <Progress percent={78} strokeColor={PRIMARY_COLOR} />
+          </Card>
+        ),
+        descriptions: renderDescriptions({
+          bordered: true,
+          size: "small",
+          column: 2,
+          items: [
+            { key: "id", label: "单号", children: "PO2025-0001" },
+            { key: "supplier", label: "供应商", children: "上海宏达贸易有限公司" },
+            { key: "bizDate", label: "业务日期", children: "2025-11-10" },
+            { key: "currency", label: "币种", children: "CNY" },
+            { key: "buyer", label: "采购员", children: "张伟" },
+            { key: "warehouse", label: "仓库", children: "上海一号仓" }
+          ]
+        }),
+        collapse: (
+          <SafeCollapse
+            items={[
+              {
+                key: "1",
+                label: "基础信息",
+                children: renderDescriptions({
+                  size: "small",
+                  column: 1,
+                  items: [
+                    { key: "type", label: "合同类型", children: "框架协议" },
+                    { key: "range", label: "有效期", children: "2025-01-01 ~ 2025-12-31" }
+                  ]
+                })
+              },
+              {
+                key: "2",
+                label: "审批日志",
+                children: <SafeTimeline items={[{ color: "green", children: "李娜 2025-11-10 同意" }, { color: "blue", children: "王强 待审批" }]} />
+              }
+            ]}
+          />
+        ),
+        timeline: (
+          <SafeTimeline
+            items={[
+              { color: "green", children: "2025-11-10 09:20 张伟 提交" },
+              { color: "green", children: "2025-11-10 09:32 李娜 审批：通过" },
+              { color: "blue", children: "2025-11-10 10:02 财务复核 待处理" }
+            ]}
+          />
+        ),
+        drawer: (
+          <Alert type="info" showIcon message="在模板页体验高级筛选抽屉。" />
+        ),
+        modal: (
+          <Button onClick={() => modal.confirm({ title: "确认关闭单据？", content: "关闭后不可编辑，可重新打开。", okText: "确认", cancelText: "取消" })}>
+            打开确认弹窗
+          </Button>
+        ),
+        notification: (
+          <Button type="primary" onClick={() => notification.success({ message: "采购订单已审批通过", description: "PO2025-0003 已完成审批流程。" })}>
+            触发通知
+          </Button>
+        ),
+        popover: (
+          <Popover content={<Space direction="vertical"><Button type="link">收藏</Button><Button type="link">分享</Button></Space>} title="快速操作">
+            <Button>悬停查看</Button>
+          </Popover>
+        ),
+        skeleton: <Skeleton active paragraph={{ rows: 4 }} />,
+        empty: <Empty description="暂无数据，请调整筛选条件。" />,
+        result: <Result status="success" title="提交成功" subTitle="单据已推送至审批流程。" />,
+        "approval-track": <ApprovalFlowPreview data={approvalMock} t={t} />,
+        "line-edit-table": <LineEditTablePreview density={density} />,
+        "import-export": (
+          <Space direction="vertical" style={{ width: "100%" }}>
+            <Alert type="info" showIcon message="导入示例：支持 CSV / XLSX 模拟，粘贴数据即可解析。" />
+            <Input.TextArea rows={4} defaultValue={"sku,qty,price\nMAT-0001,100,0.85\nMAT-0002,30,22.5"} />
+            <Space>
+              <Button icon={renderIcon("UploadOutlined")} onClick={() => message.success("导入模拟成功，共 2 条记录。")}>{t("import")}</Button>
+              <Button icon={renderIcon("DownloadOutlined")} onClick={() => message.success("导出成功，已生成模拟文件。")}>{t("export")}</Button>
+            </Space>
+          </Space>
+        ),
+        attachment: (
+          <List
+            itemLayout="horizontal"
+            dataSource={[
+              { name: "采购合同.pdf", size: "1.2MB" },
+              { name: "质检报告.jpg", size: "860KB" }
+            ]}
+            renderItem={(item) => (
+              <List.Item actions={[<Button type="link" key="preview">预览</Button>, <Button type="link" key="download">下载</Button>]}>
+                <List.Item.Meta
+                  avatar={<Avatar style={{ backgroundColor: PRIMARY_COLOR }} icon={renderIcon("PaperClipOutlined")} />}
+                  title={item.name}
+                  description={item.size}
+                />
+              </List.Item>
+            )}
+          />
+        ),
+        comment: (
+          <List
+            dataSource={[
+              { author: "李娜", content: "已审核，请财务确认发票。", datetime: "1 小时前" },
+              { author: "王强", content: "@张伟 请补充合同附件。", datetime: "3 小时前" }
+            ]}
+            renderItem={(item) => (
+              <List.Item>
+                {renderComment({
+                  author: item.author,
+                  content: item.content,
+                  datetime: item.datetime
+                })}
+              </List.Item>
+            )}
+          />
+        ),
+        audit: (
+          <SafeTimeline
+            mode="left"
+            items={[
+              { label: "字段", children: "张伟 2025-11-10 修改税率 9% → 13%" },
+              { label: "系统", children: "自动计算含税金额 1234.50 → 1394.98" }
+            ]}
+          />
+        ),
+        "linked-doc": (
+          <Tabs
+            size="small"
+            items={[
+              { key: "po", label: "采购订单", children: "PO2025-0001" },
+              { key: "gr", label: "到货单", children: "GR2025-0045" },
+              { key: "invoice", label: "应付发票", children: <Empty description="待生成" /> }
+            ]}
+          />
+        ),
+        "org-picker": (
+          <SafeTreeSelect
+            style={{ width: "100%" }}
+            placeholder="选择审批人"
+            treeData={[
+              { title: "总部", value: "dept-root", selectable: false, children: [{ title: "采购部 / 张伟", value: "U-1001" }, { title: "部门负责人 / 李娜", value: "U-2001" }] }
+            ]}
+            showSearch
+          />
+        ),
+        "warehouse-picker": (
+          <Select
+            showSearch
+            style={{ width: "100%" }}
+            placeholder="选择仓库/库位"
+            options={[
+              { label: "上海一号仓 / A-01-01", value: "SH-W1-A0101" },
+              { label: "上海一号仓 / B-02-03", value: "SH-W1-B0203" },
+              { label: "苏州成品仓 / 成品区", value: "SZ-W2-FG" }
+            ]}
+          />
+        ),
+        "product-picker": (
+          <Alert type="info" showIcon message="物料选择器可结合分类树 + 表格 + 搜索，在模板页弹窗中演示。" />
+        ),
+        "region-picker": (
+          <Cascader
+            placeholder="选择地区"
+            style={{ width: "100%" }}
+            options={[
+              { value: "CN", label: "中国", children: [{ value: "SH", label: "上海" }, { value: "JS", label: "江苏" }] },
+              { value: "US", label: "美国", children: [{ value: "CA", label: "加州" }, { value: "TX", label: "德州" }] }
+            ]}
+          />
+        ),
+        "kpi-card": (
+          <Card>
+            <Statistic title={t("kpiPurchase")} value={853420} prefix="¥" precision={2} />
+            <Divider />
+            <Space>
+              <Tag color="green">+12.5% QoQ</Tag>
+              <Tag color="red">-3.1% YoY</Tag>
+            </Space>
+          </Card>
+        ),
+        "bar-line": (
+          <ChartCard
+            title={t("trendTitle")}
+            subtitle={t("chartWeek")}
+            themeMode={themeMode}
+            option={{
+              tooltip: { trigger: "axis" },
+              legend: { data: ["采购额", "订单数"] },
+              grid: { left: 30, right: 20, top: 30, bottom: 20 },
+              xAxis: { type: "category", data: ["10-16", "10-18", "10-20", "10-22", "10-24", "10-26"] },
+              yAxis: [
+                { type: "value", name: "采购额" },
+                { type: "value", name: "订单数" }
+              ],
+              series: [
+                { name: "采购额", type: "bar", data: [120, 132, 101, 134, 90, 230], itemStyle: { color: PRIMARY_COLOR } },
+                { name: "订单数", type: "line", yAxisIndex: 1, data: [12, 18, 9, 16, 8, 20], smooth: true }
+              ]
+            }}
+          />
+        ),
+        pie: (
+          <ChartCard
+            title={t("supplierTitle")}
+            subtitle="TOP5"
+            themeMode={themeMode}
+            option={{
+              tooltip: { trigger: "item" },
+              legend: { orient: "vertical", left: "left" },
+              series: [
+                {
+                  name: "供应商占比",
+                  type: "pie",
+                  radius: ["40%", "70%"],
+                  center: ["60%", "50%"],
+                  data: [
+                    { value: 45, name: "上海宏达" },
+                    { value: 25, name: "苏州华创" },
+                    { value: 15, name: "南京晨光" },
+                    { value: 10, name: "杭州远航" },
+                    { value: 5, name: "其他" }
+                  ],
+                  emphasis: {
+                    itemStyle: {
+                      shadowBlur: 10,
+                      shadowOffsetX: 0,
+                      shadowColor: "rgba(0, 0, 0, 0.5)"
+                    }
+                  }
+                }
+              ]
+            }}
+          />
+        ),
+        "role-permission": (
+          <Space direction="vertical" style={{ width: "100%" }}>
+            <Alert type="info" showIcon message="切换头部角色可体验按钮级权限控制。" />
+            <Space>
+              <Tag color="blue">{t("roleAdmin")}</Tag>
+              <Tag color="green">{t("roleBuyer")}</Tag>
+              <Tag color="default">{t("roleGuest")}</Tag>
+            </Space>
+          </Space>
+        ),
+        "tenant-switcher": (
+          <Alert type="success" showIcon message="支持多租户隔离，切换租户后数据与权限同步刷新。" />
+        ),
+        "table-modal-selector": <TableModalSelectorPreview />,
+        "one-to-many-select": (
+          <Space direction="vertical" style={{ width: "100%" }}>
+            <Form layout="vertical">
+              <Form.Item label="角色" required>
+                <Select placeholder="请选择角色" style={{ width: "100%" }}>
+                  <Select.Option value={1}>交易员</Select.Option>
+                  <Select.Option value={2}>制单员</Select.Option>
+                  <Select.Option value={3}>业务经理</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item label="人员" required>
+                <Select
+                  mode="multiple"
+                  placeholder="请选择人员（可多选）"
+                  showSearch
+                  style={{ width: "100%" }}
+                  filterOption={(input, option) =>
+                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                >
+                  <Select.Option value={1}>张三</Select.Option>
+                  <Select.Option value={2}>李四</Select.Option>
+                  <Select.Option value={3}>王五</Select.Option>
+                  <Select.Option value={4}>赵六</Select.Option>
+                </Select>
+              </Form.Item>
+            </Form>
+            <Table
+              size="small"
+              pagination={false}
+              dataSource={[
+                { id: 1, roleName: '交易员', personNames: ['张三', '赵六'], description: '负责期货交易操作' },
+                { id: 2, roleName: '制单员', personNames: ['李四', '王五'], description: '负责合同制单' }
+              ]}
+              rowKey="id"
+              columns={[
+                { title: '角色', dataIndex: 'roleName', width: 150 },
+                {
+                  title: '姓名',
+                  dataIndex: 'personNames',
+                  width: 300,
+                  render: (value, record) => {
+                    const personNames = value || record?.personNames || [];
+                    if (!Array.isArray(personNames) || personNames.length === 0) {
+                      return <span style={{ color: '#999' }}>-</span>;
+                    }
+                    return (
+                      <div style={{ lineHeight: '1.8', whiteSpace: 'normal' }}>
+                        {personNames.map((name, index) => (
+                          <div key={index} style={{ marginBottom: index < personNames.length - 1 ? '4px' : '0' }}>
+                            {name}
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  }
+                },
+                { title: '角色解释', dataIndex: 'description', width: 250 }
+              ]}
+            />
+          </Space>
+        ),
+        "spot-brand-exposure": (
+          <SpotBrandExposurePreview />
+        )
+      }), [density, themeMode, t, modal]);
+
+      return (
+        <>
+          {previews[itemKey] || <Empty description="即将上线" />}
+          {contextHolder}
+        </>
+      );
+    };
+
+    const DynamicFormPreview = ({ density }) => {
+      const [form] = Form.useForm();
+      const [fields, setFields] = useState([{ key: 1, name: "customer", label: "客户分类", component: "select" }]);
+
+      const addField = () => {
+        const key = Date.now();
+        setFields((prev) => [...prev, { key, name: `custom_${key}`, label: `自定义字段 ${prev.length + 1}`, component: "input" }]);
+      };
+
+      const removeField = (key) => {
+        setFields((prev) => prev.filter((item) => item.key !== key));
+      };
+
+      return (
+        <Space direction="vertical" style={{ width: "100%" }}>
+          <Form form={form} layout="vertical" size={density === "compact" ? "small" : "middle"}>
+            {fields.map((field) => (
+              <Form.Item key={field.key} label={field.label} name={field.name} required>
+                <Input placeholder="请输入" />
+              </Form.Item>
+            ))}
+            <Button type="dashed" icon={renderIcon("PlusOutlined")} onClick={addField}>新增字段</Button>
+          </Form>
+          <Space>
+            <Button onClick={() => removeField(fields[fields.length - 1].key)} disabled={fields.length <= 1}>删除最后字段</Button>
+            <Button type="primary" onClick={() => message.success("校验通过，已保存动态字段。")}>保存</Button>
+          </Space>
+        </Space>
+      );
+    };
+
+    const ComponentLibraryPage = ({ t, locale, density, themeMode, onDensityChange }) => {
+      const [search, setSearch] = useState("");
+      const [activeCategory, setActiveCategory] = useState(componentCatalog[0].key);
+
+      const treeData = useMemo(() => componentCatalog.map((category) => ({
+        title: category.title[locale],
+        key: category.key,
+        children: category.children.map((comp) => ({ title: comp.name[locale], key: comp.key }))
+      })), [locale]);
+
+      const list = useMemo(() => {
+        return componentCatalog.flatMap((category) =>
+          category.children
+            .filter((comp) => {
+              const text = `${comp.name[locale]} ${comp.usage[locale]} ${comp.props}`.toLowerCase();
+              const matchSearch = search ? text.includes(search.toLowerCase()) : true;
+              const matchCategory = activeCategory ? (category.key === activeCategory || comp.key === activeCategory) : true;
+              return matchSearch && matchCategory;
+            })
+            .map((comp) => ({ category, comp }))
+        );
+      }, [locale, search, activeCategory]);
+
+      return (
+        <div>
+          <div className="erp-toolbar">
+            <Space size={10} wrap>
+              <Input
+                allowClear
+                prefix={renderIcon("SearchOutlined")}
+                placeholder={t("componentSearch")}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ width: 260 }}
+              />
+              <Tooltip title={t("infoDensityTip")}>
+                <Segmented
+                  value={density}
+                  onChange={onDensityChange}
+                  options={[
+                    { label: t("densityCompact"), value: "compact" },
+                    { label: t("densityDefault"), value: "default" }
+                  ]}
+                />
+              </Tooltip>
+            </Space>
+            <Space>
+              <Tooltip title={t("infoThemeTip")}>
+                <Tag color={themeMode === "dark" ? "blue" : "default"}>{themeMode === "dark" ? t("dark") : t("light")}</Tag>
+              </Tooltip>
+              <Tooltip title={t("infoLangTip")}>
+                <Tag>{locale === "zh-CN" ? t("zhCN") : t("enUS")}</Tag>
+              </Tooltip>
+            </Space>
+          </div>
+          <div className={`erp-component-layout ${themeMode === "dark" ? "dark" : ""}`}>
+            <Card className="erp-component-tree" size="small" title={
+              <Space>
+                {renderIcon("BlockOutlined")}
+                <span>{t("componentCategory")}</span>
+              </Space>
+            }>
+              <SafeTree
+                showLine
+                defaultExpandAll
+                selectedKeys={[activeCategory]}
+                onSelect={(keys) => setActiveCategory(keys[0])}
+                treeData={treeData}
+              />
+            </Card>
+            <div className="erp-component-grid">
+              {list.map(({ category, comp }) => (
+                <div className={`erp-component-card ${themeMode === "dark" ? "dark" : ""}`} key={comp.key}>
+                  <span className="erp-badge">{t("mockLabel")}</span>
+                  <div className="card-header">
+                    <Space>
+                      <Tag color="blue">{category.title[locale]}</Tag>
+                      <Text strong>{comp.name[locale]}</Text>
+                    </Space>
+                    <Tooltip title={comp.props}>
+                      {renderIcon("InfoCircleOutlined")}
+                    </Tooltip>
+                  </div>
+                  <div className="card-meta">{comp.usage[locale]}</div>
+                  <ComponentPreviewRenderer itemKey={comp.key} density={density} themeMode={themeMode} t={t} />
+                  <div className="card-footer">
+                    <Button size="small" icon={renderIcon("SettingOutlined")} onClick={() => Modal.info({ title: comp.name[locale], content: (
+                      <div>
+                        <p><strong>{t("componentUsage")}:</strong> {comp.usage[locale]}</p>
+                        <p><strong>{t("componentProperties")}:</strong> {comp.props}</p>
+                        <Alert type="info" showIcon message="属性说明" description="可在实际项目中通过 JSON Schema / 元数据进行配置化扩展。" />
+                      </div>
+                    ) })}>{t("viewConfig")}</Button>
+                    <Button
+                      size="small"
+                      icon={renderIcon("CopyOutlined")}
+                      onClick={async () => {
+                        const snippet = componentSnippets[comp.key] || `<${comp.key} />`;
+                        const ok = await copyToClipboard(snippet);
+                        if (ok) {
+                          message.success(t("copySnippet"));
+                        } else {
+                          message.warning("复制失败，请手动复制示例。");
+                        }
+                      }}
+                    >
+                      {t("copySnippet")}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    const TemplateListTab = ({ t, role }) => {
+      const [search, setSearch] = useState("");
+      const [drawerOpen, setDrawerOpen] = useState(false);
+      const [filters, setFilters] = useState({});
+      const [form] = Form.useForm();
+      const [savedViews, setSavedViews] = useState(() => {
+        const saved = localStorage.getItem("nebula-po-views");
+        return saved ? JSON.parse(saved) : [];
+      });
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: "id", title: "单号", dataIndex: "id", width: 150, fixed: "left" },
+        { key: "status", title: "状态", dataIndex: "status", width: 110 },
+        { 
+          key: "supplier.name", 
+          title: "供应商", 
+          dataIndex: ["supplier", "name"], 
+          width: 220,
+          // 可操作类：点击弹出详情对话框
+          clickable: true,
+          onCellClick: (record) => {
+            Modal.info({
+              title: "供应商详情",
+              width: 600,
+              content: (
+                <Descriptions column={1} bordered size="small">
+                  <Descriptions.Item label="供应商名称">{record.supplier?.name || "-"}</Descriptions.Item>
+                  <Descriptions.Item label="单号">{record.id}</Descriptions.Item>
+                  <Descriptions.Item label="业务日期">{record.bizDate}</Descriptions.Item>
+                  <Descriptions.Item label="金额">{formatCurrency(record.amount)}</Descriptions.Item>
+                </Descriptions>
+              )
+            });
+          }
+        },
+        { key: "bizDate", title: "业务日期", dataIndex: "bizDate", width: 120 },
+        { key: "amount", title: "金额", dataIndex: "amount", width: 120, render: (value) => formatCurrency(value), align: "right" },
+        { key: "currency", title: "币种", dataIndex: "currency", width: 90 },
+        { key: "buyer.name", title: "采购员", dataIndex: ["buyer", "name"], width: 120 },
+        { key: "warehouse.name", title: "仓库", dataIndex: ["warehouse", "name"], width: 180 },
+        { key: "remark", title: "备注", dataIndex: "remark", ellipsis: true }
+        // 注意：未设置 clickable: true 的列默认为不可操作类，点击会选中该行
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: poVisibleColumns
+      } = useColumnManager("nebula-po", allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      useEffect(() => {
+        localStorage.setItem("nebula-po-views", JSON.stringify(savedViews));
+      }, [savedViews]);
+
+      const filteredData = useMemo(() => {
+        return purchaseMock.filter((item) => {
+          const matchSearch = search ? Object.values(item).some((value) => {
+            if (typeof value === "string") return value.includes(search);
+            if (typeof value === "object") {
+              return JSON.stringify(value).includes(search);
+            }
+            return false;
+          }) : true;
+          const matchStatus = filters.status ? item.status === filters.status : true;
+          const matchSupplier = filters.supplier ? item.supplier.name.includes(filters.supplier) : true;
+          return matchSearch && matchStatus && matchSupplier;
+        });
+      }, [search, filters]);
+
+      const handleSaveView = (name) => {
+        if (!name) return;
+        const view = { name, filters, columns: poVisibleColumns };
+        setSavedViews((prev) => [...prev, view]);
+        message.success(t("saveView"));
+      };
+
+      const handleApplyView = (view) => {
+        setFilters(view.filters);
+        form.setFieldsValue(view.filters);
+        // 注意：视图中的列配置需要单独处理，这里简化处理
+      };
+
+      return (
+        <div>
+          <div className="erp-toolbar">
+            <Input
+              allowClear
+              prefix={renderIcon("SearchOutlined")}
+              placeholder={t("quickSearchPlaceholder")}
+              style={{ width: 320 }}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            <div className="actions">
+              <Button 
+                icon={renderIcon("SettingOutlined")} 
+                onClick={() => setColumnEditorVisible(true)}
+              >
+                自定义列
+              </Button>
+              <Button icon={renderIcon("SyncOutlined")} onClick={() => message.success(t("refresh"))}>{t("refresh")}</Button>
+              <Button icon={renderIcon("UploadOutlined")} onClick={() => message.success("导入模拟成功")}>{t("import")}</Button>
+              <Button icon={renderIcon("DownloadOutlined")} onClick={() => message.success("导出模拟成功")}>{t("export")}</Button>
+              <Button icon={renderIcon("PrinterOutlined")} onClick={() => message.success(`${t("print")}模板生成`)}>
+                {t("print")}
+              </Button>
+              <Button type="primary" icon={renderIcon("PlusOutlined")} disabled={!permissionsByRole[role].canCreate} onClick={() => message.success("新建采购订单草稿已创建。")}>
+                {t("create")}
+              </Button>
+              <Dropdown
+                trigger={["click"]}
+                menu={{
+                  items: [
+                    { key: "enable", label: t("enable") },
+                    { key: "disable", label: t("disable") },
+                    { key: "delete", label: t("delete") }
+                  ],
+                  onClick: ({ key }) => message.success(`${t("batchActions")} - ${key}`)
+                }}
+              >
+                <Button icon={renderIcon("ToolOutlined")}>{t("batchActions")}</Button>
+              </Dropdown>
+              <Button icon={renderIcon("FilterOutlined")} type="text" onClick={() => setDrawerOpen(true)}>
+                {t("advancedFilter")}
+              </Button>
+            </div>
+          </div>
+          <Space style={{ marginBottom: 12 }}>
+            <Tag color="blue">{t("savedViews")}</Tag>
+            {savedViews.map((view, idx) => (
+              <Tag key={idx} onClick={() => handleApplyView(view)} style={{ cursor: "pointer" }}>{view.name}</Tag>
+            ))}
+            <Button size="small" icon={renderIcon("SaveOutlined")} onClick={() => {
+              Modal.confirm({
+                title: t("saveView"),
+                content: <Input id="viewName" placeholder="视图名称" />,
+                onOk: () => {
+                  const input = document.getElementById("viewName");
+                  handleSaveView(input?.value);
+                }
+              });
+            }}>{t("saveView")}</Button>
+          </Space>
+          <Table
+            rowSelection={{
+              selectedRowKeys,
+              onChange: setSelectedRowKeys
+            }}
+            dataSource={filteredData}
+            columns={tableColumns}
+            rowKey="id"
+            size="small"
+            bordered
+            sticky
+            scroll={{ x: 1100 }}
+            pagination={createPaginationConfig()}
+            onRow={(record) => ({
+              onDoubleClick: () => message.info(`打开详情页：${record.id}`)
+            })}
+          />
+          <Drawer
+            title={t("advancedFilter")}
+            width={360}
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            extra={<Button onClick={() => { form.resetFields(); setFilters({}); }}>{t("reset")}</Button>}
+          >
+            <Form
+              form={form}
+              layout="vertical"
+              onFinish={(values) => {
+                setFilters(values);
+                setDrawerOpen(false);
+                message.success(t("apply"));
+              }}
+            >
+              <Form.Item name="supplier" label="供应商">
+                <Input placeholder="请输入供应商名称" />
+              </Form.Item>
+              <Form.Item name="dateRange" label="日期范围">
+                <DatePicker.RangePicker style={{ width: "100%" }} />
+              </Form.Item>
+              <Form.Item name="warehouse" label="仓库">
+                <Select placeholder="请选择仓库" options={[{ value: "W-001", label: "上海一号仓" }, { value: "W-002", label: "苏州成品仓" }]} />
+              </Form.Item>
+              <Form.Item name="status" label="状态">
+                <Select options={[
+                  { value: "draft", label: t("statusDraft") },
+                  { value: "submitted", label: t("statusSubmitted") },
+                  { value: "approved", label: t("statusApproved") }
+                ]} />
+              </Form.Item>
+              <Form.Item name="creator" label="创建人">
+                <Select placeholder="选择创建人" options={[{ value: "U-1001", label: "张伟" }, { value: "U-1002", label: "李强" }]} />
+              </Form.Item>
+              <Form.Item name="currency" label="币种">
+                <Select options={[{ value: "CNY", label: "CNY" }, { value: "USD", label: "USD" }]} />
+              </Form.Item>
+              <Form.Item>
+                <Space>
+                  <Button type="primary" htmlType="submit">{t("apply")}</Button>
+                  <Button onClick={() => { form.resetFields(); setFilters({}); }}>{t("reset")}</Button>
+                </Space>
+              </Form.Item>
+            </Form>
+          </Drawer>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={poVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    const TemplateDetailTab = ({ t, role }) => {
+      const record = purchaseMock[0];
+      return (
+        <Space direction="vertical" style={{ width: "100%" }}>
+          <div className="erp-section">
+            <div className="erp-section-header">
+              <div className="erp-section-title">
+                {renderIcon("FileTextOutlined", { className: "icon" })}
+                <span>{t("detailPage")} - {record.id}</span>
+              </div>
+              <Space>
+                <Button type="primary" disabled={!permissionsByRole[role].canEdit}>提交</Button>
+                <Button disabled={!permissionsByRole[role].canEdit}>编辑</Button>
+                <Dropdown
+                  menu={{
+                    items: [
+                      { key: "print", label: t("print") },
+                      { key: "export", label: t("export") }
+                    ]
+                  }}
+                >
+                  <Button icon={renderIcon("MoreOutlined")} />
+                </Dropdown>
+              </Space>
+            </div>
+            {renderDescriptions({
+              bordered: true,
+              column: 3,
+              size: "small",
+              items: [
+                { key: "supplier", label: "供应商", children: record.supplier.name },
+                { key: "bizDate", label: "业务日期", children: record.bizDate },
+                { key: "currency", label: "币种", children: record.currency },
+                { key: "taxRate", label: "税率", children: `${record.taxRate}%` },
+                { key: "buyer", label: "采购员", children: record.buyer.name },
+                { key: "department", label: "部门", children: record.department.name },
+                { key: "warehouse", label: "仓库", children: record.warehouse.name },
+                { key: "amount", label: "金额", children: formatCurrency(record.amount) },
+                { key: "remark", label: "备注", children: record.remark || "-" }
+              ]
+            })}
+          </div>
+          <div className="erp-section">
+            <div className="erp-section-header">
+              <div className="erp-section-title">
+                {renderIcon("AppstoreOutlined", { className: "icon" })}
+                <span>明细行</span>
+              </div>
+            </div>
+            <Table
+              size="small"
+              pagination={false}
+              columns={[
+                { title: "物料编码", dataIndex: "sku" },
+                { title: "名称", dataIndex: "name" },
+                { title: "规格", dataIndex: "spec" },
+                { title: "数量", dataIndex: "qty" },
+                { title: "单价", dataIndex: "price", render: (value) => `¥${value}` },
+                { title: "税率", dataIndex: "taxRate", render: (v) => `${v}%` }
+              ]}
+              dataSource={record.lines.map((line, idx) => ({ ...line, key: idx }))}
+            />
+          </div>
+          <SafeCollapse
+            items={[
+              {
+                key: "attachments",
+                label: t("attachments"),
+                children: <ComponentPreviewRenderer itemKey="attachment" t={t} />
+              },
+              {
+                key: "related",
+                label: t("relatedDocs"),
+                children: <ComponentPreviewRenderer itemKey="linked-doc" t={t} />
+              },
+              {
+                key: "audit",
+                label: t("auditLog"),
+                children: <ComponentPreviewRenderer itemKey="audit" t={t} />
+              }
+            ]}
+          />
+        </Space>
+      );
+    };
+
+    const TemplateEditTab = ({ t, role }) => {
+      const [form] = Form.useForm();
+      const [autoSaved, setAutoSaved] = useState(false);
+      const [saveTick, setSaveTick] = useState(0);
+
+      useEffect(() => {
+        const timer = setTimeout(() => {
+          setAutoSaved(true);
+          localStorage.setItem("nebula-edit-draft", JSON.stringify(form.getFieldsValue()));
+        }, 2500);
+        return () => clearTimeout(timer);
+      }, [form, saveTick]);
+
+      const handleValuesChange = () => {
+        setAutoSaved(false);
+        setSaveTick((tick) => tick + 1);
+      };
+
+      return (
+        <Space direction="vertical" style={{ width: "100%" }}>
+          <Alert
+            type="info"
+            showIcon
+            message={t("autoSave")}
+            description="当表单发生变化后 2.5 秒自动保存到本地存储。快捷键：Ctrl+S 保存、Alt+N 新增、Esc 取消。"
+          />
+          <Form
+            form={form}
+            layout="vertical"
+            initialValues={{
+              supplier: "SUP-001",
+              bizDate: dayjs(),
+              currency: "CNY",
+              taxRate: 13,
+              remark: ""
+            }}
+            onValuesChange={handleValuesChange}
+          >
+            <Form.Item label="供应商" name="supplier" rules={[{ required: true }]}>
+              <Select
+                showSearch
+                options={[
+                  { value: "SUP-001", label: "上海宏达贸易有限公司" },
+                  { value: "SUP-002", label: "苏州华创电子材料有限公司" }
+                ]}
+              />
+            </Form.Item>
+            <Form.Item label="业务日期" name="bizDate" rules={[{ required: true }]}>
+              <DatePicker style={{ width: "100%" }} />
+            </Form.Item>
+            <Form.Item label="币种" name="currency" rules={[{ required: true }]}>
+              <Select options={[{ value: "CNY", label: "CNY" }, { value: "USD", label: "USD" }]} />
+            </Form.Item>
+            <Form.Item label="税率" name="taxRate" rules={[{ required: true }]}><InputNumber min={0} max={100} style={{ width: "100%" }} addonAfter="%" /></Form.Item>
+            <Form.Item label="备注" name="remark"><Input.TextArea rows={3} /></Form.Item>
+          </Form>
+          <LineEditTablePreview density="compact" />
+          <Space>
+            <Button type="primary" icon={renderIcon("SaveOutlined")} disabled={!permissionsByRole[role].canEdit} onClick={() => message.success(t("resultSuccess"))}>保存</Button>
+            <Button icon={renderIcon("RocketOutlined")} disabled={!permissionsByRole[role].canEdit} onClick={() => message.success("已提交审批流程")} >提交审批</Button>
+            <Tag color={autoSaved ? "green" : "orange"}>{autoSaved ? "已自动保存" : "保存中..."}</Tag>
+          </Space>
+        </Space>
+      );
+    };
+
+    const TemplateApproveTab = ({ t, role }) => {
+      const permission = permissionsByRole[role];
+      return (
+        <Space direction="vertical" style={{ width: "100%" }}>
+          <ApprovalFlowPreview data={approvalMock} t={t} />
+          <Form layout="vertical">
+            <Form.Item label={t("approvalOpinion")} required>
+              <Input.TextArea rows={3} placeholder="请输入审批意见" />
+            </Form.Item>
+            <Form.Item label={t("approvalAttachment")}>
+              <Upload beforeUpload={() => false}>
+                <Button icon={renderIcon("PaperClipOutlined")}>{t("attachments")}</Button>
+              </Upload>
+            </Form.Item>
+          </Form>
+          <Space>
+            <Button type="primary" icon={renderIcon("CheckOutlined")} disabled={!permission.canApprove}>{t("approvalAgree")}</Button>
+            <Button danger icon={renderIcon("CloseOutlined")} disabled={!permission.canApprove}>{t("approvalReject")}</Button>
+            <Button icon={renderIcon("ShareAltOutlined")} disabled={!permission.canApprove}>{t("approvalTransfer")}</Button>
+            <Button icon={renderIcon("UserAddOutlined")} disabled={!permission.canApprove}>{t("approvalAddSign")}</Button>
+          </Space>
+          <ComponentPreviewRenderer itemKey="comment" t={t} />
+        </Space>
+      );
+    };
+
+    const TemplatesPage = ({ t, role }) => {
+      const [active, setActive] = useState("list");
+      const tabs = [
+        { key: "list", label: t("listPage"), children: <TemplateListTab t={t} role={role} /> },
+        { key: "detail", label: t("detailPage"), children: <TemplateDetailTab t={t} role={role} /> },
+        { key: "edit", label: t("editPage"), children: <TemplateEditTab t={t} role={role} /> },
+        { key: "approve", label: t("approvePage"), children: <TemplateApproveTab t={t} role={role} /> }
+      ];
+
+      return (
+        <Tabs activeKey={active} onChange={setActive} type="card" items={tabs} />
+      );
+    };
+
+    const DashboardPage = ({ t, themeMode }) => {
+      return (
+        <div className={`erp-kanban-grid ${themeMode === "dark" ? "dark" : ""}`}>
+          <Card className="span-3" title={t("todoToday")} extra={<Tag color="blue">5</Tag>}>
+            <List
+              size="small"
+              dataSource={[
+                "审批 PO2025-0002",
+                "更新供应商合同",
+                "确认到货单 GR2025-0045",
+                "跟进异常库存",
+                "导入供应商价格表"
+              ]}
+              renderItem={(item) => <List.Item>{item}</List.Item>}
+            />
+          </Card>
+          <Card className="span-3" title={t("todoApproval")} extra={<Tag color="orange">2</Tag>}>
+            <SafeTimeline items={[
+              { color: "green", children: "PO2025-0003 财务复核待处理" },
+              { color: "blue", children: "合同审批 - 杭州远航" }
+            ]} />
+          </Card>
+          <Card className="span-3" title={t("todoAlerts")} extra={<Tag color="red">3</Tag>}>
+            <Alert type="warning" showIcon message="库存低于安全线：铝型材 4040" />
+            <Divider />
+            <Alert type="error" showIcon message="PO2025-0005 交付逾期 3 天" />
+          </Card>
+          <Card className="span-3" title={t("permissionDemo")}>
+            <Paragraph>
+              切换顶部角色可实时体验菜单与按钮级权限控制。访客角色仅可浏览看板。
+            </Paragraph>
+            <Tag className="erp-permission-tag">{t("simulatedService")}</Tag>
+          </Card>
+          <Card className="span-4" title={t("kpiPurchase")}>
+            <Statistic value={985430} prefix="¥" precision={2} />
+            <Divider />
+            <Space>
+              <Tag color="green">+18% {t("chartWeek")}</Tag>
+              <Tag color="blue">核心供应商 12 家</Tag>
+            </Space>
+            <Progress percent={72} strokeColor={PRIMARY_COLOR} />
+          </Card>
+          <Card className="span-4" title={t("kpiSupplier")}>
+            <Statistic value={68} suffix="%" precision={1} />
+            <Divider />
+            <Space direction="vertical">
+              <Tag color="green">Top3 占比 45%</Tag>
+              <Tag color="cyan">新增合格供应商 4 家</Tag>
+            </Space>
+          </Card>
+          <Card className="span-4" title={t("kpiOnTime")}>
+            <Statistic value={93.5} suffix="%" precision={1} />
+            <Progress percent={93.5} status="active" strokeColor="#52c41a" />
+          </Card>
+          <div className="span-6">
+            <ChartCard
+              title={t("trendTitle")}
+              subtitle={t("chartWeek")}
+              themeMode={themeMode}
+              option={{
+                tooltip: { trigger: "axis" },
+                legend: { data: ["采购额", "订单数"], textStyle: { color: themeMode === "dark" ? "#fff" : "#333" } },
+                grid: { left: 40, right: 20, top: 40, bottom: 30 },
+                xAxis: { type: "category", data: ["10-20", "10-21", "10-22", "10-23", "10-24", "10-25", "10-26"], axisLabel: { color: themeMode === "dark" ? "#fff" : "#555" } },
+                yAxis: { type: "value", axisLabel: { color: themeMode === "dark" ? "#fff" : "#555" } },
+                series: [
+                  { name: "采购额", type: "bar", data: [120, 132, 101, 134, 90, 230, 210], itemStyle: { color: PRIMARY_COLOR } },
+                  { name: "订单数", type: "line", data: [11, 15, 9, 16, 8, 20, 18], smooth: true, itemStyle: { color: "#13c2c2" } }
+                ]
+              }}
+            />
+          </div>
+          <div className="span-6">
+            <ChartCard
+              title={t("supplierTitle")}
+              subtitle={t("chartToday")}
+              themeMode={themeMode}
+              option={{
+                tooltip: { trigger: "item" },
+                legend: { orient: "vertical", left: "left", textStyle: { color: themeMode === "dark" ? "#fff" : "#333" } },
+                series: [
+                  {
+                    name: "供应商占比",
+                    type: "pie",
+                    radius: "70%",
+                    center: ["60%", "55%"],
+                    data: [
+                      { value: 45, name: "上海宏达" },
+                      { value: 25, name: "苏州华创" },
+                      { value: 15, name: "南京晨光" },
+                      { value: 10, name: "杭州远航" },
+                      { value: 5, name: "其他" }
+                    ],
+                    itemStyle: {
+                      emphasis: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: "rgba(0, 0, 0, 0.5)"
+                      }
+                    }
+                  }
+                ]
+              }}
+            />
+          </div>
+        </div>
+      );
+    };
+
+    const SettingsPage = ({ t }) => {
+      return (
+        <SafeCollapse
+          defaultActiveKey={["dict", "number", "print", "perm"]}
+          items={[
+            {
+              key: "dict",
+              label: "数据字典",
+              children: (
+                <Form layout="vertical">
+                  <Form.Item label="字段" required>
+                    <Input placeholder="字段 ID，例如 supplierLevel" />
+                  </Form.Item>
+                  <Form.Item label="显示名称">
+                    <Input placeholder="供应商等级" />
+                  </Form.Item>
+                  <Form.Item label="选项值">
+                    <Select mode="tags" placeholder="输入选项并回车" />
+                  </Form.Item>
+                  <Button type="primary" onClick={() => message.success("已保存数据字典项")}>保存</Button>
+                </Form>
+              )
+            },
+            {
+              key: "number",
+              label: "编号规则",
+              children: (
+                <Form layout="vertical">
+                  <Form.Item label="前缀" required>
+                    <Input placeholder="PO{YYYY}" />
+                  </Form.Item>
+                  <Form.Item label="日期格式">
+                    <Select defaultValue="YYYYMMDD" options={[{ value: "YYYYMMDD", label: "YYYYMMDD" }, { value: "YYYY", label: "YYYY" }]} />
+                  </Form.Item>
+                  <Form.Item label="序列长度">
+                    <InputNumber min={3} max={6} defaultValue={4} />
+                  </Form.Item>
+                  <Button type="primary" onClick={() => message.success("编号规则已保存")}>保存</Button>
+                </Form>
+              )
+            },
+            {
+              key: "print",
+              label: "打印模板管理",
+              children: (
+                <Space direction="vertical" style={{ width: "100%" }}>
+                  <Alert type="info" showIcon message="支持上传 DOCX / HTML 模板，使用变量占位符渲染。" />
+                  <Upload beforeUpload={() => false} multiple>
+                    <Button icon={renderIcon("UploadOutlined")}>上传模板</Button>
+                  </Upload>
+                  <List
+                    size="small"
+                    dataSource={[
+                      { name: "采购订单标准模板", updated: "2025-10-01" },
+                      { name: "采购订单英文模板", updated: "2025-09-12" }
+                    ]}
+                    renderItem={(item) => <List.Item actions={[<a key="preview">预览</a>, <a key="edit">编辑</a>]}>{item.name} · {item.updated}</List.Item>}
+                  />
+                </Space>
+              )
+            },
+            {
+              key: "perm",
+              label: t("permissionDemo"),
+              children: (
+                <Space direction="vertical" style={{ width: "100%" }}>
+                  <ComponentPreviewRenderer itemKey="role-permission" t={t} />
+                  <ComponentPreviewRenderer itemKey="tenant-switcher" t={t} />
+                </Space>
+              )
+            }
+          ]}
+        />
+      );
+    };
+
+    const menuConfig = [
+      { key: "dashboard", icon: "FundProjectionScreenOutlined", labelKey: "dashboard" },
+      { key: "component-library", icon: "AppstoreOutlined", labelKey: "componentLibrary" },
+      { key: "templates", icon: "ContainerOutlined", labelKey: "templates" },
+      { key: "settings", icon: "SettingOutlined", labelKey: "settings" }
+    ];
+
+    const App = () => {
+      const [collapsed, setCollapsed] = useState(false);
+      const [themeMode, setThemeMode] = useState("light");
+      const [density, setDensity] = useState("compact");
+      const [locale, setLocale] = useState("zh-CN");
+      const [role, setRole] = useState("admin");
+      const [tenant, setTenant] = useState("T-1");
+      const [notifications, setNotifications] = useState(notificationMock);
+
+      const [tabs, setTabs] = useState([{ key: "dashboard", labelKey: "dashboard" }]);
+      const [activeTab, setActiveTab] = useState("dashboard");
+
+      const translate = useCallback((key) => i18n[locale][key] || key, [locale]);
+
+      const token = useMemo(() => ({
+        colorPrimary: PRIMARY_COLOR,
+        borderRadius: 8,
+        fontSize: density === "compact" ? 13 : 14,
+        controlHeight: density === "compact" ? 30 : 36
+      }), [density]);
+
+      const handleMenuClick = ({ key }) => {
+        setActiveTab(key);
+        setTabs((prev) => (prev.find((tab) => tab.key === key) ? prev : [...prev, { key, labelKey: menuConfig.find((m) => m.key === key)?.labelKey || key }]));
+      };
+
+      const handleTabEdit = (targetKey, action) => {
+        if (action === "remove") {
+          setTabs((prev) => {
+            const newTabs = prev.filter((tab) => tab.key !== targetKey);
+            if (targetKey === activeTab && newTabs.length) {
+              setActiveTab(newTabs[newTabs.length - 1].key);
+            }
+            return newTabs;
+          });
+        }
+      };
+
+      const renderContent = () => {
+        switch (activeTab) {
+          case "component-library":
+            return <ComponentLibraryPage t={translate} locale={locale} density={density} themeMode={themeMode} onDensityChange={setDensity} />;
+          case "templates":
+            return <TemplatesPage t={translate} role={role} />;
+          case "settings":
+            return <SettingsPage t={translate} />;
+          case "dashboard":
+          default:
+            return <DashboardPage t={translate} themeMode={themeMode} />;
+        }
+      };
+
+      const notificationItems = notifications.length ? notifications.map((item) => ({
+        key: item.id,
+        label: (
+          <Space>
+            <Tag color={item.type === "approval" ? "blue" : item.type === "alert" ? "red" : "cyan"}>{item.type}</Tag>
+            <span>{item.title}</span>
+            <Text type="secondary">{item.time}</Text>
+          </Space>
+        )
+      })) : [{ key: "empty", label: <Empty description={translate("notificationsEmpty")} image={Empty.PRESENTED_IMAGE_SIMPLE} /> }];
+
+      const topMenus = [
+        { key: "contract", label: "合同宝" },
+        { key: "instruction", label: "指令宝" },
+        { key: "match", label: "匹配宝" },
+        { key: "trade", label: "交易宝" },
+        { key: "report", label: "其他报表" },
+        { key: "settings", label: "全局设置" }
+      ];
+
+      return (
+        <ConfigProvider
+          theme={{
+            algorithm: themeMode === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm,
+            token
+          }}
+        >
+          <div style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <header className={`erp-header ${themeMode === "dark" ? "dark" : ""}`}>
+              <div className="erp-logo">
+                <div className="erp-logo-badge">NE</div>
+                <div className="erp-title">
+                  <span className="name" title={translate("appTitle")}>{translate("appTitle")}</span>
+                  <span className="desc">Mock Environment · {translate("version")} V1.0.0</span>
+                </div>
+              </div>
+              <div className="erp-top-menu" style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", gap: "4px", margin: "0 20px", overflowX: "auto", overflowY: "hidden" }}>
+                {topMenus.map(menu => (
+                  <div
+                    key={menu.key}
+                    className="erp-top-menu-item"
+                    style={{ flexShrink: 0 }}
+                  >
+                    {menu.label}
+                  </div>
+                ))}
+              </div>
+              <Space size={12} wrap align="center" style={{ flexShrink: 0 }}>
+                <Input.Search className="erp-search" placeholder={translate("searchPlaceholder")} allowClear style={{ width: 200 }} />
+                <Dropdown menu={{ items: notificationItems }} placement="bottomRight" trigger={["click"]}>
+                  <Badge count={notifications.length} overflowCount={9}>
+                    <Button type="text" icon={renderIcon("BellOutlined")} />
+                  </Badge>
+                </Dropdown>
+                <Tooltip title={translate("infoDensityTip")}>
+                  <Segmented
+                    value={density}
+                    onChange={setDensity}
+                    options={[
+                      { label: translate("densityCompact"), value: "compact" },
+                      { label: translate("densityDefault"), value: "default" }
+                    ]}
+                  />
+                </Tooltip>
+                <Tooltip title={themeMode === "dark" ? translate("dark") : translate("light")}>
+                  <Switch
+                    checkedChildren={renderIcon("MoonOutlined")}
+                    unCheckedChildren={renderIcon("SunOutlined")}
+                    checked={themeMode === "dark"}
+                    onChange={(checked) => setThemeMode(checked ? "dark" : "light")}
+                  />
+                </Tooltip>
+                <Select
+                  value={locale}
+                  style={{ width: 130 }}
+                  onChange={setLocale}
+                  options={[
+                    { value: "zh-CN", label: translate("zhCN") },
+                    { value: "en-US", label: translate("enUS") }
+                  ]}
+                />
+                <Select
+                  value={tenant}
+                  style={{ width: 140 }}
+                  onChange={setTenant}
+                  options={[{ value: "T-1", label: translate("tenantOption") }]}
+                  suffixIcon={renderIcon("DeploymentUnitOutlined")}
+                />
+                <Select
+                  value={role}
+                  style={{ width: 140 }}
+                  onChange={(value) => { setRole(value); message.success(`切换至角色：${i18n[locale][`role${value.charAt(0).toUpperCase()}${value.slice(1)}`] || value}`); }}
+                  options={[
+                    { value: "admin", label: translate("roleAdmin") },
+                    { value: "buyer", label: translate("roleBuyer") },
+                    { value: "guest", label: translate("roleGuest") }
+                  ]}
+                  suffixIcon={renderIcon("TeamOutlined")}
+                />
+                <Button icon={renderIcon("QuestionCircleOutlined")}>{translate("help")}</Button>
+                <Avatar style={{ background: "linear-gradient(135deg,#1677FF,#409EFF)" }}>ZW</Avatar>
+              </Space>
+            </header>
+            <Layout className="erp-main-layout" style={{ height: "calc(100vh - var(--header-height))" }}>
+              <Sider
+                width={240}
+                collapsible
+                collapsed={collapsed}
+                onCollapse={setCollapsed}
+                className={`erp-sider ${themeMode === "dark" ? "dark" : ""}`}
+              >
+                <Menu
+                  mode="inline"
+                  selectedKeys={[activeTab]}
+                  onClick={handleMenuClick}
+                  items={menuConfig.map((item) => ({
+                    key: item.key,
+                    icon: renderIcon(item.icon),
+                    label: translate(item.labelKey)
+                  }))}
+                />
+              </Sider>
+              <Layout style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                <div className={`erp-tabs-bar ${themeMode === "dark" ? "dark" : ""}`}>
+                  <Tabs
+                    hideAdd
+                    type="editable-card"
+                    activeKey={activeTab}
+                    onChange={setActiveTab}
+                    onEdit={handleTabEdit}
+                    items={tabs.map((tab) => ({
+                      key: tab.key,
+                      label: translate(tab.labelKey),
+                      closable: tab.key !== "dashboard"
+                    }))}
+                  />
+                </div>
+                <Content className={`erp-content ${themeMode === "dark" ? "dark" : ""}`}>
+                  {renderContent()}
+                </Content>
+              </Layout>
+            </Layout>
+          </div>
+        </ConfigProvider>
+      );
+    };
+
+      ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+      console.info("[Nebula ERP] 应用已渲染完成。");
+    };
+
+    if (window.__nebulaDepsReady) {
+      startNebulaApp();
+    } else {
+      window.addEventListener('nebula:deps-ready', startNebulaApp, { once: true });
+    }
+  </script>
+</body>
+</html>
+

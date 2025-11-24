@@ -1,0 +1,3092 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>期现业务管理平台 - 原型系统</title>
+  <link rel="stylesheet" href="https://unpkg.com/antd@5.14.2/dist/reset.css" />
+  <link rel="stylesheet" href="https://unpkg.com/antd@5.14.2/dist/antd.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    :root {
+      --primary-color: #1677ff;
+      --erp-gray-100: #f7f8fa;
+      --erp-gray-200: #eef0f5;
+      --erp-gray-300: #d9dee8;
+      --erp-gray-500: #8a94a6;
+      --erp-gray-700: #4b5565;
+      --erp-bg-light: #f4f6fb;
+      --erp-bg-dark: #1d232f;
+      --header-height: 60px;
+      --top-menu-height: 48px;
+      --tabs-height: 42px;
+      font-feature-settings: "tnum";
+    }
+
+    html, body, #root {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--erp-bg-light);
+      color: #1f2430;
+      overflow: hidden;
+    }
+
+    .erp-header {
+      position: relative;
+      z-index: 100;
+      height: var(--header-height);
+      min-height: var(--header-height);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(244, 246, 251, 0.95);
+      border-bottom: 1px solid rgba(140, 156, 187, 0.3);
+      backdrop-filter: blur(12px);
+      flex-shrink: 0;
+      overflow: visible;
+    }
+
+    .erp-header .erp-top-menu {
+      height: auto;
+      min-height: auto;
+      background: transparent;
+      border-bottom: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .erp-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+      min-width: 0;
+    }
+
+    .erp-logo-badge {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-color), #409eff);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 6px 16px rgba(22, 119, 255, 0.3);
+    }
+
+    .erp-title {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      justify-content: center;
+      line-height: 1.5;
+    }
+
+    .erp-title .name {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: #1f2430;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.5;
+      max-width: 250px;
+    }
+
+    .erp-title .desc {
+      font-size: 10px;
+      color: #7a8499;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+      line-height: 1.4;
+      max-width: 250px;
+    }
+
+    .erp-top-menu {
+      height: var(--top-menu-height);
+      min-height: var(--top-menu-height);
+      background: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid rgba(140, 156, 187, 0.2);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .erp-top-menu-item {
+      padding: 6px 14px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-size: 13px;
+      color: #4b5565;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .erp-top-menu-item:hover {
+      background: rgba(22, 119, 255, 0.08);
+      color: var(--primary-color);
+    }
+
+    .erp-top-menu-item.active {
+      background: var(--primary-color);
+      color: #fff;
+    }
+
+    .erp-main-layout {
+      height: calc(100vh - var(--header-height));
+      display: flex;
+      overflow: hidden;
+    }
+
+    .erp-sider {
+      width: 240px;
+      min-width: 240px;
+      background: rgba(255, 255, 255, 0.95);
+      border-right: 1px solid rgba(140, 156, 187, 0.2);
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex-shrink: 0;
+    }
+
+    .erp-content-area {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .erp-tabs-bar {
+      height: var(--tabs-height);
+      min-height: var(--tabs-height);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(140, 156, 187, 0.25);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .erp-content {
+      padding: 8px 9px 12px;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(244, 246, 251, 0.92) 40%, rgba(244, 246, 251, 0.92) 100%);
+    }
+
+    .erp-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .erp-toolbar .actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .erp-tree-table-layout {
+      display: flex;
+      gap: 9px;
+      align-items: stretch;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .erp-tree-panel {
+      width: 140px;
+      min-width: 140px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      border: 1px solid rgba(22, 119, 255, 0.08);
+      box-shadow: 0 12px 30px rgba(22, 119, 255, 0.05);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .erp-tree-panel .tree-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .erp-table-panel {
+      flex: 1;
+      min-width: 0;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      border: 1px solid rgba(22, 119, 255, 0.08);
+      padding: 8px;
+      box-shadow: 0 12px 30px rgba(22, 119, 255, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .erp-filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: rgba(22, 119, 255, 0.03);
+      border-radius: 8px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .erp-filter-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .erp-filter-item label {
+      font-size: 13px;
+      color: #4b5565;
+      white-space: nowrap;
+    }
+
+    .erp-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .erp-status-badge.enabled {
+      background: rgba(80, 188, 97, 0.12);
+      color: #1d7b30;
+    }
+
+    .erp-status-badge.disabled {
+      background: rgba(244, 67, 54, 0.12);
+      color: #c62828;
+    }
+
+    .erp-column-editor-modal .ant-modal-body {
+      padding: 20px;
+    }
+
+    .erp-column-editor-content {
+      display: flex;
+      gap: 20px;
+      min-height: 400px;
+      max-height: 600px;
+    }
+
+    .erp-column-editor-panel {
+      flex: 1;
+      border: 1px solid #e8e8e8;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    .erp-column-editor-panel-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    .erp-column-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .erp-column-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px;
+      border-radius: 4px;
+      transition: background 0.2s;
+      cursor: move;
+    }
+
+    .erp-column-item:hover {
+      background: #f5f5f5;
+    }
+
+    .erp-column-item.dragging {
+      opacity: 0.5;
+      background: #e6f7ff;
+    }
+
+    .erp-column-item.drag-over {
+      border-top: 2px solid #1677ff;
+      background: #f0f9ff;
+    }
+
+    .erp-column-item-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .erp-column-item-drag {
+      cursor: move;
+      color: #1677ff;
+      font-size: 16px;
+    }
+
+    .erp-column-width-input {
+      width: 80px;
+    }
+
+    .erp-mobile-menu-btn {
+      border: none;
+      box-shadow: none;
+      padding: 4px;
+      display: none;
+    }
+
+    .mobile-workbench {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .mobile-workbench .user-card {
+      border-radius: 12px;
+    }
+
+    .mobile-workbench-card {
+      border-radius: 12px;
+      border: 1px solid rgba(22, 119, 255, 0.12);
+      box-shadow: 0 8px 20px rgba(22, 119, 255, 0.06);
+    }
+
+    .mobile-workbench-card .ant-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (max-width: 1024px) {
+      body {
+        overflow: auto;
+      }
+
+      .erp-header {
+        padding: 0 12px;
+      }
+
+      .erp-mobile-menu-btn {
+        display: inline-flex;
+      }
+
+      .erp-title .name {
+        font-size: 14px;
+        max-width: 180px;
+      }
+
+      .erp-title .desc {
+        font-size: 9px;
+        max-width: 180px;
+      }
+
+      .erp-main-layout {
+        flex-direction: column;
+        height: auto;
+        min-height: calc(100vh - var(--header-height));
+      }
+
+      .erp-sider {
+        display: none;
+      }
+
+      .erp-content-area {
+        width: 100%;
+      }
+
+      .erp-tabs-bar {
+        overflow-x: auto;
+      }
+
+      .erp-tree-table-layout {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .erp-tree-panel,
+      .erp-table-panel {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        margin-bottom: 12px;
+      }
+
+      .erp-filter-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .erp-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .erp-tree-panel .tree-content {
+        max-height: 220px;
+        overflow-y: auto;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .erp-header {
+        flex-wrap: wrap;
+        gap: 8px;
+        height: auto;
+      }
+
+      .erp-top-menu {
+        order: 3;
+        width: 100%;
+        padding: 4px 0;
+      }
+
+      .erp-logo {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .erp-toolbar {
+        gap: 8px;
+      }
+
+      .erp-filter-bar {
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/dayjs@1.11.11/dayjs.min.js"></script>
+  <script src="https://unpkg.com/antd@5.14.2/dist/antd.min.js"></script>
+  <script src="https://unpkg.com/@ant-design/icons@5.2.6/dist/index.umd.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useState, useMemo, useEffect, useCallback, useRef } = React;
+    const {
+      Layout, Menu, Tabs, Space, Input, InputNumber, Button, Avatar, Badge, Dropdown,
+      ConfigProvider, theme, Select, Tooltip, Tree, Card, Tag, Divider, Table, Form,
+      Drawer, DatePicker, Modal, message, Radio, Checkbox, Switch, TreeSelect, Empty, Alert
+    } = antd;
+    const { Header, Sider, Content } = Layout;
+    const icons = window.icons;
+
+    const renderIcon = (name, extraProps = {}) => {
+      const IconComp = icons?.[name];
+      if (IconComp) {
+        return <IconComp {...extraProps} />;
+      }
+      return <span style={{ display: 'inline-block', width: 16, height: 16 }}>●</span>;
+    };
+
+    const createPaginationConfig = (overrides = {}) => ({
+      pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: ['10', '20', '50', '100'],
+      showQuickJumper: {
+        goButton: <Button size="small">前往</Button>
+      },
+      showTotal: (total, range) => `第 ${range[0]}-${range[1]} 条 / 共 ${total} 条`,
+      ...overrides
+    });
+
+    const MODAL_TEXTS = {
+      okText: '确认',
+      cancelText: '取消'
+    };
+
+    const getIsMobile = () => {
+      if (typeof window === 'undefined') return false;
+      return window.innerWidth <= 1024;
+    };
+
+    // Mock数据
+    const mockSpotCategories = [
+      { key: 'cat-1', title: '有色金属', children: [
+        { key: 'cat-1-1', title: '铜' },
+        { key: 'cat-1-2', title: '铝' }
+      ]},
+      { key: 'cat-2', title: '黑色金属', children: [
+        { key: 'cat-2-1', title: '螺纹钢' }
+      ]}
+    ];
+
+    const mockSpotBrands = [
+      { 
+        id: 1, 
+        name: '品牌A', 
+        mainPortState: 'true', 
+        platformState: 'invalid', 
+        premium: 100, 
+        price: 5300, 
+        futures: [
+          { code: 'CU2401', exposure: 0.8 },
+          { code: 'CU2402', exposure: 0.2 }
+        ]
+      },
+      { 
+        id: 2, 
+        name: '品牌B', 
+        mainPortState: 'invalid', 
+        platformState: 'true', 
+        premium: 50, 
+        price: 5250, 
+        futures: [
+          { code: 'CU2401', exposure: 1.0 }
+        ]
+      },
+      { 
+        id: 3, 
+        name: '品牌C', 
+        mainPortState: 'false', 
+        platformState: 'invalid', 
+        premium: 0, 
+        price: 5200, 
+        futures: []
+      }
+    ];
+
+    const mockCustomers = [
+      { id: 1, shortName: '供应商A', fullName: '上海XX贸易有限公司', creditRating: 'AAA', contact: '张三', phone: '13800138000', parentCompany: '', customerType: '供应商', status: '正常', creator: '蒋晓晓', createTime: '2025-11-24 10:02' },
+      { id: 2, shortName: '客户B', fullName: '江苏XX实业有限公司', creditRating: 'AA', contact: '李四', phone: '13900139000', parentCompany: '', customerType: '客户', status: '正常', creator: '籍孟晓', createTime: '2025-11-23 15:30' },
+      { id: 3, shortName: '仓库C', fullName: '上海XX仓储物流有限公司', creditRating: 'A', contact: '王五', phone: '13700137000', parentCompany: '', customerType: '仓库', status: '正常', creator: '李辉', createTime: '2025-11-22 09:15' },
+      { id: 4, shortName: '物流D', fullName: '深圳XX物流有限公司', creditRating: 'BBB', contact: '赵六', phone: '13600136000', parentCompany: '', customerType: '物流', status: '正常', creator: '贺晓兰', createTime: '2025-11-21 14:20' },
+      { id: 5, shortName: '撮合商E', fullName: '北京XX撮合服务有限公司', creditRating: 'AA', contact: '钱七', phone: '13500135000', parentCompany: '', customerType: '撮合商', status: '正常', creator: '朱利军', createTime: '2025-11-20 11:45' },
+      { id: 6, shortName: '客商F', fullName: '广州XX商贸有限公司', creditRating: 'A', contact: '孙八', phone: '13400134000', parentCompany: '', customerType: '客商', status: '正常', creator: '李文昊', createTime: '2025-11-19 16:10' },
+      { id: 7, shortName: '供应商G', fullName: '杭州XX贸易有限公司', creditRating: 'AAA', contact: '周九', phone: '13300133000', parentCompany: '', customerType: '供应商', status: '正常', creator: '魏光婷', createTime: '2025-11-18 10:30' },
+      { id: 8, shortName: '客户H', fullName: '成都XX实业有限公司', creditRating: 'AA', contact: '吴十', phone: '13200132000', parentCompany: '', customerType: '客户', status: '正常', creator: '孙倩', createTime: '2025-11-17 13:25' },
+      { id: 9, shortName: '仓库I', fullName: '武汉XX仓储有限公司', creditRating: 'A', contact: '郑一', phone: '13100131000', parentCompany: '', customerType: '仓库', status: '正常', creator: '蒋晓晓', createTime: '2025-11-16 08:50' },
+      { id: 10, shortName: '物流J', fullName: '西安XX物流有限公司', creditRating: 'BBB', contact: '王二', phone: '13000130000', parentCompany: '', customerType: '物流', status: '正常', creator: '籍孟晓', createTime: '2025-11-15 15:40' },
+      { id: 11, shortName: 'STAR PLASTICS LIMI', fullName: 'STAR PLASTICS LIMITED', creditRating: '', contact: '', phone: '', parentCompany: '', customerType: '客户', status: '正常', creator: '李辉', createTime: '2025-11-14 12:15' },
+      { id: 12, shortName: 'DONGMYONG KIM', fullName: 'DONGMYONG KIM COMPANY', creditRating: '', contact: '', phone: '', parentCompany: '', customerType: '撮合商', status: '正常', creator: '贺晓兰', createTime: '2025-11-13 11:11' },
+      { id: 13, shortName: 'THAI POLYESTER CO', fullName: 'THAI POLYESTER COMPANY', creditRating: '', contact: '', phone: '', parentCompany: '', customerType: '供应商', status: '正常', creator: '朱利军', createTime: '2025-11-12 09:20' }
+    ];
+
+    const mockHedgePlans = [
+      { id: 1, name: '整体保值方案A', type: '整体匹配', instructionTypes: ['期货交易指令', '合同创建指令'], traders: ['交易员A', '交易员B'], makers: ['制单员A'] },
+      { id: 2, name: '单单保值方案B', type: '单单匹配', instructionTypes: ['点价指令', '均价合同套保指令'], traders: ['交易员C'], makers: ['制单员B'] }
+    ];
+
+    const mockFuturesAccounts = [
+      { id: 1, account: 'ACC001', status: 'enabled', traders: ['交易员A', '交易员B'] },
+      { id: 2, account: 'ACC002', status: 'enabled', traders: ['交易员C'] }
+    ];
+
+    // 角色数据
+    const mockRoles = [
+      { id: 1, name: '交易员', description: '负责期货交易操作' },
+      { id: 2, name: '制单员', description: '负责合同制单' },
+      { id: 3, name: '业务经理', description: '负责业务管理' },
+      { id: 4, name: '风控员', description: '负责风险控制' }
+    ];
+
+    // 人员数据
+    const mockPersons = [
+      { id: 1, name: '张三', phone: '13800138000', role: '交易员', status: 'enabled' },
+      { id: 2, name: '李四', phone: '13900139000', role: '制单员', status: 'enabled' },
+      { id: 3, name: '王五', phone: '13700137000', role: '业务经理', status: 'enabled' },
+      { id: 4, name: '赵六', phone: '13600136000', role: '交易员', status: 'enabled' },
+      { id: 5, name: '钱七', phone: '13500135000', role: '制单员', status: 'enabled' },
+      { id: 6, name: '孙八', phone: '13400134000', role: '风控员', status: 'disabled' }
+    ];
+
+    // 人员角色关系数据（每个角色一行，每个角色包含多个人员）
+    const mockPersonRoles = [
+      { id: 1, roleId: 1, roleName: '交易员', personIds: [1, 4], personNames: ['张三', '赵六'], description: '负责期货交易操作', status: 'enabled' },
+      { id: 2, roleId: 2, roleName: '制单员', personIds: [2, 5], personNames: ['李四', '钱七'], description: '负责合同制单', status: 'enabled' },
+      { id: 3, roleId: 3, roleName: '业务经理', personIds: [3], personNames: ['王五'], description: '负责业务管理', status: 'enabled' },
+      { id: 4, roleId: 4, roleName: '风控员', personIds: [6], personNames: ['孙八'], description: '负责风险控制', status: 'disabled' }
+    ];
+
+    const roleWorkbenches = {
+      '交易员': [
+        { key: 'instruction', title: '指令工作台', description: '查看并处理期现指令、快速确认执行结果。', icon: 'DesktopOutlined', cta: '进入指令工作台' },
+        { key: 'web-trade', title: 'Web 交易端', description: '随时查看行情并发起下单或点价操作。', icon: 'StockOutlined', cta: '打开交易端' }
+      ],
+      '业务经理': [
+        { key: 'biz-report', title: '经营报表', description: '掌握合同执行与敞口情况，获取分析报表。', icon: 'BarChartOutlined', cta: '查看经营报表' },
+        { key: 'customer-pricing', title: '客商点价', description: '审批或查看客商点价申请，维护报价。', icon: 'DollarOutlined', cta: '进入点价' }
+      ],
+      '制单员': [
+        { key: 'instruction', title: '指令工作台', description: '接收业务指令，快速完成制单。', icon: 'FileTextOutlined', cta: '处理制单指令' }
+      ],
+      '风控员': [
+        { key: 'risk-report', title: '风险监控', description: '查看风险阈值、监控账户敞口并发出预警。', icon: 'AlertOutlined', cta: '查看风险报表' }
+      ]
+    };
+
+    const mockContracts = [
+      { id: 1, hedgePlan: '整体保值方案A', manager: '业务经理A', contractNo: 'HT2025-0001', customer: '供应商A', spotType: '铜', brand: '品牌A', pricing: '一口价', qty: 100, price: 5300, settlementPrice: 5300, amount: 530000, settlementAmount: 530000, transport: '自提', deliveryDate: '2025-12-31', pricedQty: 100, unpricedQty: 0, creator: '张三', createTime: '2025-11-10 10:00', occurTime: '2025-11-10 10:00', status: 'active' },
+      { id: 2, hedgePlan: '单单保值方案B', manager: '业务经理B', contractNo: 'HT2025-0002', customer: '客户B', spotType: '铝', brand: '品牌B', pricing: '均价', qty: 200, price: 0, settlementPrice: 0, amount: 0, settlementAmount: 0, transport: '送到', deliveryDate: '2025-12-15', pricedQty: 0, unpricedQty: 200, creator: '李四', createTime: '2025-11-11 14:30', occurTime: '2025-11-11 14:30', status: 'active' }
+    ];
+
+    // 现货品种管理页面
+    const SpotBrandManagement = () => {
+      const [selectedCategory, setSelectedCategory] = useState('cat-1');
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [filters, setFilters] = useState({ brand: '', mainPort: '', platform: '', futures: '' });
+      const [spotBrands, setSpotBrands] = useState(mockSpotBrands);
+      const [editModalVisible, setEditModalVisible] = useState(false);
+      const [priceModalVisible, setPriceModalVisible] = useState(false);
+      const [historyModalVisible, setHistoryModalVisible] = useState(false);
+      const [exposureModalVisible, setExposureModalVisible] = useState(false);
+      const [currentBrandId, setCurrentBrandId] = useState(null);
+      const [form] = Form.useForm();
+      const [exposureForm] = Form.useForm();
+
+      const filteredData = useMemo(() => {
+        return spotBrands.filter(item => {
+          if (filters.brand && !item.name.includes(filters.brand)) return false;
+          if (filters.mainPort && item.mainPortState !== filters.mainPort) return false;
+          if (filters.platform && item.platformState !== filters.platform) return false;
+          if (filters.futures) {
+            const keyword = filters.futures.toLowerCase();
+            const matched = item.futures?.some(f => f.code?.toLowerCase().includes(keyword));
+            if (!matched) return false;
+          }
+          return true;
+        });
+      }, [filters, spotBrands]);
+
+      const TRI_STATE_OPTIONS = [
+        { value: 'invalid', label: 'Invalid（继承）' },
+        { value: 'true', label: '是' },
+        { value: 'false', label: '否' }
+      ];
+
+      const formatTriState = (value) => {
+        if (value === 'true') return '是';
+        if (value === 'false') return '否';
+        return 'Invalid';
+      };
+
+      const enforceTriStateRules = (changedValues, allValues) => {
+        const updates = {};
+        if (Object.prototype.hasOwnProperty.call(changedValues, 'mainPortState')) {
+          const value = changedValues.mainPortState;
+          if (value !== 'invalid') {
+            updates.platformState = 'invalid';
+          } else if ((allValues.platformState || 'invalid') === 'invalid') {
+            updates.platformState = 'true';
+          }
+        }
+        if (Object.prototype.hasOwnProperty.call(changedValues, 'platformState')) {
+          const value = changedValues.platformState;
+          if (value !== 'invalid') {
+            updates.mainPortState = 'invalid';
+          } else if ((allValues.mainPortState || 'invalid') === 'invalid') {
+            updates.mainPortState = 'true';
+          }
+        }
+        if (Object.keys(updates).length) {
+          form.setFieldsValue(updates);
+        }
+      };
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'name', title: '名称', dataIndex: 'name', width: 150, fixed: 'left' },
+        { key: 'mainPortState', title: '是否主港', dataIndex: 'mainPortState', width: 120, render: formatTriState },
+        { key: 'platformState', title: '是否平台价', dataIndex: 'platformState', width: 140, render: formatTriState },
+        { key: 'premium', title: '升贴水', dataIndex: 'premium', width: 100 },
+        { key: 'price', title: '价格', dataIndex: 'price', width: 120 },
+        { 
+          key: 'futures', 
+          title: '期货敞口配置', 
+          dataIndex: 'futures', 
+          width: 300, 
+          render: (arr) => {
+            if (!arr || arr.length === 0) {
+              return <span style={{ color: '#999' }}>未配置</span>;
+            }
+            return (
+              <div style={{ lineHeight: 1.8 }}>
+                {arr.map((item, index) => (
+                  <div key={`${item.code}-${index}`}>
+                    <strong>{item.code || '-'}</strong>
+                    <span style={{ marginLeft: 8, color: '#4b5565' }}>敞口：{(item.exposure ?? 0).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+            );
+          }
+        }
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: spotVisibleColumns
+      } = useColumnManager('spot-brand', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-tree-table-layout" style={{ flex: 1, minHeight: 0 }}>
+            <div className="erp-tree-panel">
+              <Space style={{ marginBottom: 12, width: '100%', justifyContent: 'space-between', flexShrink: 0 }}>
+                <span style={{ fontWeight: 600 }}>现货品种</span>
+                <Button size="small" icon={renderIcon('PlusOutlined')} onClick={() => message.info('添加分类')} />
+              </Space>
+              <div className="tree-content">
+                <Tree
+                  treeData={mockSpotCategories}
+                  selectedKeys={[selectedCategory]}
+                  onSelect={(keys) => setSelectedCategory(keys[0])}
+                  defaultExpandAll
+                />
+              </div>
+            </div>
+            <div className="erp-table-panel">
+              <div className="erp-filter-bar" style={{ flexShrink: 0 }}>
+                <div className="erp-filter-item">
+                  <label>品牌：</label>
+                  <Input placeholder="品牌" style={{ width: 150 }} value={filters.brand} onChange={(e) => setFilters({...filters, brand: e.target.value})} />
+                </div>
+                <div className="erp-filter-item">
+                  <label>主港：</label>
+                  <Select placeholder="全部" style={{ width: 150 }} value={filters.mainPort} onChange={(v) => setFilters({...filters, mainPort: v})}>
+                    <Select.Option value="">全部</Select.Option>
+                    <Select.Option value="true">是</Select.Option>
+                    <Select.Option value="false">否</Select.Option>
+                    <Select.Option value="invalid">Invalid（继承）</Select.Option>
+                  </Select>
+                </div>
+                <div className="erp-filter-item">
+                  <label>平台：</label>
+                  <Select placeholder="全部" style={{ width: 150 }} value={filters.platform} onChange={(v) => setFilters({...filters, platform: v})}>
+                    <Select.Option value="">全部</Select.Option>
+                    <Select.Option value="true">是</Select.Option>
+                    <Select.Option value="false">否</Select.Option>
+                    <Select.Option value="invalid">Invalid（继承）</Select.Option>
+                  </Select>
+                </div>
+                <div className="erp-filter-item">
+                  <label>期货品种：</label>
+                  <Input placeholder="期货品种" style={{ width: 150 }} value={filters.futures} onChange={(e) => setFilters({...filters, futures: e.target.value})} />
+                </div>
+              </div>
+              <div className="erp-toolbar" style={{ flexShrink: 0 }}>
+                <Space wrap>
+                  <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={() => setEditModalVisible(true)}>增加</Button>
+                  <Button icon={renderIcon('EditOutlined')} disabled={selectedRowKeys.length !== 1}>编辑</Button>
+                  <Button danger icon={renderIcon('DeleteOutlined')} disabled={selectedRowKeys.length === 0}>删除</Button>
+                  <Button icon={renderIcon('DollarOutlined')} disabled={selectedRowKeys.length !== 1} onClick={() => setPriceModalVisible(true)}>录入价格</Button>
+                  <Button icon={renderIcon('ClusterOutlined')} disabled={selectedRowKeys.length !== 1} onClick={() => {
+                    if (selectedRowKeys.length === 1) {
+                      const brand = spotBrands.find(item => item.id === selectedRowKeys[0]);
+                      setCurrentBrandId(brand?.id || null);
+                      exposureForm.setFieldsValue({
+                        futures: brand?.futures?.length ? brand.futures.map(f => ({ code: f.code, exposure: f.exposure })) : [{ code: '', exposure: 0 }]
+                      });
+                      setExposureModalVisible(true);
+                    }
+                  }}>配置敞口</Button>
+                  <Button icon={renderIcon('UploadOutlined')}>导入价格</Button>
+                  <Button icon={renderIcon('HistoryOutlined')} disabled={selectedRowKeys.length !== 1} onClick={() => setHistoryModalVisible(true)}>历史价格</Button>
+                  <Button icon={renderIcon('PoweroffOutlined')}>禁用/启用</Button>
+                  <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+                </Space>
+                <Button 
+                  icon={renderIcon('SettingOutlined')} 
+                  onClick={() => setColumnEditorVisible(true)}
+                  style={{ marginLeft: 'auto' }}
+                >
+                  自定义列
+                </Button>
+              </div>
+              <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+                <Table
+                  rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+                  columns={tableColumns}
+                  dataSource={filteredData}
+                  rowKey="id"
+                  scroll={{ x: 'max-content' }}
+                  pagination={createPaginationConfig()}
+                />
+              </div>
+            </div>
+          </div>
+          <Modal
+            {...MODAL_TEXTS}
+            title="编辑品牌"
+            open={editModalVisible}
+            onCancel={() => setEditModalVisible(false)}
+            onOk={() => { message.success('保存成功'); setEditModalVisible(false); }}
+          >
+            <Form
+              form={form}
+              layout="vertical"
+              initialValues={{ mainPortState: 'true', platformState: 'invalid' }}
+              onValuesChange={(changed, values) => enforceTriStateRules(changed, values)}
+            >
+              <Form.Item label="名称" name="name" required><Input /></Form.Item>
+              <Form.Item label="是否主港" name="mainPortState" required>
+                <Select options={TRI_STATE_OPTIONS} />
+              </Form.Item>
+              <Form.Item label="是否平台价" name="platformState" required>
+                <Select options={TRI_STATE_OPTIONS} />
+              </Form.Item>
+              <Form.Item label="期货品种" name="futures"><Select mode="tags" placeholder="选择期货品种" /></Form.Item>
+              <Form.Item label="敞口系数" name="exposure"><InputNumber min={0} max={1} step={0.1} style={{ width: '100%' }} /></Form.Item>
+            </Form>
+          </Modal>
+          <Modal
+            {...MODAL_TEXTS}
+            title="录入价格"
+            open={priceModalVisible}
+            onCancel={() => setPriceModalVisible(false)}
+            onOk={() => { message.success('价格录入成功'); setPriceModalVisible(false); }}
+          >
+            <Form layout="vertical">
+              <Form.Item label="品牌"><Input value={spotBrands.find(b => b.id === selectedRowKeys[0])?.name} disabled /></Form.Item>
+              <Form.Item label="升贴水" required><InputNumber style={{ width: '100%' }} /></Form.Item>
+              <Form.Item label="价格" required><InputNumber style={{ width: '100%' }} /></Form.Item>
+              <Form.Item label="发生日期" required><DatePicker style={{ width: '100%' }} /></Form.Item>
+            </Form>
+          </Modal>
+          <Modal
+            {...MODAL_TEXTS}
+            title="历史价格"
+            open={historyModalVisible}
+            onCancel={() => setHistoryModalVisible(false)}
+            width={800}
+          >
+            <div className="erp-filter-bar">
+              <div className="erp-filter-item">
+                <label>日期：</label>
+                <DatePicker.RangePicker />
+              </div>
+            </div>
+            <Table
+              columns={[
+                { title: '名称', dataIndex: 'name' },
+                { title: '升贴水', dataIndex: 'premium' },
+                { title: '价格', dataIndex: 'price' },
+                { title: '日期', dataIndex: 'date' }
+              ]}
+              dataSource={[]}
+              pagination={false}
+            />
+          </Modal>
+          <Modal
+            {...MODAL_TEXTS}
+            title="配置期货敞口"
+            open={exposureModalVisible}
+            onCancel={() => setExposureModalVisible(false)}
+            width={520}
+            destroyOnClose
+            onOk={() => {
+              exposureForm.validateFields().then(values => {
+                const futuresList = (values.futures || [])
+                  .filter(item => item?.code)
+                  .map(item => ({ code: item.code.trim(), exposure: Number(item.exposure) || 0 }));
+                setSpotBrands(prev => prev.map(item => {
+                  if (item.id === currentBrandId) {
+                    return { ...item, futures: futuresList };
+                  }
+                  return item;
+                }));
+                message.success('敞口配置已更新');
+                setExposureModalVisible(false);
+              });
+            }}
+          >
+            <Form form={exposureForm} layout="vertical" preserve={false}>
+              <Form.List name="futures" initialValue={[{ code: '', exposure: 0 }]}>
+                {(fields, { add, remove }) => (
+                  <Space direction="vertical" style={{ width: '100%' }}>
+                    {fields.map((field, index) => (
+                      <Space key={field.key} align="baseline" style={{ width: '100%' }}>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, 'code']}
+                          fieldKey={[field.fieldKey, 'code']}
+                          label="期货品种"
+                          rules={[{ required: true, message: '请输入期货品种代码' }]}
+                        >
+                          <Input placeholder="如 CU2401" style={{ width: 160 }} />
+                        </Form.Item>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, 'exposure']}
+                          fieldKey={[field.fieldKey, 'exposure']}
+                          label="敞口系数"
+                          rules={[{ required: true, message: '请输入敞口系数' }]}
+                        >
+                          <InputNumber min={0} max={5} step={0.01} style={{ width: 140 }} />
+                        </Form.Item>
+                        {fields.length > 1 && (
+                          <Button
+                            type="text"
+                            danger
+                            icon={renderIcon('DeleteOutlined')}
+                            onClick={() => remove(field.name)}
+                          />
+                        )}
+                      </Space>
+                    ))}
+                    <Button
+                      type="dashed"
+                      onClick={() => add({ code: '', exposure: 0 })}
+                      icon={renderIcon('PlusOutlined')}
+                      block
+                    >
+                      新增期货品种
+                    </Button>
+                  </Space>
+                )}
+              </Form.List>
+            </Form>
+          </Modal>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={spotVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 通用的列管理Hook
+    const useColumnManager = (pageKey, allColumnDefinitions, defaultVisibleColumns, options = {}) => {
+      const { onRowSelect, onCellClick } = options;
+      
+      const [visibleColumns, setVisibleColumns] = useState(() => {
+        const saved = localStorage.getItem(`${pageKey}-columns`);
+        if (saved) {
+          try {
+            return JSON.parse(saved);
+          } catch (e) {
+            return defaultVisibleColumns;
+          }
+        }
+        return defaultVisibleColumns;
+      });
+
+      const [columnEditorVisible, setColumnEditorVisible] = useState(false);
+
+      useEffect(() => {
+        localStorage.setItem(`${pageKey}-columns`, JSON.stringify(visibleColumns));
+      }, [visibleColumns, pageKey]);
+
+      const handleColumnSave = (columns) => {
+        setVisibleColumns(columns);
+        setColumnEditorVisible(false);
+        message.success('列设置已保存');
+      };
+
+      const handleColumnRestoreDefault = () => {
+        setVisibleColumns(defaultVisibleColumns);
+        setColumnEditorVisible(false);
+        message.success('已恢复默认列设置');
+      };
+
+      // 构建表格列，添加序号列
+      const tableColumns = useMemo(() => {
+        return [
+          {
+            title: '序号',
+            key: 'index',
+            width: 80,
+            fixed: 'left',
+            render: (_, __, index) => index + 1
+          },
+          ...visibleColumns.map(col => {
+            const def = allColumnDefinitions.find(d => d.key === col.key);
+            const columnDef = {
+              ...def,
+              ...col,
+              width: col.width || def?.width || 150,
+              // 确保 render 函数从原始定义中保留
+              render: def?.render || col.render
+            };
+            
+            // 处理单元格点击行为
+            const isClickable = def?.clickable === true || col.clickable === true;
+            const hasCustomClick = def?.onCellClick || onCellClick;
+            
+            if (isClickable && hasCustomClick) {
+              // 可操作类：点击弹出详情对话框
+              columnDef.onCell = (record) => ({
+                onClick: (e) => {
+                  // 如果点击的是单元格内的按钮、链接等交互元素，不触发
+                  if (e.target.tagName === 'BUTTON' || 
+                      e.target.tagName === 'A' || 
+                      e.target.closest('button') || 
+                      e.target.closest('a') ||
+                      e.target.closest('.ant-btn') ||
+                      e.target.closest('.ant-tag') ||
+                      e.target.closest('.ant-input') ||
+                      e.target.closest('.ant-select')) {
+                    return;
+                  }
+                  // 调用自定义点击处理函数
+                  const clickHandler = def?.onCellClick || onCellClick;
+                  if (clickHandler) {
+                    clickHandler(record, e);
+                  }
+                },
+                style: { cursor: 'pointer' }
+              });
+            } else if (!isClickable && onRowSelect) {
+              // 不可操作类：点击选中行
+              columnDef.onCell = (record) => ({
+                onClick: (e) => {
+                  // 如果点击的是单元格内的按钮、链接等交互元素，不触发选中
+                  if (e.target.tagName === 'BUTTON' || 
+                      e.target.tagName === 'A' || 
+                      e.target.closest('button') || 
+                      e.target.closest('a') ||
+                      e.target.closest('.ant-btn') ||
+                      e.target.closest('.ant-tag') ||
+                      e.target.closest('.ant-input') ||
+                      e.target.closest('.ant-select')) {
+                    return;
+                  }
+                  // 选中该行
+                  if (record && record.id !== undefined) {
+                    onRowSelect([record.id]);
+                  }
+                },
+                style: { cursor: 'pointer' }
+              });
+            }
+            
+            return columnDef;
+          })
+        ];
+      }, [visibleColumns, allColumnDefinitions, onRowSelect, onCellClick]);
+
+      return {
+        visibleColumns,
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions,
+        defaultVisibleColumns,
+        setVisibleColumns
+      };
+    };
+
+    // 列编辑器组件
+    const ColumnEditor = ({ allColumns, visibleColumns, onSave, onCancel, onRestoreDefault }) => {
+      const [localVisibleColumns, setLocalVisibleColumns] = useState([...visibleColumns]);
+      const [widthInputs, setWidthInputs] = useState({});
+      const [draggedIndex, setDraggedIndex] = useState(null);
+      const [dragOverIndex, setDragOverIndex] = useState(null);
+      
+      useEffect(() => {
+        const widths = {};
+        localVisibleColumns.forEach(col => {
+          widths[col.key] = col.width || 150;
+        });
+        setWidthInputs(widths);
+      }, [localVisibleColumns]);
+
+      const handleToggleColumn = (columnKey) => {
+        const column = allColumns.find(c => c.key === columnKey);
+        if (!column) return;
+        
+        const isVisible = localVisibleColumns.some(c => c.key === columnKey);
+        if (isVisible) {
+          setLocalVisibleColumns(localVisibleColumns.filter(c => c.key !== columnKey));
+        } else {
+          setLocalVisibleColumns([...localVisibleColumns, { ...column, width: column.width || 150 }]);
+        }
+      };
+
+      const handleSelectAll = (checked) => {
+        if (checked) {
+          setLocalVisibleColumns(allColumns.map(col => ({ ...col, width: col.width || 150 })));
+        } else {
+          setLocalVisibleColumns([]);
+        }
+      };
+
+      const handleRemoveColumn = (columnKey) => {
+        setLocalVisibleColumns(localVisibleColumns.filter(c => c.key !== columnKey));
+      };
+
+      const handleWidthChange = (columnKey, width) => {
+        setWidthInputs({ ...widthInputs, [columnKey]: width });
+        setLocalVisibleColumns(localVisibleColumns.map(col => 
+          col.key === columnKey ? { ...col, width } : col
+        ));
+      };
+
+      const handleDragStart = (e, index) => {
+        // 如果点击的是按钮或按钮内的元素，不触发拖拽
+        const target = e.target;
+        if (target.tagName === 'BUTTON' || 
+            target.closest('button') || 
+            target.closest('.erp-column-item-actions')) {
+          e.preventDefault();
+          return false;
+        }
+        setDraggedIndex(index);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', index.toString());
+        // 设置拖拽时的视觉效果
+        if (e.currentTarget) {
+          e.currentTarget.style.opacity = '0.5';
+        }
+      };
+
+      const handleDragEnd = (e) => {
+        e.currentTarget.style.opacity = '1';
+        setDraggedIndex(null);
+        setDragOverIndex(null);
+      };
+
+      const handleDragOver = (e, index) => {
+        e.preventDefault();
+        e.stopPropagation();
+        e.dataTransfer.dropEffect = 'move';
+        if (draggedIndex !== null && draggedIndex !== index) {
+          setDragOverIndex(index);
+        }
+      };
+
+      const handleDragLeave = (e) => {
+        e.preventDefault();
+        // 只有当离开到列表外部时才清除dragOverIndex
+        const rect = e.currentTarget.getBoundingClientRect();
+        const x = e.clientX;
+        const y = e.clientY;
+        if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+          setDragOverIndex(null);
+        }
+      };
+
+      const handleDrop = (e, dropIndex) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (draggedIndex === null || draggedIndex === dropIndex) {
+          setDragOverIndex(null);
+          return;
+        }
+
+        const newColumns = [...localVisibleColumns];
+        const [moved] = newColumns.splice(draggedIndex, 1);
+        newColumns.splice(dropIndex, 0, moved);
+        setLocalVisibleColumns(newColumns);
+        setDraggedIndex(null);
+        setDragOverIndex(null);
+      };
+
+      const handleSave = () => {
+        const finalColumns = localVisibleColumns.map(col => ({
+          ...col,
+          width: widthInputs[col.key] || col.width || 150
+        }));
+        onSave(finalColumns);
+      };
+
+      const allSelected = localVisibleColumns.length === allColumns.length;
+      const someSelected = localVisibleColumns.length > 0 && localVisibleColumns.length < allColumns.length;
+
+      return (
+        <Modal
+          {...MODAL_TEXTS}
+          title="设置自定义列"
+          open={true}
+          onCancel={onCancel}
+          width={800}
+          className="erp-column-editor-modal"
+          footer={[
+            <Button key="cancel" onClick={onCancel}>取消</Button>,
+            <Button key="restore" onClick={onRestoreDefault}>恢复默认</Button>,
+            <Button key="confirm" type="primary" onClick={handleSave}>确认</Button>
+          ]}
+        >
+          <div className="erp-column-editor-content">
+            <div className="erp-column-editor-panel">
+              <div className="erp-column-editor-panel-title">请选择列表中要展示的信息</div>
+              <div className="erp-column-list">
+                <div className="erp-column-item">
+                  <Checkbox
+                    checked={allSelected}
+                    indeterminate={someSelected}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                  >
+                    全选
+                  </Checkbox>
+                </div>
+                {allColumns.map(column => {
+                  const isChecked = localVisibleColumns.some(c => c.key === column.key);
+                  return (
+                    <div key={column.key} className="erp-column-item">
+                      <Checkbox
+                        checked={isChecked}
+                        onChange={() => handleToggleColumn(column.key)}
+                      >
+                        {column.title}
+                      </Checkbox>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="erp-column-editor-panel">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div className="erp-column-editor-panel-title">当前选定的字段</div>
+                <Button size="small" onClick={() => setLocalVisibleColumns([])}>清空</Button>
+              </div>
+              <div className="erp-column-list">
+                {localVisibleColumns.map((column, index) => (
+                  <div
+                    key={column.key}
+                    className={`erp-column-item ${draggedIndex === index ? 'dragging' : ''} ${dragOverIndex === index ? 'drag-over' : ''}`}
+                    draggable={true}
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragEnd={handleDragEnd}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, index)}
+                  >
+                    <span style={{ userSelect: 'none', flex: 1 }}>{column.title}</span>
+                    <div 
+                      className="erp-column-item-actions" 
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        // 阻止拖拽
+                        const parent = e.currentTarget.closest('.erp-column-item');
+                        if (parent) {
+                          parent.draggable = false;
+                          setTimeout(() => {
+                            parent.draggable = true;
+                          }, 100);
+                        }
+                      }}
+                      style={{ pointerEvents: 'auto' }}
+                    >
+                      <Button
+                        size="small"
+                        type="text"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const currentWidth = widthInputs[column.key] || column.width || 150;
+                          let tempWidth = currentWidth;
+                          Modal.confirm({
+                            ...MODAL_TEXTS,
+                            title: `设置"${column.title}"列宽`,
+                            content: (
+                              <div style={{ marginTop: 16 }}>
+                                <InputNumber
+                                  style={{ width: '100%' }}
+                                  min={50}
+                                  max={500}
+                                  defaultValue={currentWidth}
+                                  onChange={(val) => {
+                                    if (val !== null) {
+                                      tempWidth = val;
+                                    }
+                                  }}
+                                  addonAfter="px"
+                                />
+                              </div>
+                            ),
+                            onOk: () => {
+                              handleWidthChange(column.key, tempWidth);
+                              message.success('列宽已更新');
+                            }
+                          });
+                        }}
+                        style={{ padding: '0 4px' }}
+                      >
+                        宽度设置
+                      </Button>
+                      <Button
+                        size="small"
+                        type="text"
+                        danger
+                        icon={renderIcon('DeleteOutlined')}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveColumn(column.key);
+                        }}
+                        style={{ padding: '0 4px' }}
+                      />
+                      <span 
+                        className="erp-column-item-drag" 
+                        title="拖拽排序（点击并拖动整行）" 
+                        style={{ cursor: 'move', fontSize: 16, userSelect: 'none', padding: '4px' }}
+                        onMouseDown={(e) => e.stopPropagation()}
+                      >
+                        {renderIcon('MenuOutlined') || '⋮⋮'}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+                {localVisibleColumns.length === 0 && (
+                  <div style={{ textAlign: 'center', color: '#999', padding: '40px 0' }}>
+                    暂无选定的字段
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </Modal>
+      );
+    };
+
+    // 客商管理页面
+    const CustomerManagement = () => {
+      const [selectedCategory, setSelectedCategory] = useState('supplier');
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [filters, setFilters] = useState({ shortName: '', fullName: '' });
+      const [editModalVisible, setEditModalVisible] = useState(false);
+      const [form] = Form.useForm();
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'shortName', title: '简称', dataIndex: 'shortName', width: 150 },
+        { key: 'fullName', title: '全称', dataIndex: 'fullName', width: 250 },
+        { key: 'creditRating', title: '信用评级', dataIndex: 'creditRating', width: 120 },
+        { key: 'contact', title: '联系人', dataIndex: 'contact', width: 120 },
+        { key: 'phone', title: '联系电话', dataIndex: 'phone', width: 150 },
+        { key: 'parentCompany', title: '关联母公司', dataIndex: 'parentCompany', width: 200 },
+        { key: 'customerType', title: '客商类型', dataIndex: 'customerType', width: 120, render: (type) => (
+          type ? <Tag color="blue">{type}</Tag> : '-'
+        )},
+        { key: 'status', title: '状态', dataIndex: 'status', width: 100, render: (status) => (
+          <span className={`erp-status-badge ${status === '正常' ? 'enabled' : 'disabled'}`}>
+            {status || '正常'}
+          </span>
+        )},
+        { key: 'creator', title: '创建人', dataIndex: 'creator', width: 120 },
+        { key: 'createTime', title: '创建时间', dataIndex: 'createTime', width: 180 }
+      ];
+
+      // 默认显示的列
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: customerVisibleColumns
+      } = useColumnManager('customer', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      const customerCategories = [
+        { key: 'supplier', title: '供应商' },
+        { key: 'customer', title: '客户' },
+        { key: 'warehouse', title: '仓库' },
+        { key: 'logistics', title: '物流' },
+        { key: 'broker', title: '撮合商' },
+        { key: 'other', title: '客商' }
+      ];
+
+      // 从数据中提取唯一的简称和全称列表
+      const shortNameOptions = useMemo(() => {
+        const uniqueNames = [...new Set(mockCustomers.map(item => item.shortName).filter(Boolean))];
+        return uniqueNames.map(name => ({ label: name, value: name }));
+      }, []);
+
+      const fullNameOptions = useMemo(() => {
+        const uniqueNames = [...new Set(mockCustomers.map(item => item.fullName).filter(Boolean))];
+        return uniqueNames.map(name => ({ label: name, value: name }));
+      }, []);
+
+      const filteredData = useMemo(() => {
+        return mockCustomers.filter(item => {
+          if (filters.shortName && !item.shortName.includes(filters.shortName)) return false;
+          if (filters.fullName && !item.fullName.includes(filters.fullName)) return false;
+          return true;
+        });
+      }, [filters]);
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-tree-table-layout" style={{ flex: 1, minHeight: 0 }}>
+            <div className="erp-tree-panel">
+              <Space style={{ marginBottom: 12, width: '100%', justifyContent: 'space-between', flexShrink: 0 }}>
+                <span style={{ fontWeight: 600 }}>客商类型</span>
+                <Button size="small" icon={renderIcon('PlusOutlined')} onClick={() => message.info('添加类型')} />
+              </Space>
+              <div className="tree-content">
+                <Tree
+                  treeData={customerCategories}
+                  selectedKeys={[selectedCategory]}
+                  onSelect={(keys) => setSelectedCategory(keys[0])}
+                />
+              </div>
+            </div>
+            <div className="erp-table-panel">
+              <div className="erp-filter-bar" style={{ flexShrink: 0 }}>
+                <div className="erp-filter-item">
+                  <label>简称：</label>
+                  <Select
+                    showSearch
+                    allowClear
+                    placeholder="请输入或选择简称"
+                    style={{ width: 200 }}
+                    value={filters.shortName || undefined}
+                    onChange={(value) => setFilters({...filters, shortName: value || ''})}
+                    options={shortNameOptions}
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                  />
+                </div>
+                <div className="erp-filter-item">
+                  <label>全称：</label>
+                  <Select
+                    showSearch
+                    allowClear
+                    placeholder="请输入或选择全称"
+                    style={{ width: 250 }}
+                    value={filters.fullName || undefined}
+                    onChange={(value) => setFilters({...filters, fullName: value || ''})}
+                    options={fullNameOptions}
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                    }
+                  />
+                </div>
+                <div className="erp-filter-item">
+                  <label>联系人：</label>
+                  <Input placeholder="联系人" style={{ width: 150 }} value={filters.contact} onChange={(e) => setFilters({...filters, contact: e.target.value})} />
+                </div>
+                <div className="erp-filter-item">
+                  <label>手机号：</label>
+                  <Input placeholder="手机号" style={{ width: 150 }} value={filters.phone} onChange={(e) => setFilters({...filters, phone: e.target.value})} />
+                </div>
+              </div>
+              <div className="erp-toolbar" style={{ flexShrink: 0 }}>
+                <Space wrap>
+                  <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={() => setEditModalVisible(true)}>增加</Button>
+                  <Button icon={renderIcon('EditOutlined')} disabled={selectedRowKeys.length !== 1}>编辑</Button>
+                  <Button danger icon={renderIcon('DeleteOutlined')} disabled={selectedRowKeys.length === 0}>删除</Button>
+                  <Button icon={renderIcon('PoweroffOutlined')}>禁用/启用</Button>
+                  <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+                </Space>
+                <Button 
+                  icon={renderIcon('SettingOutlined')} 
+                  onClick={() => setColumnEditorVisible(true)}
+                  style={{ marginLeft: 'auto' }}
+                >
+                  自定义列
+                </Button>
+              </div>
+              <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+                <Table
+                  rowSelection={{ 
+                    type: 'radio',
+                    selectedRowKeys, 
+                    onChange: setSelectedRowKeys 
+                  }}
+                  columns={tableColumns}
+                  dataSource={filteredData}
+                  rowKey="id"
+                  scroll={{ x: 'max-content' }}
+                  pagination={createPaginationConfig()}
+                />
+              </div>
+            </div>
+          </div>
+          <Modal
+            {...MODAL_TEXTS}
+            title="编辑客商"
+            open={editModalVisible}
+            onCancel={() => setEditModalVisible(false)}
+            onOk={() => { message.success('保存成功'); setEditModalVisible(false); }}
+          >
+            <Form form={form} layout="vertical">
+              <Form.Item label="简称" name="shortName" required><Input /></Form.Item>
+              <Form.Item label="全称" name="fullName" required><Input /></Form.Item>
+              <Form.Item label="联系人" name="contact"><Input /></Form.Item>
+              <Form.Item label="手机号" name="phone"><Input /></Form.Item>
+            </Form>
+          </Modal>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allColumnDefinitions}
+              visibleColumns={visibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 保值方案管理页面
+    const HedgePlanManagement = () => {
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [editModalVisible, setEditModalVisible] = useState(false);
+      const [form] = Form.useForm();
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'name', title: '名称', dataIndex: 'name', width: 200 },
+        { key: 'type', title: '类型', dataIndex: 'type', width: 120 },
+        { key: 'instructionTypes', title: '指令类型列表', dataIndex: 'instructionTypes', width: 250, render: (arr) => arr?.join(', ') || '-' },
+        { key: 'traders', title: '交易员列表', dataIndex: 'traders', width: 150, render: (arr) => arr?.join(', ') || '-' },
+        { key: 'makers', title: '制单员列表', dataIndex: 'makers', width: 150, render: (arr) => arr?.join(', ') || '-' },
+        { key: 'remark', title: '备注', dataIndex: 'remark', ellipsis: true }
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: hedgeVisibleColumns
+      } = useColumnManager('hedge-plan', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-toolbar">
+            <Space wrap>
+              <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={() => setEditModalVisible(true)}>增加</Button>
+              <Button icon={renderIcon('EditOutlined')} disabled={selectedRowKeys.length !== 1}>编辑</Button>
+              <Button danger icon={renderIcon('DeleteOutlined')} disabled={selectedRowKeys.length === 0}>删除</Button>
+              <Button icon={renderIcon('PoweroffOutlined')}>禁用/启用</Button>
+              <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+            </Space>
+            <Button 
+              icon={renderIcon('SettingOutlined')} 
+              onClick={() => setColumnEditorVisible(true)}
+              style={{ marginLeft: 'auto' }}
+            >
+              自定义列
+            </Button>
+          </div>
+          <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <Table
+                rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+                columns={tableColumns}
+                dataSource={mockHedgePlans}
+                rowKey="id"
+                scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                pagination={createPaginationConfig()}
+              />
+            </div>
+          </div>
+          <Modal
+            {...MODAL_TEXTS}
+            title="编辑保值方案"
+            open={editModalVisible}
+            onCancel={() => setEditModalVisible(false)}
+            width={600}
+            onOk={() => { message.success('保存成功'); setEditModalVisible(false); }}
+          >
+            <Form form={form} layout="vertical">
+              <Form.Item label="名称" name="name" required><Input /></Form.Item>
+              <Form.Item label="类型" name="type" required>
+                <Select>
+                  <Select.Option value="整体匹配">整体匹配</Select.Option>
+                  <Select.Option value="单单匹配">单单匹配</Select.Option>
+                  <Select.Option value="无合同（人员）">无合同（人员）</Select.Option>
+                  <Select.Option value="无合同（客商）">无合同（客商）</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item label="指令类型" name="instructionTypes">
+                <Select mode="multiple" placeholder="选择指令类型">
+                  <Select.Option value="期货交易指令">期货交易指令</Select.Option>
+                  <Select.Option value="合同创建指令">合同创建指令</Select.Option>
+                  <Select.Option value="点价指令">点价指令</Select.Option>
+                  <Select.Option value="均价合同套保指令">均价合同套保指令</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item label="交易员列表" name="traders"><Select mode="multiple" placeholder="选择交易员" /></Form.Item>
+              <Form.Item label="制单员列表" name="makers"><Select mode="multiple" placeholder="选择制单员" /></Form.Item>
+            </Form>
+          </Modal>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={hedgeVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 期货账户管理页面
+    const FuturesAccountManagement = () => {
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [editModalVisible, setEditModalVisible] = useState(false);
+      const [form] = Form.useForm();
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'account', title: '期货账户', dataIndex: 'account', width: 150 },
+        { key: 'status', title: '账户状态', dataIndex: 'status', width: 120, render: (status) => (
+          <span className={`erp-status-badge ${status === 'enabled' ? 'enabled' : 'disabled'}`}>
+            {status === 'enabled' ? '启用' : '禁用'}
+          </span>
+        )},
+        { key: 'traders', title: '交易员', dataIndex: 'traders', width: 200, render: (arr) => arr?.join(', ') || '-' }
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: futuresVisibleColumns
+      } = useColumnManager('futures-account', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-toolbar">
+            <Space wrap>
+              <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={() => setEditModalVisible(true)}>增加</Button>
+              <Button icon={renderIcon('EditOutlined')} disabled={selectedRowKeys.length !== 1}>编辑</Button>
+              <Button danger icon={renderIcon('DeleteOutlined')} disabled={selectedRowKeys.length === 0}>删除</Button>
+              <Button icon={renderIcon('UserOutlined')} disabled={selectedRowKeys.length !== 1}>绑定交易员</Button>
+              <Button icon={renderIcon('SafetyOutlined')} disabled={selectedRowKeys.length !== 1}>设置账户风控限制</Button>
+              <Button icon={renderIcon('PoweroffOutlined')}>禁用/启用</Button>
+              <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+            </Space>
+            <Button 
+              icon={renderIcon('SettingOutlined')} 
+              onClick={() => setColumnEditorVisible(true)}
+              style={{ marginLeft: 'auto' }}
+            >
+              自定义列
+            </Button>
+          </div>
+          <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <Table
+                rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+                columns={tableColumns}
+                dataSource={mockFuturesAccounts}
+                rowKey="id"
+                scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                pagination={createPaginationConfig()}
+              />
+            </div>
+          </div>
+          <Modal
+            {...MODAL_TEXTS}
+            title="编辑期货账户"
+            open={editModalVisible}
+            onCancel={() => setEditModalVisible(false)}
+            onOk={() => { message.success('保存成功'); setEditModalVisible(false); }}
+          >
+            <Form form={form} layout="vertical">
+              <Form.Item label="期货账户" name="account" required><Input /></Form.Item>
+              <Form.Item label="密码" name="password"><Input.Password /></Form.Item>
+              <Form.Item label="期货公司" name="company"><Input /></Form.Item>
+              <Form.Item label="前置" name="frontend"><Input /></Form.Item>
+            </Form>
+          </Modal>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={futuresVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 人员管理页面
+    const PersonManagement = () => {
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [filters, setFilters] = useState({ name: '', phone: '' });
+      const [editModalVisible, setEditModalVisible] = useState(false);
+      const [form] = Form.useForm();
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'name', title: '姓名', dataIndex: 'name', width: 150 },
+        { key: 'role', title: '角色', dataIndex: 'role', width: 150 },
+        { key: 'phone', title: '手机号', dataIndex: 'phone', width: 150 }
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: personVisibleColumns
+      } = useColumnManager('person', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      // 从数据中提取唯一的姓名和手机号列表
+      const nameOptions = useMemo(() => {
+        const uniqueNames = [...new Set(mockPersons.map(item => item.name).filter(Boolean))];
+        return uniqueNames.map(name => ({ label: name, value: name }));
+      }, []);
+
+      const phoneOptions = useMemo(() => {
+        const uniquePhones = [...new Set(mockPersons.map(item => item.phone).filter(Boolean))];
+        return uniquePhones.map(phone => ({ label: phone, value: phone }));
+      }, []);
+
+      const filteredData = useMemo(() => {
+        return mockPersons.map(person => {
+          // 从人员角色关系中获取角色（每个角色一行，每个角色包含多个人员）
+          const roles = mockPersonRoles
+            .filter(pr => pr.personIds?.includes(person.id) && pr.status === 'enabled')
+            .map(pr => pr.roleName);
+          return {
+            ...person,
+            role: roles.join(', ') || '-'
+          };
+        }).filter(item => {
+          if (filters.name && !item.name.includes(filters.name)) return false;
+          if (filters.phone && !item.phone.includes(filters.phone)) return false;
+          return true;
+        });
+      }, [filters]);
+
+      const handleDelete = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要删除的人员');
+          return;
+        }
+        // 检查是否有保值方案绑定或角色绑定
+        const selectedPersons = mockPersons.filter(p => selectedRowKeys.includes(p.id));
+        const hasHedgePlan = selectedPersons.some(p => {
+          return mockHedgePlans.some(hp => 
+            hp.traders?.includes(p.name) || hp.makers?.includes(p.name)
+          );
+        });
+        const hasRole = selectedPersons.some(p => {
+          return mockPersonRoles.some(pr => pr.personId === p.id && pr.status === 'enabled');
+        });
+        
+        if (hasHedgePlan) {
+          message.error('有保值方案绑定的人员不能删除');
+          return;
+        }
+        if (hasRole) {
+          message.error('有角色绑定的人员不能删除');
+          return;
+        }
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: '确认删除',
+          content: `确定要删除选中的 ${selectedRowKeys.length} 个人员吗？`,
+          onOk: () => {
+            message.success('删除成功');
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      const handleAdd = () => {
+        form.resetFields();
+        setEditModalVisible(true);
+      };
+
+      const handleEdit = () => {
+        if (selectedRowKeys.length !== 1) {
+          message.warning('请选择一个人员进行编辑');
+          return;
+        }
+        const person = mockPersons.find(p => p.id === selectedRowKeys[0]);
+        if (person) {
+          form.setFieldsValue(person);
+          setEditModalVisible(true);
+        }
+      };
+
+      const handleSave = () => {
+        form.validateFields().then(values => {
+          // 检查重复姓名（新增时）
+          if (!form.getFieldValue('id')) {
+            const exists = mockPersons.some(p => p.name === values.name);
+            if (exists) {
+              message.error('已有重复姓名的人员，不能增加');
+              return;
+            }
+          }
+          message.success('保存成功');
+          setEditModalVisible(false);
+          form.resetFields();
+        });
+      };
+
+      const handleToggleStatus = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要操作的人员');
+          return;
+        }
+        const selectedPersons = mockPersons.filter(p => selectedRowKeys.includes(p.id));
+        const hasDisabled = selectedPersons.some(p => p.status === 'disabled');
+        const action = hasDisabled ? '启用' : '禁用';
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: `确认${action}`,
+          content: `确定要${action}选中的 ${selectedRowKeys.length} 个人员吗？`,
+          onOk: () => {
+            message.success(`${action}成功`);
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-filter-bar" style={{ flexShrink: 0 }}>
+            <div className="erp-filter-item">
+              <label>姓名：</label>
+              <Select
+                showSearch
+                allowClear
+                placeholder="请输入或选择姓名"
+                style={{ width: 200 }}
+                value={filters.name || undefined}
+                onChange={(value) => setFilters({...filters, name: value || ''})}
+                options={nameOptions}
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              />
+            </div>
+            <div className="erp-filter-item">
+              <label>手机号：</label>
+              <Select
+                showSearch
+                allowClear
+                placeholder="请输入或选择手机号"
+                style={{ width: 200 }}
+                value={filters.phone || undefined}
+                onChange={(value) => setFilters({...filters, phone: value || ''})}
+                options={phoneOptions}
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              />
+            </div>
+          </div>
+          <div className="erp-toolbar" style={{ flexShrink: 0 }}>
+            <Space wrap>
+              <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={handleAdd}>增加</Button>
+              <Button icon={renderIcon('EditOutlined')} onClick={handleEdit} disabled={selectedRowKeys.length !== 1}>编辑</Button>
+              <Button danger icon={renderIcon('DeleteOutlined')} onClick={handleDelete} disabled={selectedRowKeys.length === 0}>删除</Button>
+              <Button icon={renderIcon('PoweroffOutlined')} onClick={handleToggleStatus} disabled={selectedRowKeys.length === 0}>禁用/启用</Button>
+              <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+            </Space>
+            <Button 
+              icon={renderIcon('SettingOutlined')} 
+              onClick={() => setColumnEditorVisible(true)}
+              style={{ marginLeft: 'auto' }}
+            >
+              自定义列
+            </Button>
+          </div>
+          <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <Table
+                rowSelection={{ 
+                  type: 'radio',
+                  selectedRowKeys, 
+                  onChange: setSelectedRowKeys 
+                }}
+                columns={tableColumns}
+                dataSource={filteredData}
+                rowKey="id"
+                scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                pagination={createPaginationConfig()}
+              />
+            </div>
+          </div>
+          <Modal
+            {...MODAL_TEXTS}
+            title="编辑人员"
+            open={editModalVisible}
+            onCancel={() => { setEditModalVisible(false); form.resetFields(); }}
+            onOk={handleSave}
+            width={500}
+          >
+            <Form form={form} layout="vertical">
+              <Form.Item label="姓名" name="name" required rules={[{ required: true, message: '请输入姓名' }]}>
+                <Input placeholder="请输入姓名" />
+              </Form.Item>
+              <Form.Item label="手机号" name="phone" required rules={[{ required: true, message: '请输入手机号' }, { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }]}>
+                <Input placeholder="请输入手机号" />
+              </Form.Item>
+            </Form>
+          </Modal>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={personVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 人员角色管理页面
+    const PersonRoleManagement = () => {
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [filters, setFilters] = useState({ role: '', name: '' });
+      const [editModalVisible, setEditModalVisible] = useState(false);
+      const [form] = Form.useForm();
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'roleName', title: '角色', dataIndex: 'roleName', width: 150 },
+        { 
+          key: 'personNames', 
+          title: '姓名', 
+          dataIndex: 'personNames', 
+          width: 300,
+          render: (value, record) => {
+            // 从 record 中获取 personNames，优先使用 value（dataIndex 对应的值）
+            const personNames = value || record?.personNames || [];
+            if (!Array.isArray(personNames) || personNames.length === 0) {
+              return <span style={{ color: '#999' }}>-</span>;
+            }
+            return (
+              <div style={{ lineHeight: '1.8', whiteSpace: 'normal' }}>
+                {personNames.map((name, index) => (
+                  <div key={index} style={{ marginBottom: index < personNames.length - 1 ? '4px' : '0' }}>
+                    {name}
+                  </div>
+                ))}
+              </div>
+            );
+          }
+        },
+        { key: 'description', title: '角色解释', dataIndex: 'description', width: 250 }
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: personRoleVisibleColumns
+      } = useColumnManager('person-role', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      // 从数据中提取唯一的角色列表
+      const roleOptions = useMemo(() => {
+        return mockRoles.map(role => ({ label: role.name, value: role.name }));
+      }, []);
+
+      // 从所有人员角色关系中提取所有人员姓名（用于筛选）
+      const allPersonNames = useMemo(() => {
+        const names = new Set();
+        mockPersonRoles.forEach(pr => {
+          if (pr.personNames) {
+            pr.personNames.forEach(name => names.add(name));
+          }
+        });
+        return Array.from(names).map(name => ({ label: name, value: name }));
+      }, []);
+
+      const filteredData = useMemo(() => {
+        return mockPersonRoles.filter(item => {
+          if (filters.role && !item.roleName.includes(filters.role)) return false;
+          if (filters.name && item.personNames && !item.personNames.some(name => name.includes(filters.name))) return false;
+          return true;
+        });
+      }, [filters]);
+
+      const handleDelete = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要删除的角色');
+          return;
+        }
+        // 检查是否已绑定期货账户的交易员
+        const selectedRoles = mockPersonRoles.filter(pr => selectedRowKeys.includes(pr.id));
+        const hasFuturesAccount = selectedRoles.some(pr => {
+          if (pr.roleName === '交易员' && pr.personNames) {
+            return pr.personNames.some(personName => {
+              return mockFuturesAccounts.some(fa => fa.traders?.includes(personName));
+            });
+          }
+          return false;
+        });
+        
+        if (hasFuturesAccount) {
+          message.error('已绑定期货账户的交易员不能解除人员与角色关系');
+          return;
+        }
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: '确认删除',
+          content: `确定要删除选中的 ${selectedRowKeys.length} 个角色配置吗？`,
+          onOk: () => {
+            message.success('删除成功');
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      const handleAdd = () => {
+        form.resetFields();
+        setEditModalVisible(true);
+      };
+
+      const handleEdit = () => {
+        if (selectedRowKeys.length !== 1) {
+          message.warning('请选择一个角色进行编辑');
+          return;
+        }
+        const role = mockPersonRoles.find(pr => pr.id === selectedRowKeys[0]);
+        if (role) {
+          form.setFieldsValue({
+            id: role.id,
+            roleId: role.roleId,
+            personIds: role.personIds || []
+          });
+          setEditModalVisible(true);
+        }
+      };
+
+      const handleSave = () => {
+        form.validateFields().then(values => {
+          const editingId = form.getFieldValue('id');
+          
+          // 检查一类角色只能增加一行（新增时）
+          if (!editingId) {
+            // 新增：检查该角色是否已存在
+            const existingRole = mockPersonRoles.find(pr => pr.roleId === values.roleId);
+            if (existingRole) {
+              message.error('一类角色只能增加一行');
+              return;
+            }
+          } else {
+            // 编辑：检查是否修改了角色，如果修改了角色，检查新角色是否已存在
+            const currentRole = mockPersonRoles.find(pr => pr.id === editingId);
+            if (currentRole && currentRole.roleId !== values.roleId) {
+              const existingRole = mockPersonRoles.find(pr => pr.roleId === values.roleId);
+              if (existingRole) {
+                message.error('一类角色只能增加一行，不能修改为已存在的角色');
+                return;
+              }
+            }
+          }
+          message.success('保存成功');
+          setEditModalVisible(false);
+          form.resetFields();
+        });
+      };
+
+      const handleToggleStatus = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要操作的角色');
+          return;
+        }
+        const selectedRoles = mockPersonRoles.filter(pr => selectedRowKeys.includes(pr.id));
+        const hasDisabled = selectedRoles.some(pr => pr.status === 'disabled');
+        const action = hasDisabled ? '启用' : '禁用';
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: `确认${action}`,
+          content: `确定要${action}选中的 ${selectedRowKeys.length} 个角色配置吗？`,
+          onOk: () => {
+            message.success(`${action}成功`);
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-filter-bar" style={{ flexShrink: 0 }}>
+            <div className="erp-filter-item">
+              <label>角色：</label>
+              <Select
+                showSearch
+                allowClear
+                placeholder="请输入或选择角色"
+                style={{ width: 200 }}
+                value={filters.role || undefined}
+                onChange={(value) => setFilters({...filters, role: value || ''})}
+                options={roleOptions}
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              />
+            </div>
+            <div className="erp-filter-item">
+              <label>姓名：</label>
+              <Select
+                showSearch
+                allowClear
+                placeholder="请输入或选择姓名"
+                style={{ width: 200 }}
+                value={filters.name || undefined}
+                onChange={(value) => setFilters({...filters, name: value || ''})}
+                options={allPersonNames}
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+              />
+            </div>
+          </div>
+          <div className="erp-toolbar" style={{ flexShrink: 0 }}>
+            <Space wrap>
+              <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={handleAdd}>增加</Button>
+              <Button icon={renderIcon('EditOutlined')} onClick={handleEdit} disabled={selectedRowKeys.length !== 1}>编辑</Button>
+              <Button danger icon={renderIcon('DeleteOutlined')} onClick={handleDelete} disabled={selectedRowKeys.length === 0}>删除</Button>
+              <Button icon={renderIcon('PoweroffOutlined')} onClick={handleToggleStatus} disabled={selectedRowKeys.length === 0}>禁用/启用</Button>
+              <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+            </Space>
+            <Button 
+              icon={renderIcon('SettingOutlined')} 
+              onClick={() => setColumnEditorVisible(true)}
+              style={{ marginLeft: 'auto' }}
+            >
+              自定义列
+            </Button>
+          </div>
+          <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <Table
+                rowSelection={{ 
+                  type: 'radio',
+                  selectedRowKeys, 
+                  onChange: setSelectedRowKeys 
+                }}
+                columns={tableColumns}
+                dataSource={filteredData}
+                rowKey="id"
+                scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                pagination={createPaginationConfig()}
+              />
+            </div>
+          </div>
+          <Modal
+            {...MODAL_TEXTS}
+            title="编辑人员与角色关系"
+            open={editModalVisible}
+            onCancel={() => { setEditModalVisible(false); form.resetFields(); }}
+            onOk={handleSave}
+            width={500}
+          >
+            <Form form={form} layout="vertical">
+              <Form.Item label="角色" name="roleId" required rules={[{ required: true, message: '请选择角色' }]}>
+                <Select 
+                  placeholder="请选择角色"
+                  disabled={!!form.getFieldValue('id')} // 编辑时禁用角色选择
+                >
+                  {mockRoles.map(role => (
+                    <Select.Option key={role.id} value={role.id}>{role.name}</Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item label="人员" name="personIds" required rules={[{ required: true, message: '请选择人员' }, { type: 'array', min: 1, message: '至少选择一个人员' }]}>
+                <Select 
+                  mode="multiple"
+                  placeholder="请选择人员（可多选）"
+                  showSearch
+                  filterOption={(input, option) =>
+                    (option?.children ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                >
+                  {mockPersons.map(person => (
+                    <Select.Option key={person.id} value={person.id}>{person.name}</Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Form>
+          </Modal>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={personRoleVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 合同管理页面
+    const ContractManagement = ({ contractType = 'purchase' }) => {
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [linkModalVisible, setLinkModalVisible] = useState(false);
+      const [unlinkModalVisible, setUnlinkModalVisible] = useState(false);
+      const [priceModalVisible, setPriceModalVisible] = useState(false);
+      const [editModalVisible, setEditModalVisible] = useState(false);
+      const [form] = Form.useForm();
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'hedgePlan', title: '保值方案', dataIndex: 'hedgePlan', width: 150 },
+        { key: 'manager', title: '业务经理', dataIndex: 'manager', width: 120 },
+        { key: 'contractNo', title: '合同编号', dataIndex: 'contractNo', width: 150, fixed: 'left' },
+        { key: 'customer', title: contractType === 'purchase' ? '供应商' : '客户', dataIndex: 'customer', width: 150 },
+        { key: 'spotType', title: '现货品种', dataIndex: 'spotType', width: 120 },
+        { key: 'brand', title: '品牌', dataIndex: 'brand', width: 120 },
+        { key: 'pricing', title: '计价方式', dataIndex: 'pricing', width: 120 },
+        { key: 'qty', title: '合同数量', dataIndex: 'qty', width: 120, align: 'right' },
+        { key: 'price', title: '单价', dataIndex: 'price', width: 120, align: 'right' },
+        { key: 'settlementPrice', title: '结算单价', dataIndex: 'settlementPrice', width: 120, align: 'right' },
+        { key: 'amount', title: '合同金额', dataIndex: 'amount', width: 150, align: 'right' },
+        { key: 'settlementAmount', title: '结算金额', dataIndex: 'settlementAmount', width: 150, align: 'right' },
+        { key: 'transport', title: '运输方式', dataIndex: 'transport', width: 120 },
+        { key: 'deliveryDate', title: '交割日期', dataIndex: 'deliveryDate', width: 120 },
+        { key: 'pricedQty', title: '已点数量', dataIndex: 'pricedQty', width: 120, align: 'right' },
+        { key: 'unpricedQty', title: '未点数量', dataIndex: 'unpricedQty', width: 120, align: 'right' },
+        { key: 'creator', title: '创建人', dataIndex: 'creator', width: 120 },
+        { key: 'createTime', title: '创建日期时间', dataIndex: 'createTime', width: 160 },
+        { key: 'occurTime', title: '发生日期时间', dataIndex: 'occurTime', width: 160 },
+        { key: 'status', title: '状态', dataIndex: 'status', width: 100 }
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: contractVisibleColumns
+      } = useColumnManager(`contract-${contractType}`, allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-toolbar">
+            <Space wrap>
+              <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={() => setEditModalVisible(true)}>创建</Button>
+              <Button icon={renderIcon('EditOutlined')} disabled={selectedRowKeys.length !== 1}>编辑（变更）</Button>
+              <Button danger icon={renderIcon('DeleteOutlined')} disabled={selectedRowKeys.length === 0}>删除（作废）</Button>
+              <Button icon={renderIcon('LinkOutlined')} disabled={selectedRowKeys.length !== 1} onClick={() => setLinkModalVisible(true)}>关联</Button>
+              <Button icon={renderIcon('DisconnectOutlined')} disabled={selectedRowKeys.length !== 1} onClick={() => setUnlinkModalVisible(true)}>解除关联</Button>
+              <Button icon={renderIcon('DollarOutlined')} disabled={selectedRowKeys.length !== 1} onClick={() => setPriceModalVisible(true)}>点价</Button>
+              <Button icon={renderIcon('PoweroffOutlined')}>禁用/启用</Button>
+              <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+            </Space>
+            <Button 
+              icon={renderIcon('SettingOutlined')} 
+              onClick={() => setColumnEditorVisible(true)}
+              style={{ marginLeft: 'auto' }}
+            >
+              自定义列
+            </Button>
+          </div>
+          <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <Table
+                rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+                columns={tableColumns}
+                dataSource={mockContracts}
+                rowKey="id"
+                scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                pagination={createPaginationConfig()}
+              />
+            </div>
+          </div>
+          <Modal
+            {...MODAL_TEXTS}
+            title="关联"
+            open={linkModalVisible}
+            onCancel={() => setLinkModalVisible(false)}
+            width={900}
+          >
+            <Tabs>
+              <Tabs.TabPane tab="期现关联" key="futures">
+                <div className="erp-filter-bar">
+                  <div className="erp-filter-item">
+                    <label>合约：</label>
+                    <Input style={{ width: 150 }} />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>成交日期：</label>
+                    <DatePicker.RangePicker />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>价格：</label>
+                    <InputNumber style={{ width: 150 }} />
+                  </div>
+                </div>
+                <Table
+                  columns={[
+                    { title: '选择', dataIndex: 'select', render: () => <Checkbox /> },
+                    { title: '合约', dataIndex: 'contract' },
+                    { title: '成交日期', dataIndex: 'date' },
+                    { title: '价格', dataIndex: 'price' },
+                    { title: '期货数量', dataIndex: 'futuresQty', render: () => <InputNumber style={{ width: 100 }} /> },
+                    { title: '合同数量', dataIndex: 'contractQty', render: () => <InputNumber style={{ width: 100 }} /> },
+                    { title: '发生时间', dataIndex: 'occurTime', render: () => <DatePicker showTime /> }
+                  ]}
+                  dataSource={[]}
+                  pagination={false}
+                />
+                <Space style={{ marginTop: 16 }}>
+                  <Button type="primary">确认</Button>
+                  <Button onClick={() => setLinkModalVisible(false)}>取消</Button>
+                </Space>
+              </Tabs.TabPane>
+              <Tabs.TabPane tab="采销关联" key="sales">
+                <div className="erp-filter-bar">
+                  <div className="erp-filter-item">
+                    <label>合同编号：</label>
+                    <Input style={{ width: 150 }} />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>客商：</label>
+                    <Input style={{ width: 150 }} />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>业务经理：</label>
+                    <Input style={{ width: 150 }} />
+                  </div>
+                </div>
+                <Table
+                  columns={[
+                    { title: '选择', dataIndex: 'select', render: () => <Checkbox /> },
+                    { title: '合同编号', dataIndex: 'contractNo' },
+                    { title: '客商', dataIndex: 'customer' },
+                    { title: '数量', dataIndex: 'qty', render: () => <InputNumber style={{ width: 100 }} /> },
+                    { title: '发生时间', dataIndex: 'occurTime', render: () => <DatePicker showTime /> }
+                  ]}
+                  dataSource={[]}
+                  pagination={false}
+                />
+                <Space style={{ marginTop: 16 }}>
+                  <Button type="primary">确认</Button>
+                  <Button onClick={() => setLinkModalVisible(false)}>取消</Button>
+                </Space>
+              </Tabs.TabPane>
+            </Tabs>
+          </Modal>
+          <Modal
+            {...MODAL_TEXTS}
+            title="解除关联"
+            open={unlinkModalVisible}
+            onCancel={() => setUnlinkModalVisible(false)}
+            width={900}
+          >
+            <Tabs>
+              <Tabs.TabPane tab="解除期现关联" key="futures">
+                <div className="erp-filter-bar">
+                  <div className="erp-filter-item">
+                    <label>关联日期：</label>
+                    <DatePicker.RangePicker />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>合约：</label>
+                    <Input style={{ width: 150 }} />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>成交日期：</label>
+                    <DatePicker.RangePicker />
+                  </div>
+                </div>
+                <Table
+                  columns={[
+                    { title: '选择', dataIndex: 'select', render: () => <Checkbox /> },
+                    { title: '合约', dataIndex: 'contract' },
+                    { title: '成交日期', dataIndex: 'date' },
+                    { title: '解除期货数量', dataIndex: 'futuresQty', render: () => <InputNumber style={{ width: 100 }} /> },
+                    { title: '解除合同数量', dataIndex: 'contractQty', render: () => <InputNumber style={{ width: 100 }} /> },
+                    { title: '发生日期时间', dataIndex: 'occurTime', render: () => <DatePicker showTime /> }
+                  ]}
+                  dataSource={[]}
+                  pagination={false}
+                />
+                <Space style={{ marginTop: 16 }}>
+                  <Button type="primary">确认</Button>
+                  <Button onClick={() => setUnlinkModalVisible(false)}>取消</Button>
+                </Space>
+              </Tabs.TabPane>
+              <Tabs.TabPane tab="解除采销关联" key="sales">
+                <div className="erp-filter-bar">
+                  <div className="erp-filter-item">
+                    <label>关联日期：</label>
+                    <DatePicker.RangePicker />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>合同编号：</label>
+                    <Input style={{ width: 150 }} />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>客商：</label>
+                    <Input style={{ width: 150 }} />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>业务经理：</label>
+                    <Input style={{ width: 150 }} />
+                  </div>
+                </div>
+                <Table
+                  columns={[
+                    { title: '选择', dataIndex: 'select', render: () => <Checkbox /> },
+                    { title: '合同编号', dataIndex: 'contractNo' },
+                    { title: '客商', dataIndex: 'customer' },
+                    { title: '解除数量', dataIndex: 'qty', render: () => <InputNumber style={{ width: 100 }} /> },
+                    { title: '发生日期时间', dataIndex: 'occurTime', render: () => <DatePicker showTime /> }
+                  ]}
+                  dataSource={[]}
+                  pagination={false}
+                />
+                <Space style={{ marginTop: 16 }}>
+                  <Button type="primary">确认</Button>
+                  <Button onClick={() => setUnlinkModalVisible(false)}>取消</Button>
+                </Space>
+              </Tabs.TabPane>
+            </Tabs>
+          </Modal>
+          <Modal
+            {...MODAL_TEXTS}
+            title="点价"
+            open={priceModalVisible}
+            onCancel={() => setPriceModalVisible(false)}
+            width={800}
+          >
+            <Form layout="vertical">
+              <Form.Item label="点价数量" required><InputNumber style={{ width: '100%' }} /></Form.Item>
+              <Form.Item label="点价价格" required><InputNumber style={{ width: '100%' }} /></Form.Item>
+              <Form.Item label="发生日期时间" required><DatePicker showTime style={{ width: '100%' }} /></Form.Item>
+              <Form.Item label="期货委托表">
+                <div className="erp-filter-bar">
+                  <div className="erp-filter-item">
+                    <label>合约：</label>
+                    <Input style={{ width: 150 }} />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>成交日期：</label>
+                    <DatePicker.RangePicker />
+                  </div>
+                  <div className="erp-filter-item">
+                    <label>价格：</label>
+                    <InputNumber style={{ width: 150 }} />
+                  </div>
+                </div>
+                <Table
+                  columns={[
+                    { title: '选择', dataIndex: 'select', render: () => <Checkbox /> },
+                    { title: '合约', dataIndex: 'contract' },
+                    { title: '成交日期', dataIndex: 'date' },
+                    { title: '价格', dataIndex: 'price' },
+                    { title: '期货数量', dataIndex: 'futuresQty', render: () => <InputNumber style={{ width: 100 }} /> }
+                  ]}
+                  dataSource={[]}
+                  pagination={false}
+                />
+              </Form.Item>
+              <Space style={{ marginTop: 16 }}>
+                <Button type="primary">确认</Button>
+                <Button onClick={() => setPriceModalVisible(false)}>取消</Button>
+              </Space>
+            </Form>
+          </Modal>
+          <Modal
+            {...MODAL_TEXTS}
+            title="创建/编辑合同"
+            open={editModalVisible}
+            onCancel={() => setEditModalVisible(false)}
+            width={800}
+            onOk={() => { message.success('保存成功'); setEditModalVisible(false); }}
+          >
+            <Form form={form} layout="vertical">
+              <Form.Item label="保值方案" name="hedgePlan" required><Select /></Form.Item>
+              <Form.Item label="业务经理" name="manager"><Select /></Form.Item>
+              <Form.Item label="合同编号" name="contractNo" required><Input /></Form.Item>
+              <Form.Item label={contractType === 'purchase' ? '供应商' : '客户'} name="customer" required><Select /></Form.Item>
+              <Form.Item label="现货品种" name="spotType" required><Select /></Form.Item>
+              <Form.Item label="品牌" name="brand" required><Select /></Form.Item>
+              <Form.Item label="计价方式" name="pricing" required>
+                <Select>
+                  <Select.Option value="一口价">一口价</Select.Option>
+                  <Select.Option value="暂定价">暂定价</Select.Option>
+                  <Select.Option value="均价">均价</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item label="合同数量" name="qty" required><InputNumber style={{ width: '100%' }} /></Form.Item>
+              <Form.Item label="单价" name="price"><InputNumber style={{ width: '100%' }} /></Form.Item>
+              <Form.Item label="运输方式" name="transport">
+                <Select>
+                  <Select.Option value="自提">自提</Select.Option>
+                  <Select.Option value="送到">送到</Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item label="交割日期" name="deliveryDate" required><DatePicker style={{ width: '100%' }} /></Form.Item>
+              <Form.Item label="均价起止日" name="avgDateRange"><DatePicker.RangePicker style={{ width: '100%' }} /></Form.Item>
+              <Form.Item label="点价截止日" name="priceDeadline"><DatePicker style={{ width: '100%' }} /></Form.Item>
+            </Form>
+          </Modal>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={contractVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 指令工作台页面
+    const InstructionWorkbench = () => {
+      const [role, setRole] = useState('trader');
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+      const mockInstructions = [
+        { id: 1, type: '期货交易指令', status: '待完成', trader: '交易员A', contract: 'HT2025-0001', futures: 'CU2401', qty: 100, price: 5300, createTime: '2025-11-10 10:00' },
+        { id: 2, type: '点价指令', status: '待完成', trader: '交易员B', contract: 'HT2025-0002', futures: 'AL2401', qty: 200, price: 0, createTime: '2025-11-11 14:30' }
+      ];
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'type', title: '指令类型', dataIndex: 'type', width: 150 },
+        { key: 'status', title: '指令状态', dataIndex: 'status', width: 120, render: (status) => {
+          const color = status === '完成' ? 'green' : status === '撤销待处理' ? 'orange' : 'blue';
+          return <Tag color={color}>{status}</Tag>;
+        }},
+        { key: 'trader', title: '交易员', dataIndex: 'trader', width: 120 },
+        { key: 'contract', title: '合同', dataIndex: 'contract', width: 150 },
+        { key: 'futures', title: '期货', dataIndex: 'futures', width: 120 },
+        { key: 'qty', title: '数量', dataIndex: 'qty', width: 100, align: 'right' },
+        { key: 'price', title: '价格', dataIndex: 'price', width: 120, align: 'right' },
+        { key: 'createTime', title: '创建时间', dataIndex: 'createTime', width: 160 },
+        { key: 'action', title: '操作', key: 'action', width: 200, fixed: 'right', render: () => (
+          <Space>
+            <Button size="small" type="link">查看详情</Button>
+            <Button size="small" type="link">备注</Button>
+            <Button size="small" type="link">完成</Button>
+          </Space>
+        )}
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: instructionVisibleColumns
+      } = useColumnManager('instruction-workbench', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-toolbar">
+            <Space wrap>
+              <Radio.Group value={role} onChange={(e) => setRole(e.target.value)}>
+                <Radio.Button value="trader">交易员工作台</Radio.Button>
+                <Radio.Button value="manager">业务经理工作台</Radio.Button>
+                <Radio.Button value="maker">指令员工作台</Radio.Button>
+                <Radio.Button value="clerk">制单员工作台</Radio.Button>
+                <Radio.Button value="customer">客商工作台</Radio.Button>
+              </Radio.Group>
+            </Space>
+            <Space wrap>
+              <Button type="primary" icon={renderIcon('PlusOutlined')}>发起指令</Button>
+              <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+            </Space>
+            <Button 
+              icon={renderIcon('SettingOutlined')} 
+              onClick={() => setColumnEditorVisible(true)}
+              style={{ marginLeft: 'auto' }}
+            >
+              自定义列
+            </Button>
+          </div>
+          <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <Table
+                rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+                columns={tableColumns}
+                dataSource={mockInstructions}
+                rowKey="id"
+                scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                pagination={createPaginationConfig()}
+              />
+            </div>
+          </div>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={instructionVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    const MobileWorkbench = ({ user, roles, workbenches, onEnterDesktop }) => {
+      const [activeWorkbench, setActiveWorkbench] = useState(null);
+
+      return (
+        <div className="mobile-workbench">
+          <Card className="user-card" title="我的工作台">
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Space>
+                <Avatar size={48}>{user?.name?.slice(-1) || '用'}</Avatar>
+                <div>
+                  <div style={{ fontSize: 18, fontWeight: 600 }}>{user?.name || '未登录用户'}</div>
+                  <div style={{ color: '#8a94a6', fontSize: 13 }}>当前角色：</div>
+                  <Space wrap>
+                    {roles.length ? roles.map(role => (
+                      <Tag color="blue" key={role}>{role}</Tag>
+                    )) : <span style={{ color: '#999' }}>暂无角色</span>}
+                  </Space>
+                </div>
+              </Space>
+              <Alert
+                type="info"
+                showIcon
+                message="移动端仅保留与你相关的工作台。复杂操作请使用桌面端。"
+              />
+              <Button block onClick={onEnterDesktop}>前往桌面版</Button>
+            </Space>
+          </Card>
+          {workbenches.length ? workbenches.map(item => (
+            <Card
+              key={item.key}
+              className="mobile-workbench-card"
+              title={item.title}
+              extra={<Tag color="geekblue">{item.fromRole}</Tag>}
+              cover={
+                <div style={{ padding: '12px 16px 0' }}>
+                  <Space align="center" size={8}>
+                    {renderIcon(item.icon, { style: { fontSize: 24, color: '#1677ff' } })}
+                    <span style={{ color: '#8a94a6' }}>{item.description}</span>
+                  </Space>
+                </div>
+              }
+            >
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Button type="primary" block onClick={() => setActiveWorkbench(item)}>{item.cta}</Button>
+                <Button block onClick={onEnterDesktop}>在桌面端处理</Button>
+              </Space>
+            </Card>
+          )) : (
+            <Empty description="暂无匹配的工作台，请联系管理员配置角色" />
+          )}
+          <Drawer
+            placement="bottom"
+            height={360}
+            open={!!activeWorkbench}
+            onClose={() => setActiveWorkbench(null)}
+            title={activeWorkbench?.title}
+          >
+            {activeWorkbench && (
+              <Space direction="vertical" style={{ width: '100%' }}>
+                <Alert
+                  message={`当前为 ${activeWorkbench.fromRole} 的工作台模块`}
+                  description={activeWorkbench.description}
+                  type="info"
+                  showIcon
+                />
+                <Button
+                  type="primary"
+                  block
+                  onClick={() => {
+                    message.success(`已进入 ${activeWorkbench.title}`);
+                    setActiveWorkbench(null);
+                  }}
+                >
+                  我知道了
+                </Button>
+                <Button block onClick={onEnterDesktop}>使用桌面端获取完整体验</Button>
+              </Space>
+            )}
+          </Drawer>
+        </div>
+      );
+    };
+
+    // 主应用组件
+    const App = () => {
+      const [topMenu, setTopMenu] = useState('contract');
+      const [sideMenuKey, setSideMenuKey] = useState('');
+      const [tabs, setTabs] = useState([]);
+      const [activeTab, setActiveTab] = useState('');
+      const [isMobile, setIsMobile] = useState(getIsMobile());
+      const [sideMenuDrawerVisible, setSideMenuDrawerVisible] = useState(false);
+      const [currentUser] = useState(mockPersons[0] || null);
+
+      const currentUserRoles = useMemo(() => {
+        if (!currentUser) return [];
+        const roleSet = new Set();
+        mockPersonRoles.forEach(pr => {
+          if (pr.personNames?.includes(currentUser.name)) {
+            roleSet.add(pr.roleName);
+          }
+        });
+        return Array.from(roleSet);
+      }, [currentUser]);
+
+      const userWorkbenches = useMemo(() => {
+        const map = new Map();
+        currentUserRoles.forEach(role => {
+          roleWorkbenches[role]?.forEach(item => {
+            if (!map.has(item.key)) {
+              map.set(item.key, { ...item, fromRole: role });
+            }
+          });
+        });
+        return Array.from(map.values());
+      }, [currentUserRoles]);
+
+      const topMenus = [
+        { key: 'contract', label: '合同宝' },
+        { key: 'instruction', label: '指令宝' },
+        { key: 'match', label: '匹配宝' },
+        { key: 'trade', label: '交易宝' },
+        { key: 'report', label: '其他报表' },
+        { key: 'settings', label: '全局设置' }
+      ];
+
+      const sideMenus = {
+        contract: [
+          { 
+            key: 'contract-manage', 
+            label: '合同管理', 
+            icon: 'FileTextOutlined',
+            children: [
+              { key: '采购合同管理', label: '采购合同管理', icon: 'ShoppingOutlined' },
+              { key: '销售合同管理', label: '销售合同管理', icon: 'ShopOutlined' }
+            ]
+          },
+          { key: 'contract-report', label: '报表', icon: 'BarChartOutlined' }
+        ],
+        instruction: [
+          { key: 'instruction-settings', label: '指令设置', icon: 'SettingOutlined' },
+          { key: 'instruction-workbench', label: '各岗位的指令工作台', icon: 'DesktopOutlined' },
+          { key: 'instruction-report', label: '报表', icon: 'BarChartOutlined' }
+        ],
+        settings: [
+          { key: 'spot-brand', label: '现货品种与价格', icon: 'DatabaseOutlined' },
+          { key: 'customer', label: '客商管理', icon: 'TeamOutlined' },
+          { key: 'hedge-plan', label: '保值方案管理', icon: 'WalletOutlined' },
+          { key: 'futures-account', label: '期货账户管理', icon: 'AccountBookOutlined' },
+          { 
+            key: 'person-manage', 
+            label: '人员管理', 
+            icon: 'UserOutlined',
+            children: [
+              { key: 'person', label: '人员管理', icon: 'UserOutlined' },
+              { key: 'person-role', label: '人员角色管理', icon: 'TeamOutlined' }
+            ]
+          }
+        ]
+      };
+
+      useEffect(() => {
+        const handleResize = () => {
+          setIsMobile(getIsMobile());
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
+
+      useEffect(() => {
+        if (!isMobile) {
+          setSideMenuDrawerVisible(false);
+        }
+      }, [isMobile]);
+
+      const menuItems = useMemo(() => {
+        return sideMenus[topMenu]?.map(item => ({
+          key: item.key,
+          icon: renderIcon(item.icon),
+          label: item.label,
+          children: item.children?.map(child => ({
+            key: child.key,
+            icon: renderIcon(child.icon),
+            label: child.label
+          }))
+        })) || [];
+      }, [topMenu]);
+
+      const handleDesktopHint = useCallback(() => {
+        message.info('请使用桌面端访问完整功能');
+      }, []);
+
+      const handleMenuClick = (key) => {
+        setSideMenuKey(key);
+        if (!tabs.find(t => t.key === key)) {
+          // 查找菜单项，包括子菜单
+          let menuItem = sideMenus[topMenu]?.find(m => m.key === key);
+          if (!menuItem) {
+            // 在子菜单中查找
+            const parentMenu = sideMenus[topMenu]?.find(m => m.children?.some(c => c.key === key));
+            if (parentMenu) {
+              menuItem = parentMenu.children.find(c => c.key === key);
+            }
+          }
+          const newTab = { key, label: menuItem?.label || key };
+          setTabs([...tabs, newTab]);
+        }
+        setActiveTab(key);
+      };
+
+      const handleTabEdit = (targetKey, action) => {
+        if (action === 'remove') {
+          const newTabs = tabs.filter(t => t.key !== targetKey);
+          setTabs(newTabs);
+          if (targetKey === activeTab && newTabs.length) {
+            setActiveTab(newTabs[newTabs.length - 1].key);
+          } else if (targetKey === activeTab) {
+            setActiveTab('');
+          }
+        }
+      };
+
+      const renderContent = () => {
+        switch (activeTab) {
+          case 'spot-brand':
+            return <SpotBrandManagement />;
+          case 'customer':
+            return <CustomerManagement />;
+          case 'hedge-plan':
+            return <HedgePlanManagement />;
+          case 'futures-account':
+            return <FuturesAccountManagement />;
+          case 'person':
+            return <PersonManagement />;
+          case 'person-role':
+            return <PersonRoleManagement />;
+          case '采购合同管理':
+            return <ContractManagement contractType="purchase" />;
+          case '销售合同管理':
+            return <ContractManagement contractType="sales" />;
+          case 'contract-manage':
+            return <ContractManagement contractType="purchase" />;
+          case 'instruction-workbench':
+            return <InstructionWorkbench />;
+          default:
+            return <div style={{ padding: 40, textAlign: 'center', color: '#8a94a6' }}>请选择菜单项</div>;
+        }
+      };
+
+      if (isMobile) {
+        return (
+          <ConfigProvider theme={{ token: { colorPrimary: '#1677ff' } }}>
+            <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+              <Header className="erp-header" style={{ width: '100%' }}>
+                <div className="erp-logo" style={{ width: '100%', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div className="erp-logo-badge">快期</div>
+                    <div className="erp-title">
+                      <span className="name" title="期现业务管理平台">期现业务管理平台</span>
+                      <span className="desc">Mobile Workbench</span>
+                    </div>
+                  </div>
+                  <Button type="text" onClick={handleDesktopHint}>桌面版</Button>
+                </div>
+              </Header>
+              <Content className="erp-content" style={{ flex: 1, width: '100%' }}>
+                <MobileWorkbench
+                  user={currentUser}
+                  roles={currentUserRoles}
+                  workbenches={userWorkbenches}
+                  onEnterDesktop={handleDesktopHint}
+                />
+              </Content>
+            </div>
+          </ConfigProvider>
+        );
+      }
+
+      return (
+        <ConfigProvider theme={{ token: { colorPrimary: '#1677ff' } }}>
+          <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <Header className="erp-header">
+              <div className="erp-logo">
+                {isMobile && (
+                  <Button
+                    className="erp-mobile-menu-btn"
+                    type="text"
+                    icon={renderIcon('MenuOutlined')}
+                    onClick={() => setSideMenuDrawerVisible(true)}
+                  />
+                )}
+                <div className="erp-logo-badge">快期</div>
+                <div className="erp-title">
+                  <span className="name" title="期现业务管理平台">期现业务管理平台</span>
+                  <span className="desc" title="Prototype System">Prototype</span>
+                </div>
+              </div>
+              <div className="erp-top-menu" style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', margin: '0 20px', overflowX: 'auto', overflowY: 'hidden' }}>
+                {topMenus.map(menu => (
+                  <div
+                    key={menu.key}
+                    className={`erp-top-menu-item ${topMenu === menu.key ? 'active' : ''}`}
+                    onClick={() => setTopMenu(menu.key)}
+                    style={{ flexShrink: 0 }}
+                  >
+                    {menu.label}
+                  </div>
+                ))}
+              </div>
+              <Space style={{ flexShrink: 0 }}>
+                <Avatar>用户</Avatar>
+              </Space>
+            </Header>
+            <div className="erp-main-layout">
+              {!isMobile && (
+                <Sider className="erp-sider" width={240}>
+                  <Menu
+                    mode="inline"
+                    selectedKeys={[sideMenuKey]}
+                    onClick={({ key }) => handleMenuClick(key)}
+                    items={menuItems}
+                  />
+                </Sider>
+              )}
+              <div className="erp-content-area">
+                <div className="erp-tabs-bar">
+                  <Tabs
+                    type="editable-card"
+                    activeKey={activeTab}
+                    onChange={setActiveTab}
+                    onEdit={handleTabEdit}
+                    hideAdd
+                    items={tabs.map(tab => ({
+                      key: tab.key,
+                      label: tab.label,
+                      closable: true
+                    }))}
+                  />
+                </div>
+                <Content className="erp-content">
+                  {renderContent()}
+                </Content>
+              </div>
+            </div>
+            {isMobile && (
+              <Drawer
+                placement="left"
+                width={260}
+                open={sideMenuDrawerVisible}
+                onClose={() => setSideMenuDrawerVisible(false)}
+                bodyStyle={{ padding: 0 }}
+              >
+                <Menu
+                  mode="inline"
+                  selectedKeys={[sideMenuKey]}
+                  onClick={({ key }) => {
+                    handleMenuClick(key);
+                    setSideMenuDrawerVisible(false);
+                  }}
+                  items={menuItems}
+                />
+              </Drawer>
+            )}
+          </div>
+        </ConfigProvider>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
