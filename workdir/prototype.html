@@ -603,9 +603,75 @@
       { id: 13, shortName: 'THAI POLYESTER CO', fullName: 'THAI POLYESTER COMPANY', creditRating: '', contact: '', phone: '', parentCompany: '', customerType: '供应商', status: '正常', creator: '朱利军', createTime: '2025-11-12 09:20' }
     ];
 
+    // 缺省标签（系统预设，可编辑）
+    const defaultTags = [
+      '长单保值',
+      '长单增量',
+      '长单减量',
+      '长单取消',
+      '订单接货保值',
+      '订单出货保值',
+      '订单增量',
+      '订单减量',
+      '移仓换月',
+      '订单取消',
+      '买点价',
+      '卖点价',
+      '投机',
+      '调敞口',
+      '代持'
+    ];
+
+    // 标签管理（存储在localStorage中，可编辑）
+    const getTags = () => {
+      const saved = localStorage.getItem('hedge-plan-tags');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch (e) {
+          return [...defaultTags];
+        }
+      }
+      return [...defaultTags];
+    };
+
+    const saveTags = (tags) => {
+      localStorage.setItem('hedge-plan-tags', JSON.stringify(tags));
+    };
+
     const mockHedgePlans = [
-      { id: 1, name: '整体保值方案A', type: '整体匹配', instructionTypes: ['期货交易指令', '合同创建指令'], traders: ['交易员A', '交易员B'], makers: ['制单员A'] },
-      { id: 2, name: '单单保值方案B', type: '单单匹配', instructionTypes: ['点价指令', '均价合同套保指令'], traders: ['交易员C'], makers: ['制单员B'] }
+      { id: 1, name: '整体保值方案A', type: '整体匹配', instructionTypes: ['期货交易指令', '合同创建指令'], traders: ['交易员A', '交易员B'], makers: ['制单员A'], tags: ['长单保值', '订单接货保值'] },
+      { id: 2, name: '单单保值方案B', type: '单单匹配', instructionTypes: ['点价指令', '均价合同套保指令'], traders: ['交易员C'], makers: ['制单员B'], tags: ['买点价', '卖点价'] },
+      { id: 3, name: '无合同（人员）方案', type: '无合同（人员）', instructionTypes: ['期货交易指令'], traders: ['交易员A'], makers: [], tags: ['投机'] },
+      { id: 4, name: '无合同（客商）方案', type: '无合同（客商）', instructionTypes: ['期货交易指令'], traders: ['交易员B'], makers: [], tags: ['代持'] }
+    ];
+
+    // 指令类型数据
+    const mockInstructionTypes = [
+      { id: 1, name: '期货交易指令' },
+      { id: 2, name: '合同创建指令' },
+      { id: 3, name: '点价指令' },
+      { id: 4, name: '均价合同套保指令' },
+      { id: 5, name: '保值方案均价净值套保指令' }
+    ];
+
+    // 人员指令权限数据
+    const mockPersonInstructionPermissions = [
+      { id: 1, hedgePlan: '整体保值方案A', instructionType: '期货交易指令', creators: ['张三', '李四'], makers: ['制单员A'], traders: ['交易员A'], status: 'enabled' },
+      { id: 2, hedgePlan: '单单保值方案B', instructionType: '点价指令', creators: ['王五'], makers: ['制单员B'], traders: ['交易员C'], status: 'enabled' },
+      { id: 3, hedgePlan: '无合同（人员）方案', instructionType: '期货交易指令', creators: ['张三'], makers: [], traders: ['交易员A'], status: 'enabled' }
+    ];
+
+    // 客商指令权限数据
+    const mockCustomerInstructionPermissions = [
+      { id: 1, hedgePlan: '无合同（客商）方案', instructionType: '期货交易指令', creators: ['供应商A', '客户B'], traders: ['交易员B'], validUntil: '2025-12-31', status: 'enabled' },
+      { id: 2, hedgePlan: '无合同（客商）方案', instructionType: '期货交易指令', creators: ['客户B'], traders: ['交易员A'], validUntil: '2025-11-30', status: 'enabled' }
+    ];
+
+    // 均价自动指令启停数据
+    const mockAvgPriceAutoInstructions = [
+      { id: 1, hedgePlan: '整体保值方案A', creator: '系统管理员', instructionType: '保值方案均价净值套保指令', status: 'disabled' },
+      { id: 2, hedgePlan: '单单保值方案B', creator: '系统管理员', instructionType: '均价合同套保指令', status: 'enabled' }
     ];
 
     const mockFuturesAccounts = [
@@ -659,6 +725,272 @@
     const mockContracts = [
       { id: 1, hedgePlan: '整体保值方案A', manager: '业务经理A', contractNo: 'HT2025-0001', customer: '供应商A', spotType: '铜', brand: '品牌A', pricing: '一口价', qty: 100, price: 5300, settlementPrice: 5300, amount: 530000, settlementAmount: 530000, transport: '自提', deliveryDate: '2025-12-31', pricedQty: 100, unpricedQty: 0, creator: '张三', createTime: '2025-11-10 10:00', occurTime: '2025-11-10 10:00', status: 'active' },
       { id: 2, hedgePlan: '单单保值方案B', manager: '业务经理B', contractNo: 'HT2025-0002', customer: '客户B', spotType: '铝', brand: '品牌B', pricing: '均价', qty: 200, price: 0, settlementPrice: 0, amount: 0, settlementAmount: 0, transport: '送到', deliveryDate: '2025-12-15', pricedQty: 0, unpricedQty: 200, creator: '李四', createTime: '2025-11-11 14:30', occurTime: '2025-11-11 14:30', status: 'active' }
+    ];
+
+    // 委托单数据
+    const mockFuturesOrders = [
+      { 
+        id: 1, 
+        futuresAccount: 'ACC001', 
+        hedgePlan: '整体保值方案A', 
+        hedgePlanId: 1,
+        dateTime: '2025-11-24 10:30:00', 
+        shortNo: 'NO001', 
+        contract: 'CU2401', 
+        direction: '买入', 
+        openClose: '开仓',
+        avgPrice: 5300, 
+        tradedQty: 50, 
+        orderPrice: 5300,
+        unmatchedQty: 20,
+        orderStatus: '部成',
+        spotRemarks: [
+          { id: 1, qty: 20, spotQty: 100, pricingPrice: 5300, tag: '长单保值', remark: '备注1', customerId: 1, contractId: null, isMatched: false },
+          { id: 2, qty: 10, spotQty: 50, pricingPrice: 0, tag: '订单接货保值', remark: '备注2', customerId: null, contractId: 1, isMatched: true }
+        ],
+        orderRemark: ''
+      },
+      { 
+        id: 2, 
+        futuresAccount: 'ACC002', 
+        hedgePlan: '单单保值方案B', 
+        hedgePlanId: 2,
+        dateTime: '2025-11-24 11:00:00', 
+        shortNo: 'NO002', 
+        contract: 'AL2401', 
+        direction: '卖出', 
+        openClose: '平仓',
+        avgPrice: 5250, 
+        tradedQty: 30, 
+        orderPrice: 5250,
+        unmatchedQty: 30,
+        orderStatus: '全成',
+        spotRemarks: [],
+        orderRemark: '<p>这是委托备注内容</p>'
+      },
+      { 
+        id: 3, 
+        futuresAccount: 'ACC001', 
+        hedgePlan: '无合同（人员）方案', 
+        hedgePlanId: 3,
+        dateTime: '2025-11-24 09:15:00', 
+        shortNo: 'NO003', 
+        contract: 'CU2402', 
+        direction: '买入', 
+        openClose: '开仓',
+        avgPrice: 5350, 
+        tradedQty: 100, 
+        orderPrice: 5350,
+        unmatchedQty: 100,
+        orderStatus: '全成',
+        spotRemarks: [
+          { id: 3, qty: 100, spotQty: 500, pricingPrice: 0, tag: '投机', remark: '', customerId: null, contractId: null, isMatched: false }
+        ],
+        orderRemark: ''
+      },
+      { 
+        id: 4, 
+        futuresAccount: 'ACC001', 
+        hedgePlan: '整体保值方案A', 
+        hedgePlanId: 1,
+        dateTime: '2025-11-24 14:20:00', 
+        shortNo: 'NO004', 
+        contract: 'CU2403', 
+        direction: '卖出', 
+        openClose: '平仓',
+        avgPrice: 5280, 
+        tradedQty: 80, 
+        orderPrice: 5280,
+        unmatchedQty: 0,
+        orderStatus: '全成',
+        spotRemarks: [
+          { id: 4, qty: 50, spotQty: 250, pricingPrice: 5280, tag: '长单减量', remark: '减仓操作', customerId: 2, contractId: null, isMatched: true },
+          { id: 5, qty: 30, spotQty: 150, pricingPrice: 5280, tag: '订单出货保值', remark: '出货备注', customerId: 2, contractId: null, isMatched: true }
+        ],
+        orderRemark: '<p>整体保值减仓操作</p>'
+      },
+      { 
+        id: 5, 
+        futuresAccount: 'ACC002', 
+        hedgePlan: '单单保值方案B', 
+        hedgePlanId: 2,
+        dateTime: '2025-11-24 15:45:00', 
+        shortNo: 'NO005', 
+        contract: 'AL2402', 
+        direction: '买入', 
+        openClose: '开仓',
+        avgPrice: 5200, 
+        tradedQty: 60, 
+        orderPrice: 5200,
+        unmatchedQty: 60,
+        orderStatus: '全成',
+        spotRemarks: [
+          { id: 6, qty: 40, spotQty: 200, pricingPrice: 5200, tag: '买点价', remark: '点价买入', customerId: null, contractId: 2, isMatched: false },
+          { id: 7, qty: 20, spotQty: 100, pricingPrice: 0, tag: '订单增量', remark: '增量操作', customerId: null, contractId: 2, isMatched: false }
+        ],
+        orderRemark: ''
+      },
+      { 
+        id: 6, 
+        futuresAccount: 'ACC001', 
+        hedgePlan: '无合同（客商）方案', 
+        hedgePlanId: 4,
+        dateTime: '2025-11-24 16:10:00', 
+        shortNo: 'NO006', 
+        contract: 'CU2401', 
+        direction: '买入', 
+        openClose: '开仓',
+        avgPrice: 5320, 
+        tradedQty: 40, 
+        orderPrice: 5320,
+        unmatchedQty: 40,
+        orderStatus: '全成',
+        spotRemarks: [
+          { id: 8, qty: 40, spotQty: 200, pricingPrice: 0, tag: '代持', remark: '代客持有', customerId: 3, contractId: null, isMatched: false }
+        ],
+        orderRemark: '<p>客商代持操作</p>'
+      },
+      { 
+        id: 7, 
+        futuresAccount: 'ACC002', 
+        hedgePlan: '整体保值方案A', 
+        hedgePlanId: 1,
+        dateTime: '2025-11-24 09:30:00', 
+        shortNo: 'NO007', 
+        contract: 'AL2401', 
+        direction: '卖出', 
+        openClose: '平仓',
+        avgPrice: 5240, 
+        tradedQty: 25, 
+        orderPrice: 5240,
+        unmatchedQty: 5,
+        orderStatus: '部成',
+        spotRemarks: [
+          { id: 9, qty: 20, spotQty: 100, pricingPrice: 5240, tag: '长单取消', remark: '取消订单', customerId: 4, contractId: null, isMatched: true }
+        ],
+        orderRemark: ''
+      },
+      { 
+        id: 8, 
+        futuresAccount: 'ACC001', 
+        hedgePlan: '单单保值方案B', 
+        hedgePlanId: 2,
+        dateTime: '2025-11-24 13:15:00', 
+        shortNo: 'NO008', 
+        contract: 'CU2402', 
+        direction: '买入', 
+        openClose: '开仓',
+        avgPrice: 5360, 
+        tradedQty: 70, 
+        orderPrice: 5360,
+        unmatchedQty: 70,
+        orderStatus: '全成',
+        spotRemarks: [
+          { id: 10, qty: 35, spotQty: 175, pricingPrice: 5360, tag: '卖点价', remark: '点价卖出', customerId: null, contractId: 1, isMatched: false },
+          { id: 11, qty: 35, spotQty: 175, pricingPrice: 0, tag: '订单减量', remark: '减量操作', customerId: null, contractId: 1, isMatched: false }
+        ],
+        orderRemark: '<p>点价和减量组合操作</p>'
+      },
+      { 
+        id: 9, 
+        futuresAccount: 'ACC002', 
+        hedgePlan: '无合同（人员）方案', 
+        hedgePlanId: 3,
+        dateTime: '2025-11-24 10:00:00', 
+        shortNo: 'NO009', 
+        contract: 'AL2403', 
+        direction: '卖出', 
+        openClose: '平仓',
+        avgPrice: 5180, 
+        tradedQty: 90, 
+        orderPrice: 5180,
+        unmatchedQty: 90,
+        orderStatus: '全成',
+        spotRemarks: [
+          { id: 12, qty: 50, spotQty: 250, pricingPrice: 0, tag: '调敞口', remark: '调整敞口', customerId: null, contractId: null, isMatched: false },
+          { id: 13, qty: 40, spotQty: 200, pricingPrice: 0, tag: '投机', remark: '投机交易', customerId: null, contractId: null, isMatched: false }
+        ],
+        orderRemark: ''
+      },
+      { 
+        id: 10, 
+        futuresAccount: 'ACC001', 
+        hedgePlan: '整体保值方案A', 
+        hedgePlanId: 1,
+        dateTime: '2025-11-24 11:30:00', 
+        shortNo: 'NO010', 
+        contract: 'CU2401', 
+        direction: '买入', 
+        openClose: '开仓',
+        avgPrice: 5310, 
+        tradedQty: 35, 
+        orderPrice: 5310,
+        unmatchedQty: 35,
+        orderStatus: '全成',
+        spotRemarks: [
+          { id: 14, qty: 35, spotQty: 175, pricingPrice: 5310, tag: '长单增量', remark: '增量操作', customerId: 5, contractId: null, isMatched: false }
+        ],
+        orderRemark: '<p>长单增量保值</p>'
+      },
+      { 
+        id: 11, 
+        futuresAccount: 'ACC002', 
+        hedgePlan: '单单保值方案B', 
+        hedgePlanId: 2,
+        dateTime: '2025-11-24 12:00:00', 
+        shortNo: 'NO011', 
+        contract: 'AL2401', 
+        direction: '卖出', 
+        openClose: '平仓',
+        avgPrice: 5230, 
+        tradedQty: 45, 
+        orderPrice: 5230,
+        unmatchedQty: 0,
+        orderStatus: '全成',
+        spotRemarks: [
+          { id: 15, qty: 30, spotQty: 150, pricingPrice: 5230, tag: '订单取消', remark: '取消订单', customerId: null, contractId: 2, isMatched: true },
+          { id: 16, qty: 15, spotQty: 75, pricingPrice: 5230, tag: '移仓换月', remark: '移仓操作', customerId: null, contractId: 2, isMatched: true }
+        ],
+        orderRemark: ''
+      },
+      { 
+        id: 12, 
+        futuresAccount: 'ACC001', 
+        hedgePlan: '无合同（客商）方案', 
+        hedgePlanId: 4,
+        dateTime: '2025-11-24 14:50:00', 
+        shortNo: 'NO012', 
+        contract: 'CU2403', 
+        direction: '买入', 
+        openClose: '开仓',
+        avgPrice: 5340, 
+        tradedQty: 55, 
+        orderPrice: 5340,
+        unmatchedQty: 55,
+        orderStatus: '全成',
+        spotRemarks: [
+          { id: 17, qty: 55, spotQty: 275, pricingPrice: 0, tag: '代持', remark: '代客持有', customerId: 6, contractId: null, isMatched: false }
+        ],
+        orderRemark: '<p>客商代持</p>'
+      },
+      { 
+        id: 13, 
+        futuresAccount: 'ACC002', 
+        hedgePlan: '整体保值方案A', 
+        hedgePlanId: 1,
+        dateTime: '2025-11-24 15:20:00', 
+        shortNo: 'NO013', 
+        contract: 'AL2402', 
+        direction: '卖出', 
+        openClose: '平仓',
+        avgPrice: 5190, 
+        tradedQty: 20, 
+        orderPrice: 5190,
+        unmatchedQty: 20,
+        orderStatus: '未成',
+        spotRemarks: [],
+        orderRemark: ''
+      }
     ];
 
     // 现货品种管理页面
@@ -1579,7 +1911,11 @@
     const HedgePlanManagement = () => {
       const [selectedRowKeys, setSelectedRowKeys] = useState([]);
       const [editModalVisible, setEditModalVisible] = useState(false);
+      const [tagManageModalVisible, setTagManageModalVisible] = useState(false);
       const [form] = Form.useForm();
+      const [tagForm] = Form.useForm();
+      const [availableTags, setAvailableTags] = useState(() => getTags());
+      const [selectedHedgePlanType, setSelectedHedgePlanType] = useState(null);
 
       // 所有可用列定义
       const allColumnDefinitions = [
@@ -1588,6 +1924,16 @@
         { key: 'instructionTypes', title: '指令类型列表', dataIndex: 'instructionTypes', width: 250, render: (arr) => arr?.join(', ') || '-' },
         { key: 'traders', title: '交易员列表', dataIndex: 'traders', width: 150, render: (arr) => arr?.join(', ') || '-' },
         { key: 'makers', title: '制单员列表', dataIndex: 'makers', width: 150, render: (arr) => arr?.join(', ') || '-' },
+        { key: 'tags', title: '标签列表', dataIndex: 'tags', width: 250, render: (arr) => {
+          if (!arr || arr.length === 0) return '-';
+          return (
+            <Space wrap>
+              {arr.map((tag, index) => (
+                <Tag key={index} color="blue">{tag}</Tag>
+              ))}
+            </Space>
+          );
+        }},
         { key: 'remark', title: '备注', dataIndex: 'remark', ellipsis: true }
       ];
 
@@ -1606,14 +1952,162 @@
         onRowSelect: setSelectedRowKeys
       });
 
+      const handleAdd = () => {
+        form.resetFields();
+        setSelectedHedgePlanType(null);
+        setEditModalVisible(true);
+      };
+
+      const handleEdit = () => {
+        if (selectedRowKeys.length !== 1) {
+          message.warning('请选择一条记录进行编辑');
+          return;
+        }
+        const record = mockHedgePlans.find(hp => hp.id === selectedRowKeys[0]);
+        if (record) {
+          form.setFieldsValue({
+            id: record.id,
+            name: record.name,
+            type: record.type,
+            instructionTypes: record.instructionTypes,
+            traders: record.traders?.map(name => mockPersons.find(p => p.name === name)?.id).filter(Boolean) || [],
+            makers: record.makers?.map(name => mockPersons.find(p => p.name === name)?.id).filter(Boolean) || [],
+            tags: record.tags || [],
+            remark: record.remark || ''
+          });
+          setSelectedHedgePlanType(record.type);
+          setEditModalVisible(true);
+        }
+      };
+
+      const handleSave = () => {
+        form.validateFields().then(values => {
+          const editingId = form.getFieldValue('id');
+          
+          // 检查重复名称（新增时）
+          if (!editingId) {
+            const exists = mockHedgePlans.some(hp => hp.name === values.name);
+            if (exists) {
+              message.error('已有重复名称的保值方案，不能增加');
+              return;
+            }
+          }
+          
+          message.success('保存成功');
+          setEditModalVisible(false);
+          form.resetFields();
+          setSelectedHedgePlanType(null);
+        });
+      };
+
+      const handleDelete = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要删除的记录');
+          return;
+        }
+        // 检查是否有合同在用
+        const selectedPlans = mockHedgePlans.filter(hp => selectedRowKeys.includes(hp.id));
+        const hasContracts = selectedPlans.some(plan => {
+          return mockContracts.some(contract => contract.hedgePlan === plan.name);
+        });
+        
+        if (hasContracts) {
+          message.error('有合同在用的保值方案不能删除');
+          return;
+        }
+        
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: '确认删除',
+          content: `确定要删除选中的 ${selectedRowKeys.length} 条记录吗？`,
+          onOk: () => {
+            message.success('删除成功');
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      const handleToggleStatus = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要操作的记录');
+          return;
+        }
+        const selectedPlans = mockHedgePlans.filter(hp => selectedRowKeys.includes(hp.id));
+        const hasDisabled = selectedPlans.some(hp => hp.status === 'disabled');
+        const action = hasDisabled ? '启用' : '禁用';
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: `确认${action}`,
+          content: `确定要${action}选中的 ${selectedRowKeys.length} 条记录吗？`,
+          onOk: () => {
+            message.success(`${action}成功`);
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      const handleTagManage = () => {
+        tagForm.setFieldsValue({ tags: availableTags });
+        setTagManageModalVisible(true);
+      };
+
+      const handleTagSave = () => {
+        tagForm.validateFields().then(values => {
+          const tags = values.tags || [];
+          // 过滤空标签
+          const validTags = tags.filter(tag => tag && tag.trim());
+          setAvailableTags(validTags);
+          saveTags(validTags);
+          message.success('标签保存成功');
+          setTagManageModalVisible(false);
+        });
+      };
+
+      // 获取交易员列表
+      const traderOptions = useMemo(() => {
+        const traders = mockPersonRoles.find(pr => pr.roleName === '交易员');
+        if (traders && traders.personIds) {
+          return mockPersons.filter(p => traders.personIds.includes(p.id));
+        }
+        return [];
+      }, []);
+
+      // 获取制单员列表
+      const makerOptions = useMemo(() => {
+        const makers = mockPersonRoles.find(pr => pr.roleName === '制单员');
+        if (makers && makers.personIds) {
+          return mockPersons.filter(p => makers.personIds.includes(p.id));
+        }
+        return [];
+      }, []);
+
+      // 根据保值方案类型过滤指令类型
+      const getAvailableInstructionTypes = (hedgePlanType) => {
+        const allTypes = [
+          { name: '期货交易指令', types: ['整体匹配', '单单匹配', '无合同（人员）', '无合同（客商）'] },
+          { name: '合同创建指令', types: ['整体匹配', '单单匹配'] },
+          { name: '一口价创建套保指令', types: ['整体匹配', '单单匹配'] },
+          { name: '保值方案移仓换月指令', types: ['整体匹配', '单单匹配'] },
+          { name: '保值方案净值套保指令', types: ['整体匹配'] },
+          { name: '保值方案均价净值套保指令', types: ['整体匹配'] },
+          { name: '非均价合同套保指令', types: ['单单匹配'] },
+          { name: '均价合同套保指令', types: ['单单匹配'] },
+          { name: '点价指令', types: ['单单匹配'] },
+          { name: '非均价合同变更指令', types: ['单单匹配'] },
+          { name: '均价合同变更指令', types: ['单单匹配'] }
+        ];
+        return allTypes.filter(it => it.types.includes(hedgePlanType)).map(it => it.name);
+      };
+
       return (
         <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
           <div className="erp-toolbar">
             <Space wrap>
-              <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={() => setEditModalVisible(true)}>增加</Button>
-              <Button icon={renderIcon('EditOutlined')} disabled={selectedRowKeys.length !== 1}>编辑</Button>
-              <Button danger icon={renderIcon('DeleteOutlined')} disabled={selectedRowKeys.length === 0}>删除</Button>
-              <Button icon={renderIcon('PoweroffOutlined')}>禁用/启用</Button>
+              <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={handleAdd}>增加</Button>
+              <Button icon={renderIcon('EditOutlined')} onClick={handleEdit} disabled={selectedRowKeys.length !== 1}>编辑</Button>
+              <Button danger icon={renderIcon('DeleteOutlined')} onClick={handleDelete} disabled={selectedRowKeys.length === 0}>删除</Button>
+              <Button icon={renderIcon('PoweroffOutlined')} onClick={handleToggleStatus} disabled={selectedRowKeys.length === 0}>禁用/启用</Button>
+              <Button icon={renderIcon('BookOutlined')} onClick={handleTagManage}>管理标签</Button>
               <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
             </Space>
             <Button 
@@ -1627,7 +2121,11 @@
           <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
             <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
               <Table
-                rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
+                rowSelection={{ 
+                  type: 'radio',
+                  selectedRowKeys, 
+                  onChange: setSelectedRowKeys 
+                }}
                 columns={tableColumns}
                 dataSource={mockHedgePlans}
                 rowKey="id"
@@ -1640,30 +2138,161 @@
             {...MODAL_TEXTS}
             title="编辑保值方案"
             open={editModalVisible}
-            onCancel={() => setEditModalVisible(false)}
-            width={600}
-            onOk={() => { message.success('保存成功'); setEditModalVisible(false); }}
+            onCancel={() => { 
+              setEditModalVisible(false); 
+              form.resetFields(); 
+              setSelectedHedgePlanType(null);
+            }}
+            width={700}
+            onOk={handleSave}
           >
             <Form form={form} layout="vertical">
-              <Form.Item label="名称" name="name" required><Input /></Form.Item>
-              <Form.Item label="类型" name="type" required>
-                <Select>
+              <Form.Item label="名称" name="name" required rules={[{ required: true, message: '请输入名称' }]}>
+                <Input placeholder="请输入保值方案名称" />
+              </Form.Item>
+              <Form.Item label="类型" name="type" required rules={[{ required: true, message: '请选择类型' }]}>
+                <Select 
+                  placeholder="请选择保值方案类型"
+                  onChange={(value) => {
+                    setSelectedHedgePlanType(value);
+                    // 当类型改变时，清空并重新设置指令类型选项
+                    form.setFieldsValue({ instructionTypes: [] });
+                  }}
+                >
                   <Select.Option value="整体匹配">整体匹配</Select.Option>
                   <Select.Option value="单单匹配">单单匹配</Select.Option>
                   <Select.Option value="无合同（人员）">无合同（人员）</Select.Option>
                   <Select.Option value="无合同（客商）">无合同（客商）</Select.Option>
                 </Select>
               </Form.Item>
-              <Form.Item label="指令类型" name="instructionTypes">
-                <Select mode="multiple" placeholder="选择指令类型">
-                  <Select.Option value="期货交易指令">期货交易指令</Select.Option>
-                  <Select.Option value="合同创建指令">合同创建指令</Select.Option>
-                  <Select.Option value="点价指令">点价指令</Select.Option>
-                  <Select.Option value="均价合同套保指令">均价合同套保指令</Select.Option>
-                </Select>
+              <Form.Item 
+                label="指令类型" 
+                name="instructionTypes"
+                rules={[
+                  { type: 'array', min: 1, message: '至少选择一个指令类型' },
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const type = getFieldValue('type') || selectedHedgePlanType;
+                      if (!type || !value || value.length === 0) {
+                        return Promise.resolve();
+                      }
+                      const availableTypes = getAvailableInstructionTypes(type);
+                      const invalidTypes = value.filter(v => !availableTypes.includes(v));
+                      if (invalidTypes.length > 0) {
+                        return Promise.reject(new Error(`整体的保值方案中不能选单单类型的指令：${invalidTypes.join(', ')}`));
+                      }
+                      return Promise.resolve();
+                    }
+                  })
+                ]}
+              >
+                <Select 
+                  mode="multiple" 
+                  placeholder={selectedHedgePlanType ? "选择指令类型" : "请先选择保值方案类型"}
+                  disabled={!selectedHedgePlanType}
+                  options={selectedHedgePlanType ? getAvailableInstructionTypes(selectedHedgePlanType).map(name => ({ label: name, value: name })) : []}
+                />
               </Form.Item>
-              <Form.Item label="交易员列表" name="traders"><Select mode="multiple" placeholder="选择交易员" /></Form.Item>
-              <Form.Item label="制单员列表" name="makers"><Select mode="multiple" placeholder="选择制单员" /></Form.Item>
+              <Form.Item label="交易员列表" name="traders">
+                <Select 
+                  mode="multiple" 
+                  placeholder="选择交易员（可多选）"
+                  options={traderOptions.map(p => ({ label: p.name, value: p.id }))}
+                />
+              </Form.Item>
+              <Form.Item label="制单员列表" name="makers">
+                <Select 
+                  mode="multiple" 
+                  placeholder="选择制单员（可多选）"
+                  options={makerOptions.map(p => ({ label: p.name, value: p.id }))}
+                />
+              </Form.Item>
+              <Form.Item 
+                label="标签列表" 
+                name="tags"
+                tooltip="标签用于期现备注中的标签选项，每笔期货都应该有保值方案，期现备注中的标签选项来源于对应保值方案设置的标签"
+              >
+                <Select 
+                  mode="tags" 
+                  placeholder="选择或输入标签（可多选）"
+                  options={availableTags.map(tag => ({ label: tag, value: tag }))}
+                  tokenSeparators={[',']}
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+              <Form.Item label="备注" name="remark">
+                <Input.TextArea rows={3} placeholder="请输入备注" />
+              </Form.Item>
+            </Form>
+          </Modal>
+          <Modal
+            {...MODAL_TEXTS}
+            title="管理标签"
+            open={tagManageModalVisible}
+            onCancel={() => { setTagManageModalVisible(false); tagForm.resetFields(); }}
+            width={600}
+            onOk={handleTagSave}
+          >
+            <Alert
+              type="info"
+              showIcon
+              message="标签说明"
+              description="标签是业务中的具体操作分类，保值方案是业务类型或流程。标签作为期现备注中的可选项，每笔期货都应该有保值方案，期现备注中的标签选项来源于对应保值方案设置的标签。"
+              style={{ marginBottom: 16 }}
+            />
+            <Form form={tagForm} layout="vertical">
+              <Form.Item 
+                label="标签列表" 
+                name="tags"
+                rules={[{ required: true, message: '至少需要一个标签' }]}
+              >
+                <Form.List name="tags" initialValue={availableTags}>
+                  {(fields, { add, remove }) => (
+                    <Space direction="vertical" style={{ width: '100%' }}>
+                      {fields.map((field, index) => (
+                        <Space key={field.key} align="baseline" style={{ width: '100%' }}>
+                          <Form.Item
+                            {...field}
+                            name={[field.name]}
+                            fieldKey={[field.fieldKey]}
+                            rules={[{ required: true, message: '请输入标签名称' }]}
+                            style={{ flex: 1, marginBottom: 0 }}
+                          >
+                            <Input placeholder="请输入标签名称" />
+                          </Form.Item>
+                          {fields.length > 1 && (
+                            <Button
+                              type="text"
+                              danger
+                              icon={renderIcon('DeleteOutlined')}
+                              onClick={() => remove(field.name)}
+                            />
+                          )}
+                        </Space>
+                      ))}
+                      <Button
+                        type="dashed"
+                        onClick={() => add('')}
+                        icon={renderIcon('PlusOutlined')}
+                        block
+                      >
+                        新增标签
+                      </Button>
+                    </Space>
+                  )}
+                </Form.List>
+              </Form.Item>
+              <Form.Item>
+                <Button 
+                  type="link" 
+                  onClick={() => {
+                    tagForm.setFieldsValue({ tags: [...defaultTags] });
+                    message.info('已恢复为缺省标签');
+                  }}
+                >
+                  恢复缺省标签
+                </Button>
+              </Form.Item>
             </Form>
           </Modal>
           {columnEditorVisible && (
@@ -2718,6 +3347,2138 @@
       );
     };
 
+    // 人员指令权限设置页面
+    const PersonInstructionPermission = () => {
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [editModalVisible, setEditModalVisible] = useState(false);
+      const [form] = Form.useForm();
+      const [selectedInstructionType, setSelectedInstructionType] = useState(null);
+      const [selectedHedgePlan, setSelectedHedgePlan] = useState(null);
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'hedgePlan', title: '保值方案', dataIndex: 'hedgePlan', width: 180 },
+        { key: 'instructionType', title: '指令类型', dataIndex: 'instructionType', width: 150 },
+        { key: 'creators', title: '指令创建人', dataIndex: 'creators', width: 200, render: (arr) => arr?.join(', ') || '-' },
+        { key: 'makers', title: '制单员', dataIndex: 'makers', width: 150, render: (arr) => arr?.join(', ') || '-' },
+        { key: 'traders', title: '交易员', dataIndex: 'traders', width: 150, render: (arr) => arr?.join(', ') || '-' },
+        { key: 'status', title: '状态', dataIndex: 'status', width: 100, render: (status) => (
+          <span className={`erp-status-badge ${status === 'enabled' ? 'enabled' : 'disabled'}`}>
+            {status === 'enabled' ? '启用' : '禁用'}
+          </span>
+        )}
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: permissionVisibleColumns
+      } = useColumnManager('person-instruction-permission', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      // 获取所有角色下的人员
+      const getPersonsByRole = () => {
+        const rolePersonMap = {};
+        mockPersonRoles.forEach(pr => {
+          if (pr.status === 'enabled' && pr.personNames) {
+            if (!rolePersonMap[pr.roleName]) {
+              rolePersonMap[pr.roleName] = [];
+            }
+            pr.personNames.forEach(name => {
+              const person = mockPersons.find(p => p.name === name);
+              if (person && !rolePersonMap[pr.roleName].find(p => p.id === person.id)) {
+                rolePersonMap[pr.roleName].push(person);
+              }
+            });
+          }
+        });
+        return rolePersonMap;
+      };
+
+      const rolePersonMap = useMemo(() => getPersonsByRole(), []);
+
+      // 获取制单员列表
+      const makerOptions = useMemo(() => {
+        const makers = mockPersonRoles.find(pr => pr.roleName === '制单员');
+        if (makers && makers.personIds) {
+          return mockPersons.filter(p => makers.personIds.includes(p.id));
+        }
+        return [];
+      }, []);
+
+      // 获取交易员列表
+      const traderOptions = useMemo(() => {
+        const traders = mockPersonRoles.find(pr => pr.roleName === '交易员');
+        if (traders && traders.personIds) {
+          return mockPersons.filter(p => traders.personIds.includes(p.id));
+        }
+        return [];
+      }, []);
+
+      const handleAdd = () => {
+        form.resetFields();
+        setSelectedInstructionType(null);
+        setSelectedHedgePlan(null);
+        setEditModalVisible(true);
+      };
+
+      const handleEdit = () => {
+        if (selectedRowKeys.length !== 1) {
+          message.warning('请选择一条记录进行编辑');
+          return;
+        }
+        const record = mockPersonInstructionPermissions.find(p => p.id === selectedRowKeys[0]);
+        if (record) {
+          form.setFieldsValue({
+            id: record.id,
+            instructionTypeId: mockInstructionTypes.find(it => it.name === record.instructionType)?.id,
+            hedgePlanId: mockHedgePlans.find(hp => hp.name === record.hedgePlan)?.id,
+            creators: record.creators?.map(name => mockPersons.find(p => p.name === name)?.id).filter(Boolean) || [],
+            makers: record.makers?.map(name => makerOptions.find(p => p.name === name)?.id).filter(Boolean) || [],
+            traders: record.traders?.map(name => traderOptions.find(p => p.name === name)?.id).filter(Boolean) || []
+          });
+          setSelectedInstructionType(mockInstructionTypes.find(it => it.name === record.instructionType)?.id);
+          setSelectedHedgePlan(mockHedgePlans.find(hp => hp.name === record.hedgePlan));
+          setEditModalVisible(true);
+        }
+      };
+
+      const handleSave = () => {
+        form.validateFields().then(values => {
+          message.success('保存成功');
+          setEditModalVisible(false);
+          form.resetFields();
+          setSelectedInstructionType(null);
+          setSelectedHedgePlan(null);
+        });
+      };
+
+      const handleDelete = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要删除的记录');
+          return;
+        }
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: '确认删除',
+          content: `确定要删除选中的 ${selectedRowKeys.length} 条记录吗？`,
+          onOk: () => {
+            message.success('删除成功');
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      const handleToggleStatus = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要操作的记录');
+          return;
+        }
+        const selectedRecords = mockPersonInstructionPermissions.filter(p => selectedRowKeys.includes(p.id));
+        const hasDisabled = selectedRecords.some(p => p.status === 'disabled');
+        const action = hasDisabled ? '启用' : '禁用';
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: `确认${action}`,
+          content: `确定要${action}选中的 ${selectedRowKeys.length} 条记录吗？`,
+          onOk: () => {
+            message.success(`${action}成功`);
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      // 判断是否显示期货相关字段
+      const showFuturesFields = () => {
+        if (!selectedInstructionType) return false;
+        const instructionType = mockInstructionTypes.find(it => it.id === selectedInstructionType);
+        return instructionType && instructionType.name !== '合同创建指令';
+      };
+
+      // 判断是否显示持仓限制字段
+      const showPositionLimitFields = () => {
+        if (!selectedInstructionType || !selectedHedgePlan) return false;
+        const instructionType = mockInstructionTypes.find(it => it.id === selectedInstructionType);
+        return instructionType?.name === '期货交易指令' && selectedHedgePlan?.type === '无合同（人员）';
+      };
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-toolbar" style={{ flexShrink: 0 }}>
+            <Space wrap>
+              <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={handleAdd}>创建</Button>
+              <Button icon={renderIcon('EditOutlined')} onClick={handleEdit} disabled={selectedRowKeys.length !== 1}>修改</Button>
+              <Button danger icon={renderIcon('DeleteOutlined')} onClick={handleDelete} disabled={selectedRowKeys.length === 0}>删除</Button>
+              <Button icon={renderIcon('PoweroffOutlined')} onClick={handleToggleStatus} disabled={selectedRowKeys.length === 0}>禁用/启用</Button>
+              <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+            </Space>
+            <Button 
+              icon={renderIcon('SettingOutlined')} 
+              onClick={() => setColumnEditorVisible(true)}
+              style={{ marginLeft: 'auto' }}
+            >
+              自定义列
+            </Button>
+          </div>
+          <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <Table
+                rowSelection={{ 
+                  type: 'radio',
+                  selectedRowKeys, 
+                  onChange: setSelectedRowKeys 
+                }}
+                columns={tableColumns}
+                dataSource={mockPersonInstructionPermissions}
+                rowKey="id"
+                scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                pagination={createPaginationConfig()}
+              />
+            </div>
+          </div>
+          <Modal
+            {...MODAL_TEXTS}
+            title="创建/修改人员指令权限"
+            open={editModalVisible}
+            onCancel={() => { setEditModalVisible(false); form.resetFields(); setSelectedInstructionType(null); setSelectedHedgePlan(null); }}
+            onOk={handleSave}
+            width={700}
+          >
+            <Form form={form} layout="vertical">
+              <Form.Item label="指令类型" name="instructionTypeId" required rules={[{ required: true, message: '请选择指令类型' }]}>
+                <Select 
+                  placeholder="请选择指令类型"
+                  onChange={(value) => {
+                    setSelectedInstructionType(value);
+                    const instructionType = mockInstructionTypes.find(it => it.id === value);
+                    if (instructionType?.name === '合同创建指令') {
+                      form.setFieldsValue({ futuresVarietyLimit: [], futuresContractLimit: [] });
+                    }
+                  }}
+                >
+                  {mockInstructionTypes.map(it => (
+                    <Select.Option key={it.id} value={it.id}>{it.name}</Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item label="保值方案" name="hedgePlanId" required rules={[{ required: true, message: '请选择保值方案' }]}>
+                <Select 
+                  placeholder="请选择保值方案"
+                  onChange={(value) => {
+                    const plan = mockHedgePlans.find(hp => hp.id === value);
+                    setSelectedHedgePlan(plan);
+                  }}
+                >
+                  {mockHedgePlans.map(hp => (
+                    <Select.Option key={hp.id} value={hp.id}>{hp.name}</Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item label="指令创建人" name="creators" required rules={[{ required: true, message: '请选择指令创建人' }, { type: 'array', min: 1, message: '至少选择一个创建人' }]}>
+                <TreeSelect
+                  multiple
+                  placeholder="先选择角色，再勾选角色下的人员"
+                  treeData={Object.keys(rolePersonMap).map(roleName => ({
+                    title: roleName,
+                    value: `role_${roleName}`,
+                    selectable: false,
+                    children: rolePersonMap[roleName].map(person => ({
+                      title: person.name,
+                      value: person.id
+                    }))
+                  }))}
+                  style={{ width: '100%' }}
+                />
+              </Form.Item>
+              {showFuturesFields() && (
+                <>
+                  <Form.Item label="期货品种限制" name="futuresVarietyLimit">
+                    <Select mode="tags" placeholder="请输入或选择期货品种" />
+                  </Form.Item>
+                  <Form.Item label="期货合约限制" name="futuresContractLimit">
+                    <Select mode="tags" placeholder="请输入或选择期货合约" />
+                  </Form.Item>
+                </>
+              )}
+              {showPositionLimitFields() && (
+                <>
+                  <Form.Item label="持仓方向限制" name="positionDirection">
+                    <Radio.Group>
+                      <Radio value="多头">多头</Radio>
+                      <Radio value="空头">空头</Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                  <Form.Item label="持仓手数限制" name="positionLimit" rules={[{ pattern: /^\d+$/, message: '请输入正整数' }]}>
+                    <InputNumber min={1} style={{ width: '100%' }} placeholder="请输入正整数" />
+                  </Form.Item>
+                  <Form.Item label="单笔手数限制" name="singleOrderLimit" rules={[{ pattern: /^\d+$/, message: '请输入正整数' }]}>
+                    <InputNumber min={1} style={{ width: '100%' }} placeholder="请输入正整数" />
+                  </Form.Item>
+                </>
+              )}
+              <Form.Item label="制单员" name="makers">
+                <Select 
+                  mode="multiple"
+                  placeholder="请选择制单员（可多选）"
+                  options={makerOptions.map(p => ({ label: p.name, value: p.id }))}
+                />
+              </Form.Item>
+              <Form.Item label="交易员" name="traders">
+                <Select 
+                  mode="multiple"
+                  placeholder="请选择交易员（可多选，可选）"
+                  options={traderOptions.map(p => ({ label: p.name, value: p.id }))}
+                />
+              </Form.Item>
+            </Form>
+          </Modal>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={permissionVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 客商指令权限设置页面
+    const CustomerInstructionPermission = () => {
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [editModalVisible, setEditModalVisible] = useState(false);
+      const [form] = Form.useForm();
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'hedgePlan', title: '保值方案', dataIndex: 'hedgePlan', width: 180 },
+        { key: 'instructionType', title: '指令类型', dataIndex: 'instructionType', width: 150 },
+        { key: 'creators', title: '指令创建人', dataIndex: 'creators', width: 200, render: (arr) => arr?.join(', ') || '-' },
+        { key: 'traders', title: '交易员', dataIndex: 'traders', width: 150, render: (arr) => arr?.join(', ') || '-' },
+        { key: 'validUntil', title: '有效期', dataIndex: 'validUntil', width: 120 },
+        { key: 'status', title: '状态', dataIndex: 'status', width: 100, render: (status) => (
+          <span className={`erp-status-badge ${status === 'enabled' ? 'enabled' : 'disabled'}`}>
+            {status === 'enabled' ? '启用' : '禁用'}
+          </span>
+        )}
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: customerPermissionVisibleColumns
+      } = useColumnManager('customer-instruction-permission', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      // 获取交易员列表
+      const traderOptions = useMemo(() => {
+        const traders = mockPersonRoles.find(pr => pr.roleName === '交易员');
+        if (traders && traders.personIds) {
+          return mockPersons.filter(p => traders.personIds.includes(p.id));
+        }
+        return [];
+      }, []);
+
+      // 获取无合同（客商）类型的保值方案
+      const customerHedgePlans = useMemo(() => {
+        return mockHedgePlans.filter(hp => hp.type === '无合同（客商）');
+      }, []);
+
+      const handleAdd = () => {
+        form.resetFields();
+        form.setFieldsValue({ instructionTypeId: 1 }); // 默认期货交易指令
+        setEditModalVisible(true);
+      };
+
+      const handleEdit = () => {
+        if (selectedRowKeys.length !== 1) {
+          message.warning('请选择一条记录进行编辑');
+          return;
+        }
+        const record = mockCustomerInstructionPermissions.find(p => p.id === selectedRowKeys[0]);
+        if (record) {
+          form.setFieldsValue({
+            id: record.id,
+            instructionTypeId: 1, // 固定为期货交易指令
+            hedgePlanId: mockHedgePlans.find(hp => hp.name === record.hedgePlan)?.id,
+            creators: record.creators?.map(name => mockCustomers.find(c => c.shortName === name)?.id).filter(Boolean) || [],
+            traders: record.traders?.map(name => traderOptions.find(p => p.name === name)?.id).filter(Boolean) || [],
+            validUntil: record.validUntil ? dayjs(record.validUntil) : null
+          });
+          setEditModalVisible(true);
+        }
+      };
+
+      const handleSave = () => {
+        form.validateFields().then(values => {
+          message.success('保存成功');
+          setEditModalVisible(false);
+          form.resetFields();
+        });
+      };
+
+      const handleDelete = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要删除的记录');
+          return;
+        }
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: '确认删除',
+          content: `确定要删除选中的 ${selectedRowKeys.length} 条记录吗？`,
+          onOk: () => {
+            message.success('删除成功');
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      const handleToggleStatus = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要操作的记录');
+          return;
+        }
+        const selectedRecords = mockCustomerInstructionPermissions.filter(p => selectedRowKeys.includes(p.id));
+        const hasDisabled = selectedRecords.some(p => p.status === 'disabled');
+        const action = hasDisabled ? '启用' : '禁用';
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: `确认${action}`,
+          content: `确定要${action}选中的 ${selectedRowKeys.length} 条记录吗？`,
+          onOk: () => {
+            message.success(`${action}成功`);
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-toolbar" style={{ flexShrink: 0 }}>
+            <Space wrap>
+              <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={handleAdd}>创建</Button>
+              <Button icon={renderIcon('EditOutlined')} onClick={handleEdit} disabled={selectedRowKeys.length !== 1}>修改</Button>
+              <Button danger icon={renderIcon('DeleteOutlined')} onClick={handleDelete} disabled={selectedRowKeys.length === 0}>删除</Button>
+              <Button icon={renderIcon('PoweroffOutlined')} onClick={handleToggleStatus} disabled={selectedRowKeys.length === 0}>禁用/启用</Button>
+              <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+            </Space>
+            <Button 
+              icon={renderIcon('SettingOutlined')} 
+              onClick={() => setColumnEditorVisible(true)}
+              style={{ marginLeft: 'auto' }}
+            >
+              自定义列
+            </Button>
+          </div>
+          <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <Table
+                rowSelection={{ 
+                  type: 'radio',
+                  selectedRowKeys, 
+                  onChange: setSelectedRowKeys 
+                }}
+                columns={tableColumns}
+                dataSource={mockCustomerInstructionPermissions}
+                rowKey="id"
+                scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                pagination={createPaginationConfig()}
+              />
+            </div>
+          </div>
+          <Modal
+            {...MODAL_TEXTS}
+            title="创建/修改客商指令权限"
+            open={editModalVisible}
+            onCancel={() => { setEditModalVisible(false); form.resetFields(); }}
+            onOk={handleSave}
+            width={700}
+          >
+            <Form form={form} layout="vertical">
+              <Form.Item label="指令类型" name="instructionTypeId">
+                <Input value="期货交易指令" disabled />
+              </Form.Item>
+              <Form.Item label="保值方案" name="hedgePlanId" required rules={[{ required: true, message: '请选择保值方案' }]}>
+                <Select placeholder="请选择保值方案（只能选择无合同（客商）类型）">
+                  {customerHedgePlans.map(hp => (
+                    <Select.Option key={hp.id} value={hp.id}>{hp.name}</Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item label="指令创建人" name="creators" required rules={[{ required: true, message: '请选择指令创建人' }, { type: 'array', min: 1, message: '至少选择一个创建人' }]}>
+                <Select 
+                  mode="multiple"
+                  placeholder="请选择客商（可多选）"
+                  showSearch
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={mockCustomers.map(c => ({ label: c.shortName, value: c.id }))}
+                />
+              </Form.Item>
+              <Form.Item label="期货合约限制" name="futuresContractLimit" required rules={[{ required: true, message: '请选择期货合约限制' }]}>
+                <Select mode="multiple" placeholder="请选择期货合约（可多选）" />
+              </Form.Item>
+              <Form.Item label="持仓方向限制" name="positionDirection" required rules={[{ required: true, message: '请选择持仓方向限制' }]}>
+                <Radio.Group>
+                  <Radio value="多头">多头</Radio>
+                  <Radio value="空头">空头</Radio>
+                </Radio.Group>
+              </Form.Item>
+              <Form.Item label="持仓手数限制" name="positionLimit" required rules={[{ required: true, message: '请输入持仓手数限制' }, { pattern: /^\d+$/, message: '请输入正整数' }]}>
+                <InputNumber min={1} style={{ width: '100%' }} placeholder="请输入正整数" />
+              </Form.Item>
+              <Form.Item label="单笔手数限制" name="singleOrderLimit" required rules={[{ required: true, message: '请输入单笔手数限制' }, { pattern: /^\d+$/, message: '请输入正整数' }]}>
+                <InputNumber min={1} style={{ width: '100%' }} placeholder="请输入正整数" />
+              </Form.Item>
+              <Form.Item label="交易员" name="traders">
+                <Select 
+                  mode="multiple"
+                  placeholder="请选择交易员（可多选，可选）"
+                  options={traderOptions.map(p => ({ label: p.name, value: p.id }))}
+                />
+              </Form.Item>
+              <Form.Item label="有效期" name="validUntil" required rules={[{ required: true, message: '请选择有效期' }]}>
+                <DatePicker style={{ width: '100%' }} placeholder="请选择有效期（含）" />
+              </Form.Item>
+            </Form>
+          </Modal>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={customerPermissionVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 均价自动指令启停页面
+    const AvgPriceAutoInstruction = () => {
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'hedgePlan', title: '保值方案', dataIndex: 'hedgePlan', width: 180 },
+        { key: 'creator', title: '指令发起人', dataIndex: 'creator', width: 150 },
+        { key: 'instructionType', title: '指令类型', dataIndex: 'instructionType', width: 200 },
+        { key: 'status', title: '状态', dataIndex: 'status', width: 100, render: (status) => (
+          <span className={`erp-status-badge ${status === 'enabled' ? 'enabled' : 'disabled'}`}>
+            {status === 'enabled' ? '启动' : '禁用'}
+          </span>
+        )}
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: avgPriceVisibleColumns
+      } = useColumnManager('avg-price-auto-instruction', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      const handleToggleStatus = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要操作的记录');
+          return;
+        }
+        const selectedRecords = mockAvgPriceAutoInstructions.filter(p => selectedRowKeys.includes(p.id));
+        const hasDisabled = selectedRecords.some(p => p.status === 'disabled');
+        const action = hasDisabled ? '启动' : '禁用';
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: `确认${action}`,
+          content: `确定要${action}选中的 ${selectedRowKeys.length} 条记录吗？${action === '启动' ? '启动后，系统将每日自动进行按保值方案或按合同的均价指令发起。' : ''}`,
+          onOk: () => {
+            message.success(`${action}成功`);
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-toolbar" style={{ flexShrink: 0 }}>
+            <Space wrap>
+              <Button icon={renderIcon('PoweroffOutlined')} onClick={handleToggleStatus} disabled={selectedRowKeys.length === 0}>启动/禁用</Button>
+              <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+            </Space>
+            <Button 
+              icon={renderIcon('SettingOutlined')} 
+              onClick={() => setColumnEditorVisible(true)}
+              style={{ marginLeft: 'auto' }}
+            >
+              自定义列
+            </Button>
+          </div>
+          <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+            <Alert
+              type="info"
+              showIcon
+              message="说明"
+              description="本表格数据来源于人员指令权限设置中针对保值方案设置了'保值方案均价净值套保指令'或'均价合同套保指令'的记录。启动后，系统将每日自动进行按保值方案或按合同的均价指令发起。默认状态为禁用。"
+              style={{ marginBottom: 16 }}
+            />
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <Table
+                rowSelection={{ 
+                  type: 'radio',
+                  selectedRowKeys, 
+                  onChange: setSelectedRowKeys 
+                }}
+                columns={tableColumns}
+                dataSource={mockAvgPriceAutoInstructions}
+                rowKey="id"
+                scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                pagination={createPaginationConfig()}
+              />
+            </div>
+          </div>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={avgPriceVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 匹配宝与委托备注页面
+    const MatchAndRemark = () => {
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [filterType, setFilterType] = useState('today'); // today or history
+      const [spotRemarkModalVisible, setSpotRemarkModalVisible] = useState(false);
+      const [orderRemarkModalVisible, setOrderRemarkModalVisible] = useState(false);
+      const [batchMatchModalVisible, setBatchMatchModalVisible] = useState(false);
+      const [singleMatchModalVisible, setSingleMatchModalVisible] = useState(false);
+      const [matchResultModalVisible, setMatchResultModalVisible] = useState(false);
+      const [spotRemarkColumnEditorVisible, setSpotRemarkColumnEditorVisible] = useState(false);
+      const [currentFuturesId, setCurrentFuturesId] = useState(null);
+      const [spotRemarkForm] = Form.useForm();
+      const [orderRemarkForm] = Form.useForm();
+      const [batchMatchForm] = Form.useForm();
+      const [singleMatchForm] = Form.useForm();
+      const [searchKeyword, setSearchKeyword] = useState('');
+
+      // 获取当前显示的委托单数据
+      const displayOrders = useMemo(() => {
+        let orders = [...mockFuturesOrders];
+        if (filterType === 'today') {
+          const today = dayjs().format('YYYY-MM-DD');
+          orders = orders.filter(order => order.dateTime.startsWith(today));
+        }
+        if (searchKeyword) {
+          const keyword = searchKeyword.toLowerCase();
+          orders = orders.filter(order => 
+            order.shortNo.toLowerCase().includes(keyword) ||
+            order.contract.toLowerCase().includes(keyword) ||
+            order.futuresAccount.toLowerCase().includes(keyword) ||
+            order.hedgePlan.toLowerCase().includes(keyword)
+          );
+        }
+        return orders;
+      }, [filterType, searchKeyword]);
+
+      // 所有可用列定义（一级字段）
+      const allColumnDefinitions = [
+        { key: 'futuresAccount', title: '期货账户', dataIndex: 'futuresAccount', width: 120 },
+        { key: 'hedgePlan', title: '保值方案', dataIndex: 'hedgePlan', width: 180 },
+        { key: 'dateTime', title: '日期时间', dataIndex: 'dateTime', width: 160 },
+        { key: 'shortNo', title: '短编号', dataIndex: 'shortNo', width: 120 },
+        { key: 'contract', title: '合约', dataIndex: 'contract', width: 120 },
+        { key: 'direction', title: '方向', dataIndex: 'direction', width: 80, render: (dir) => (
+          <Tag color={dir === '买入' ? 'red' : 'green'}>{dir}</Tag>
+        )},
+        { key: 'avgPrice', title: '成交均价', dataIndex: 'avgPrice', width: 120, align: 'right' },
+        { key: 'tradedQty', title: '成交手数', dataIndex: 'tradedQty', width: 120, align: 'right' },
+        { 
+          key: 'spotRemarks', 
+          title: '期现备注', 
+          dataIndex: 'spotRemarks', 
+          width: 400,
+          render: (remarks, record) => {
+            if (!remarks || remarks.length === 0) return '-';
+            
+            // 根据配置的可见列动态生成表格列
+            const spotRemarkTableColumns = spotRemarkVisibleColumns.map(col => {
+              const def = spotRemarkColumnDefinitions.find(d => d.key === col.key);
+              if (!def) return null;
+              
+              const columnDef = {
+                ...def,
+                ...col,
+                width: col.width || def.width || 100,
+                title: def.title,
+                align: def.align || 'left',
+                dataIndex: def.dataIndex
+              };
+              
+              // 添加render函数
+              if (col.key === 'qty') {
+                columnDef.render = (v) => v || '-';
+              } else if (col.key === 'spotQty') {
+                columnDef.render = (v) => v || '-';
+              } else if (col.key === 'pricingPrice') {
+                columnDef.render = (v) => v || '-';
+              } else if (col.key === 'tag') {
+                columnDef.render = (tag) => tag ? <Tag>{tag}</Tag> : '-';
+              } else if (col.key === 'remark') {
+                columnDef.render = (v) => v || '-';
+              } else if (col.key === 'customer') {
+                // customer字段对应customerId
+                columnDef.dataIndex = 'customerId';
+                columnDef.render = (id) => {
+                  if (!id) return '-';
+                  const customer = mockCustomers.find(c => c.id === id);
+                  return customer ? customer.shortName : '-';
+                };
+              } else if (col.key === 'contractNo') {
+                // contractNo字段对应contractId
+                columnDef.dataIndex = 'contractId';
+                columnDef.render = (id) => {
+                  if (!id) return '-';
+                  const contract = mockContracts.find(c => c.id === id);
+                  return contract ? contract.contractNo : '-';
+                };
+              } else if (col.key === 'isMatched') {
+                columnDef.render = (matched) => (
+                  <Tag color={matched ? 'green' : 'default'}>{matched ? '是' : '否'}</Tag>
+                );
+              }
+              
+              return columnDef;
+            }).filter(Boolean);
+            
+            return (
+              <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                <Table
+                  size="small"
+                  dataSource={remarks}
+                  rowKey="id"
+                  pagination={false}
+                  columns={spotRemarkTableColumns}
+                />
+              </div>
+            );
+          }
+        },
+        { key: 'orderPrice', title: '报单价格', dataIndex: 'orderPrice', width: 120, align: 'right' },
+        { key: 'unmatchedQty', title: '未匹配手数', dataIndex: 'unmatchedQty', width: 120, align: 'right' },
+        { key: 'orderStatus', title: '挂单状态', dataIndex: 'orderStatus', width: 100, render: (status) => {
+          const statusMap = {
+            '未成': { color: 'default' },
+            '部成': { color: 'orange' },
+            '全成': { color: 'green' },
+            '已撤': { color: 'red' },
+            '部成已撤': { color: 'red' },
+            '错单': { color: 'red' }
+          };
+          const config = statusMap[status] || { color: 'default' };
+          return <Tag color={config.color}>{status}</Tag>;
+        }},
+        { key: 'orderRemark', title: '委托备注', dataIndex: 'orderRemark', width: 200, ellipsis: true, render: (remark) => {
+          if (!remark) return '';
+          const text = remark.replace(/<[^>]*>/g, '').substring(0, 50);
+          return (
+            <Tooltip title={<div dangerouslySetInnerHTML={{ __html: remark }} />}>
+              <span>{text}{remark.length > 50 ? '...' : ''}</span>
+            </Tooltip>
+          );
+        }}
+      ];
+
+      // 期现备注二级字段列定义
+      const spotRemarkColumnDefinitions = [
+        { key: 'qty', title: '手数', dataIndex: 'qty', width: 80, align: 'right' },
+        { key: 'spotQty', title: '现货数量', dataIndex: 'spotQty', width: 100, align: 'right' },
+        { key: 'pricingPrice', title: '点价价格', dataIndex: 'pricingPrice', width: 100, align: 'right' },
+        { key: 'tag', title: '标签', dataIndex: 'tag', width: 120 },
+        { key: 'remark', title: '备注', dataIndex: 'remark', width: 150, ellipsis: true },
+        { key: 'customer', title: '客商', dataIndex: 'customerId', width: 120 },
+        { key: 'contractNo', title: '合同号', dataIndex: 'contractId', width: 120 },
+        { key: 'isMatched', title: '是否已匹配', dataIndex: 'isMatched', width: 100 }
+      ];
+
+      // 期现备注二级字段的默认可见列
+      const defaultSpotRemarkVisibleColumns = spotRemarkColumnDefinitions;
+
+      // 期现备注二级字段的列管理
+      const [spotRemarkVisibleColumns, setSpotRemarkVisibleColumns] = useState(() => {
+        const saved = localStorage.getItem('match-remark-spot-columns');
+        if (saved) {
+          try {
+            return JSON.parse(saved);
+          } catch (e) {
+            return defaultSpotRemarkVisibleColumns;
+          }
+        }
+        return defaultSpotRemarkVisibleColumns;
+      });
+
+      useEffect(() => {
+        localStorage.setItem('match-remark-spot-columns', JSON.stringify(spotRemarkVisibleColumns));
+      }, [spotRemarkVisibleColumns]);
+
+      // 期现备注列配置的保存和恢复
+      const handleSpotRemarkColumnSave = (columns) => {
+        setSpotRemarkVisibleColumns(columns);
+        setSpotRemarkColumnEditorVisible(false);
+        message.success('期现备注列设置已保存');
+      };
+
+      const handleSpotRemarkColumnRestoreDefault = () => {
+        setSpotRemarkVisibleColumns(defaultSpotRemarkVisibleColumns);
+        setSpotRemarkColumnEditorVisible(false);
+        message.success('已恢复期现备注默认列设置');
+      };
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: matchVisibleColumns
+      } = useColumnManager('match-remark', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      // 获取保值方案的标签
+      const getHedgePlanTags = (hedgePlanId) => {
+        const plan = mockHedgePlans.find(hp => hp.id === hedgePlanId);
+        return plan?.tags || [];
+      };
+
+      // 获取同保值方案的合同列表
+      const getContractsByHedgePlan = (hedgePlanId) => {
+        const plan = mockHedgePlans.find(hp => hp.id === hedgePlanId);
+        if (!plan) return [];
+        return mockContracts.filter(c => c.hedgePlan === plan.name);
+      };
+
+      // 处理期现备注
+      const handleSpotRemark = () => {
+        if (selectedRowKeys.length !== 1) {
+          message.warning('请选择一条委托单');
+          return;
+        }
+        const order = displayOrders.find(o => o.id === selectedRowKeys[0]);
+        if (order) {
+          setCurrentFuturesId(order.id);
+          spotRemarkForm.setFieldsValue({
+            spotRemarks: order.spotRemarks || []
+          });
+          setSpotRemarkModalVisible(true);
+        }
+      };
+
+      // 处理委托备注
+      const handleOrderRemark = () => {
+        if (selectedRowKeys.length !== 1) {
+          message.warning('请选择一条委托单');
+          return;
+        }
+        const order = displayOrders.find(o => o.id === selectedRowKeys[0]);
+        if (order) {
+          setCurrentFuturesId(order.id);
+          orderRemarkForm.setFieldsValue({
+            orderRemark: order.orderRemark || ''
+          });
+          setOrderRemarkModalVisible(true);
+        }
+      };
+
+      // 保存期现备注
+      const handleSaveSpotRemark = () => {
+        spotRemarkForm.validateFields().then(values => {
+          const order = displayOrders.find(o => o.id === currentFuturesId);
+          if (order) {
+            const totalQty = (values.spotRemarks || []).reduce((sum, r) => sum + (r.qty || 0), 0);
+            if (totalQty > order.tradedQty) {
+              message.error(`期现备注中的总手数不能大于委托单的已成交手数（${order.tradedQty}）`);
+              return;
+            }
+          }
+          message.success('保存成功');
+          setSpotRemarkModalVisible(false);
+          spotRemarkForm.resetFields();
+        });
+      };
+
+      // 保存委托备注
+      const handleSaveOrderRemark = () => {
+        orderRemarkForm.validateFields().then(values => {
+          message.success('保存成功');
+          setOrderRemarkModalVisible(false);
+          orderRemarkForm.resetFields();
+        });
+      };
+
+      // 删除委托备注
+      const handleDeleteOrderRemark = () => {
+        if (currentFuturesId) {
+          message.success('删除成功');
+          setOrderRemarkModalVisible(false);
+          orderRemarkForm.resetFields();
+        }
+      };
+
+      // 批量匹配
+      const handleBatchMatch = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要匹配的委托单');
+          return;
+        }
+        const selectedOrders = displayOrders.filter(o => selectedRowKeys.includes(o.id));
+        batchMatchForm.setFieldsValue({
+          matchRecords: selectedOrders.map(order => ({
+            futuresId: order.id,
+            hedgePlanId: order.hedgePlanId,
+            contractId: null,
+            contractQty: null,
+            contractPrice: null,
+            futuresQty: order.unmatchedQty
+          }))
+        });
+        setBatchMatchModalVisible(true);
+      };
+
+      // 单条匹配
+      const handleSingleMatch = () => {
+        if (selectedRowKeys.length !== 1) {
+          message.warning('请选择一条委托单');
+          return;
+        }
+        const order = displayOrders.find(o => o.id === selectedRowKeys[0]);
+        if (order) {
+          const plan = mockHedgePlans.find(hp => hp.id === order.hedgePlanId);
+          singleMatchForm.setFieldsValue({
+            futuresId: order.id,
+            hedgePlanId: order.hedgePlanId,
+            hedgePlanType: plan?.type,
+            contractId: null,
+            contractQty: null,
+            contractPrice: null,
+            futuresQty: order.unmatchedQty
+          });
+          setSingleMatchModalVisible(true);
+        }
+      };
+
+      // 确认批量匹配
+      const handleConfirmBatchMatch = () => {
+        batchMatchForm.validateFields().then(values => {
+          const matchRecords = values.matchRecords || [];
+          const validRecords = matchRecords.filter(r => {
+            const order = displayOrders.find(o => o.id === r.futuresId);
+            if (!order) return false;
+            const plan = mockHedgePlans.find(hp => hp.id === r.hedgePlanId);
+            if (!plan) return false;
+            
+            // 检查匹配规则
+            if (plan.type === '单单匹配') {
+              // 需要检查标签
+              const spotRemark = order.spotRemarks?.[0];
+              if (spotRemark && spotRemark.tag) {
+                const requireContractTags = ['长单保值', '长单增量', '长单减量', '长单取消', '订单接货保值', '订单出货保值', '订单增量', '订单减量', '订单取消', '买点价', '卖点价', '调敞口', '代持'];
+                if (requireContractTags.includes(spotRemark.tag)) {
+                  return !!r.contractId;
+                }
+              }
+            }
+            return true;
+          });
+          
+          if (validRecords.length === 0) {
+            message.warning('没有符合匹配规则的记录');
+            return;
+          }
+          
+          setBatchMatchModalVisible(false);
+          setMatchResultModalVisible(true);
+          message.success(`成功匹配 ${validRecords.length} 条记录`);
+        });
+      };
+
+      // 确认单条匹配
+      const handleConfirmSingleMatch = () => {
+        singleMatchForm.validateFields().then(values => {
+          const plan = mockHedgePlans.find(hp => hp.id === values.hedgePlanId);
+          if (plan?.type === '单单匹配' && !values.contractId) {
+            message.error('单单匹配的保值方案必须选择合同');
+            return;
+          }
+          message.success('匹配成功');
+          setSingleMatchModalVisible(false);
+          singleMatchForm.resetFields();
+        });
+      };
+
+      // 刷新
+      const handleRefresh = () => {
+        message.success('刷新成功');
+      };
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-filter-bar" style={{ flexShrink: 0 }}>
+            <div className="erp-filter-item">
+              <label>筛选：</label>
+              <Radio.Group value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+                <Radio.Button value="today">当日</Radio.Button>
+                <Radio.Button value="history">历史</Radio.Button>
+              </Radio.Group>
+            </div>
+            <div className="erp-filter-item">
+              <Input.Search
+                placeholder="搜索短编号、合约、账户、保值方案"
+                style={{ width: 300 }}
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                onSearch={(value) => setSearchKeyword(value)}
+                allowClear
+              />
+            </div>
+          </div>
+          <div className="erp-toolbar" style={{ flexShrink: 0 }}>
+            <Space wrap>
+              <Button icon={renderIcon('FileTextOutlined')} onClick={handleSpotRemark} disabled={selectedRowKeys.length !== 1}>期现备注</Button>
+              <Button icon={renderIcon('EditOutlined')} onClick={handleOrderRemark} disabled={selectedRowKeys.length !== 1}>委托备注</Button>
+              <Button icon={renderIcon('ClusterOutlined')} onClick={handleBatchMatch} disabled={selectedRowKeys.length === 0}>批量匹配</Button>
+              <Button icon={renderIcon('LinkOutlined')} onClick={handleSingleMatch} disabled={selectedRowKeys.length !== 1}>单条匹配</Button>
+              <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+              <Button icon={renderIcon('SyncOutlined')} onClick={handleRefresh}>刷新</Button>
+            </Space>
+            <Space>
+              <Button 
+                icon={renderIcon('SettingOutlined')} 
+                onClick={() => setSpotRemarkColumnEditorVisible(true)}
+              >
+                期现备注列配置
+              </Button>
+              <Button 
+                icon={renderIcon('SettingOutlined')} 
+                onClick={() => setColumnEditorVisible(true)}
+              >
+                自定义列
+              </Button>
+            </Space>
+          </div>
+          <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <Table
+                rowSelection={{ 
+                  type: 'radio',
+                  selectedRowKeys, 
+                  onChange: setSelectedRowKeys 
+                }}
+                columns={tableColumns}
+                dataSource={displayOrders}
+                rowKey="id"
+                scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                pagination={createPaginationConfig()}
+              />
+            </div>
+          </div>
+
+          {/* 期现备注模态框 */}
+          <Modal
+            {...MODAL_TEXTS}
+            title="期现备注"
+            open={spotRemarkModalVisible}
+            onCancel={() => { setSpotRemarkModalVisible(false); spotRemarkForm.resetFields(); }}
+            width={1000}
+            onOk={handleSaveSpotRemark}
+          >
+            <Form form={spotRemarkForm} layout="vertical">
+              <Form.List name="spotRemarks" initialValue={[]}>
+                {(fields, { add, remove }) => {
+                  const order = displayOrders.find(o => o.id === currentFuturesId);
+                  const hedgePlanTags = order ? getHedgePlanTags(order.hedgePlanId) : [];
+                  const contracts = order ? getContractsByHedgePlan(order.hedgePlanId) : [];
+                  const plan = order ? mockHedgePlans.find(hp => hp.id === order.hedgePlanId) : null;
+                  const canSelectContract = plan?.type === '单单匹配';
+
+                  return (
+                    <Space direction="vertical" style={{ width: '100%' }}>
+                      {fields.map((field, index) => (
+                        <Card key={field.key} size="small" title={`期现备注 ${index + 1}`} extra={
+                          <Button type="text" danger icon={renderIcon('DeleteOutlined')} onClick={() => remove(field.name)}>删除</Button>
+                        }>
+                          <Space direction="vertical" style={{ width: '100%' }}>
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'qty']}
+                              fieldKey={[field.fieldKey, 'qty']}
+                              label="手数"
+                              rules={[{ required: true, message: '请输入手数' }, { type: 'number', min: 1, message: '手数必须大于0' }]}
+                            >
+                              <InputNumber min={1} style={{ width: '100%' }} placeholder="请输入手数" />
+                            </Form.Item>
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'spotQty']}
+                              fieldKey={[field.fieldKey, 'spotQty']}
+                              label="现货数量"
+                            >
+                              <InputNumber min={0} style={{ width: '100%' }} placeholder="请输入现货数量" />
+                            </Form.Item>
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'pricingPrice']}
+                              fieldKey={[field.fieldKey, 'pricingPrice']}
+                              label="点价价格"
+                            >
+                              <InputNumber min={0} style={{ width: '100%' }} placeholder="请输入点价价格" />
+                            </Form.Item>
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'tag']}
+                              fieldKey={[field.fieldKey, 'tag']}
+                              label="标签"
+                            >
+                              <Select placeholder="请选择标签" options={hedgePlanTags.map(tag => ({ label: tag, value: tag }))} />
+                            </Form.Item>
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'remark']}
+                              fieldKey={[field.fieldKey, 'remark']}
+                              label="备注"
+                            >
+                              <Input.TextArea rows={2} placeholder="请输入备注" />
+                            </Form.Item>
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'contractId']}
+                              fieldKey={[field.fieldKey, 'contractId']}
+                              label="合同号"
+                            >
+                              <Select 
+                                placeholder={canSelectContract ? "请选择合同（如果保值方案是单单才允许选取）" : "当前保值方案不支持选择合同"}
+                                disabled={!canSelectContract}
+                                options={contracts.map(c => ({ label: c.contractNo, value: c.id }))}
+                                onChange={(value) => {
+                                  // 如果已选合同，清空客商
+                                  if (value) {
+                                    spotRemarkForm.setFieldsValue({
+                                      spotRemarks: spotRemarkForm.getFieldValue('spotRemarks').map((r, i) => 
+                                        i === field.name ? { ...r, customerId: null } : r
+                                      )
+                                    });
+                                  }
+                                }}
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'customerId']}
+                              fieldKey={[field.fieldKey, 'customerId']}
+                              label="客商"
+                            >
+                              <Select 
+                                placeholder="请选择客商（如果已选合同则不能选）"
+                                disabled={!!spotRemarkForm.getFieldValue(['spotRemarks', field.name, 'contractId'])}
+                                options={mockCustomers.map(c => ({ label: c.shortName, value: c.id }))}
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              {...field}
+                              name={[field.name, 'isMatched']}
+                              fieldKey={[field.fieldKey, 'isMatched']}
+                              label="是否已匹配"
+                              valuePropName="checked"
+                            >
+                              <Switch />
+                            </Form.Item>
+                          </Space>
+                        </Card>
+                      ))}
+                      <Button
+                        type="dashed"
+                        onClick={() => add({ qty: null, spotQty: null, pricingPrice: null, tag: null, remark: '', customerId: null, contractId: null, isMatched: false })}
+                        icon={renderIcon('PlusOutlined')}
+                        block
+                      >
+                        新增期现备注
+                      </Button>
+                    </Space>
+                  );
+                }}
+              </Form.List>
+            </Form>
+          </Modal>
+
+          {/* 委托备注模态框 */}
+          <Modal
+            {...MODAL_TEXTS}
+            title="委托备注"
+            open={orderRemarkModalVisible}
+            onCancel={() => { setOrderRemarkModalVisible(false); orderRemarkForm.resetFields(); }}
+            width={700}
+            footer={[
+              <Button key="delete" danger onClick={handleDeleteOrderRemark}>删除</Button>,
+              <Button key="cancel" onClick={() => { setOrderRemarkModalVisible(false); orderRemarkForm.resetFields(); }}>取消</Button>,
+              <Button key="ok" type="primary" onClick={handleSaveOrderRemark}>确认</Button>
+            ]}
+          >
+            <Form form={orderRemarkForm} layout="vertical">
+              <Form.Item label="备注信息" name="orderRemark">
+                <Input.TextArea rows={8} placeholder="请输入委托备注（支持富文本）" />
+              </Form.Item>
+              <Alert
+                type="info"
+                message="提示：委托备注支持富文本格式，可直接输入HTML内容"
+                style={{ marginTop: 8 }}
+              />
+            </Form>
+          </Modal>
+
+          {/* 批量匹配模态框 */}
+          <Modal
+            {...MODAL_TEXTS}
+            title="批量匹配"
+            open={batchMatchModalVisible}
+            onCancel={() => { setBatchMatchModalVisible(false); batchMatchForm.resetFields(); }}
+            width={1200}
+            onOk={handleConfirmBatchMatch}
+          >
+            <Form form={batchMatchForm} layout="vertical">
+              <Form.List name="matchRecords">
+                {(fields) => {
+                  const matchRecords = batchMatchForm.getFieldValue('matchRecords') || [];
+                  return (
+                    <Table
+                      dataSource={matchRecords.map((record, index) => ({ ...record, key: index }))}
+                      columns={[
+                        { title: '保值方案', dataIndex: 'hedgePlanId', width: 150, render: (id) => {
+                          const plan = mockHedgePlans.find(hp => hp.id === id);
+                          return plan?.name || '-';
+                        }},
+                        { title: '期货账户', dataIndex: 'futuresAccount', width: 120, render: (_, record) => {
+                          const order = displayOrders.find(o => o.id === record.futuresId);
+                          return order?.futuresAccount || '-';
+                        }},
+                        { title: '日期时间', dataIndex: 'dateTime', width: 160, render: (_, record) => {
+                          const order = displayOrders.find(o => o.id === record.futuresId);
+                          return order?.dateTime || '-';
+                        }},
+                        { title: '合约', dataIndex: 'contract', width: 120, render: (_, record) => {
+                          const order = displayOrders.find(o => o.id === record.futuresId);
+                          return order?.contract || '-';
+                        }},
+                        { title: '方向', dataIndex: 'direction', width: 80, render: (_, record) => {
+                          const order = displayOrders.find(o => o.id === record.futuresId);
+                          return order ? <Tag color={order.direction === '买入' ? 'red' : 'green'}>{order.direction}</Tag> : '-';
+                        }},
+                        { title: '开平', dataIndex: 'openClose', width: 80, render: (_, record) => {
+                          const order = displayOrders.find(o => o.id === record.futuresId);
+                          return order?.openClose || '-';
+                        }},
+                        { title: '价格', dataIndex: 'price', width: 100, render: (_, record) => {
+                          const order = displayOrders.find(o => o.id === record.futuresId);
+                          return order?.avgPrice || '-';
+                        }},
+                        { title: '手数', dataIndex: 'futuresQty', width: 100, render: (qty, record, index) => (
+                          <Form.Item name={[index, 'futuresQty']} style={{ margin: 0 }}>
+                            <InputNumber min={1} style={{ width: '100%' }} />
+                          </Form.Item>
+                        )},
+                        { title: '合同号', dataIndex: 'contractId', width: 150, render: (_, record, index) => {
+                          const order = displayOrders.find(o => o.id === record.futuresId);
+                          const contracts = order ? getContractsByHedgePlan(order.hedgePlanId) : [];
+                          return (
+                            <Form.Item name={[index, 'contractId']} style={{ margin: 0 }}>
+                              <Select placeholder="请选择合同" options={contracts.map(c => ({ label: c.contractNo, value: c.id }))} />
+                            </Form.Item>
+                          );
+                        }},
+                        { title: '合同数量', dataIndex: 'contractQty', width: 120, render: (_, record, index) => (
+                          <Form.Item name={[index, 'contractQty']} style={{ margin: 0 }}>
+                            <InputNumber min={0} style={{ width: '100%' }} placeholder="可选" />
+                          </Form.Item>
+                        )},
+                        { title: '合同价格', dataIndex: 'contractPrice', width: 120, render: (_, record, index) => (
+                          <Form.Item name={[index, 'contractPrice']} style={{ margin: 0 }}>
+                            <InputNumber min={0} style={{ width: '100%' }} placeholder="可选" />
+                          </Form.Item>
+                        )}
+                      ]}
+                      pagination={false}
+                      scroll={{ y: 400 }}
+                    />
+                  );
+                }}
+              </Form.List>
+              <Alert
+                type="info"
+                message="匹配规则"
+                description="如果保值方案是单单，且标签是特定标签（长单保值、长单增量等），必须指定合同。其他情况：绑定保值方案进行匹配。"
+                style={{ marginTop: 16 }}
+              />
+            </Form>
+          </Modal>
+
+          {/* 单条匹配模态框 */}
+          <Modal
+            {...MODAL_TEXTS}
+            title="单条匹配"
+            open={singleMatchModalVisible}
+            onCancel={() => { setSingleMatchModalVisible(false); singleMatchForm.resetFields(); }}
+            width={600}
+            onOk={handleConfirmSingleMatch}
+          >
+            <Form form={singleMatchForm} layout="vertical">
+              <Form.Item label="保值方案" name="hedgePlanType">
+                <Input disabled />
+              </Form.Item>
+              <Form.Item 
+                label="合同号" 
+                name="contractId"
+                rules={[
+                  ({ getFieldValue }) => ({
+                    validator(_, value) {
+                      const type = getFieldValue('hedgePlanType');
+                      if (type === '单单匹配' && !value) {
+                        return Promise.reject(new Error('单单匹配的保值方案必须选择合同'));
+                      }
+                      return Promise.resolve();
+                    }
+                  })
+                ]}
+              >
+                <Select 
+                  placeholder="请选择合同（如果保值方案是单单则必填）"
+                  options={(() => {
+                    const hedgePlanId = singleMatchForm.getFieldValue('hedgePlanId');
+                    const contracts = hedgePlanId ? getContractsByHedgePlan(hedgePlanId) : [];
+                    return contracts.map(c => ({ label: c.contractNo, value: c.id }));
+                  })()}
+                />
+              </Form.Item>
+              <Form.Item label="合同数量" name="contractQty">
+                <InputNumber min={0} style={{ width: '100%' }} placeholder="可选，非必填" />
+              </Form.Item>
+              <Form.Item label="合同价格" name="contractPrice">
+                <InputNumber min={0} style={{ width: '100%' }} placeholder="可选，非必填" />
+              </Form.Item>
+              <Form.Item label="期货数量" name="futuresQty">
+                <InputNumber min={1} style={{ width: '100%' }} disabled />
+              </Form.Item>
+              <Alert
+                type="info"
+                message="匹配说明"
+                description="如果保值方案是整体、客商、人员的：只需要确认即可完成匹配。如果保值方案是单单的：需要选择指定合同。匹配成功后，将自动创建期现备注并刷新委托单列表。"
+                style={{ marginTop: 16 }}
+              />
+            </Form>
+          </Modal>
+
+          {/* 匹配结果模态框 */}
+          <Modal
+            {...MODAL_TEXTS}
+            title="匹配结果"
+            open={matchResultModalVisible}
+            onCancel={() => setMatchResultModalVisible(false)}
+            width={800}
+            footer={[
+              <Button key="ok" type="primary" onClick={() => setMatchResultModalVisible(false)}>确认</Button>
+            ]}
+          >
+            <Alert
+              type="success"
+              message="匹配成功"
+              description="已成功完成批量匹配操作，相关记录已更新。"
+              style={{ marginBottom: 16 }}
+            />
+            <Table
+              columns={[
+                { title: '委托单', dataIndex: 'futuresId' },
+                { title: '匹配状态', dataIndex: 'status', render: () => <Tag color="green">成功</Tag> }
+              ]}
+              dataSource={[]}
+              pagination={false}
+            />
+          </Modal>
+
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={matchVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+          {spotRemarkColumnEditorVisible && (
+            <ColumnEditor
+              allColumns={spotRemarkColumnDefinitions}
+              visibleColumns={spotRemarkVisibleColumns}
+              onSave={handleSpotRemarkColumnSave}
+              onCancel={() => setSpotRemarkColumnEditorVisible(false)}
+              onRestoreDefault={handleSpotRemarkColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // Web交易终端页面
+    const WebTradeTerminal = () => {
+      const [selectedAccount, setSelectedAccount] = useState(mockFuturesAccounts[0]?.account || '');
+      const [selectedHedgePlan, setSelectedHedgePlan] = useState(null);
+      const [instructionDrawerVisible, setInstructionDrawerVisible] = useState(false);
+      const [orderForm] = Form.useForm();
+      const [selectedContract, setSelectedContract] = useState('CU2401');
+      
+      // 模拟持仓数据
+      const mockPositions = [
+        { id: 1, direction: '买入', contract: 'CU2401', qty: 10, avgPrice: 5300, floatingPnL: 5000, hedgePlan: '整体保值方案A', insurance: '投机' },
+        { id: 2, direction: '卖出', contract: 'AL2401', qty: 5, avgPrice: 5250, floatingPnL: -2000, hedgePlan: '单单保值方案B', insurance: '套保' }
+      ];
+      
+      // 模拟委托数据
+      const mockOrders = [
+        { id: 1, status: '部成', orderTime: '2025-11-24 10:30:00', triggerType: '手动', relatedInstruction: '指令001', contract: 'CU2401', direction: '买入', price: 5300, qty: 10 },
+        { id: 2, status: '全成', orderTime: '2025-11-24 11:00:00', triggerType: '自动', relatedInstruction: '指令002', contract: 'AL2401', direction: '卖出', price: 5250, qty: 5 }
+      ];
+      
+      // 模拟成交数据
+      const mockFills = [
+        { id: 1, price: 5300, qty: 10, fee: 50, matchNo: 'M001', contract: 'CU2401', direction: '买入', time: '2025-11-24 10:30:15' },
+        { id: 2, price: 5250, qty: 5, fee: 25, matchNo: 'M002', contract: 'AL2401', direction: '卖出', time: '2025-11-24 11:00:20' }
+      ];
+      
+      // 模拟资金数据
+      const mockFunds = {
+        equity: 1000000,
+        available: 800000,
+        occupied: 200000,
+        riskDegree: 0.25,
+        margin: 200000
+      };
+      
+      // 模拟行情数据
+      const mockMarketData = {
+        'CU2401': { latest: 5300, change: 50, changePercent: 0.95, volume: 10000, openInterest: 50000, bid: [5299, 5298, 5297, 5296, 5295], ask: [5301, 5302, 5303, 5304, 5305] },
+        'AL2401': { latest: 5250, change: -30, changePercent: -0.57, volume: 8000, openInterest: 30000, bid: [5249, 5248, 5247, 5246, 5245], ask: [5251, 5252, 5253, 5254, 5255] }
+      };
+      
+      const currentMarket = mockMarketData[selectedContract] || mockMarketData['CU2401'];
+      
+      // 获取当前交易员支持的保值方案
+      const availableHedgePlans = useMemo(() => {
+        return mockHedgePlans.filter(hp => {
+          const traders = mockPersonRoles.find(pr => pr.roleName === '交易员');
+          return traders?.personNames?.some(name => hp.traders?.includes(name));
+        });
+      }, []);
+      
+      // 获取指令数据（从指令工作台）
+      const instructionData = useMemo(() => {
+        return [
+          { id: 1, type: '期货交易指令', source: '人员', contract: 'HT2025-0001', futures: 'CU2401', direction: '买入', qty: 100, execType: '人工', progress: '待执行' },
+          { id: 2, type: '点价指令', source: '客商', contract: 'HT2025-0002', futures: 'AL2401', direction: '卖出', qty: 200, execType: '自动', progress: '执行中' }
+        ];
+      }, []);
+      
+      const filteredPositions = useMemo(() => {
+        if (!selectedHedgePlan) return mockPositions;
+        return mockPositions.filter(p => p.hedgePlan === selectedHedgePlan);
+      }, [selectedHedgePlan]);
+      
+      const filteredOrders = useMemo(() => {
+        if (!selectedHedgePlan) return mockOrders;
+        return mockOrders.filter(o => {
+          const pos = mockPositions.find(p => p.contract === o.contract);
+          return pos?.hedgePlan === selectedHedgePlan;
+        });
+      }, [selectedHedgePlan]);
+      
+      const handleSubmitOrder = () => {
+        orderForm.validateFields().then(values => {
+          message.success('下单成功（模拟）');
+          orderForm.resetFields();
+        });
+      };
+      
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#f5f5f5' }}>
+          {/* 顶部状态条 */}
+          <div style={{ padding: '8px 16px', background: '#fff', borderBottom: '1px solid #e8e8e8', display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+            <Select value={selectedAccount} onChange={setSelectedAccount} style={{ width: 150 }}>
+              {mockFuturesAccounts.map(acc => (
+                <Select.Option key={acc.id} value={acc.account}>{acc.account}</Select.Option>
+              ))}
+            </Select>
+            <Space>
+              <Badge status="success" text="行情连接" />
+              <Badge status="success" text="交易连接" />
+            </Space>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: 16, alignItems: 'center' }}>
+              <span>风险度：<strong style={{ color: mockFunds.riskDegree > 0.8 ? 'red' : 'green' }}>{(mockFunds.riskDegree * 100).toFixed(1)}%</strong></span>
+              <span>可用资金：<strong>{mockFunds.available.toLocaleString()}</strong></span>
+              <Button type="primary" icon={renderIcon('FileTextOutlined')} onClick={() => setInstructionDrawerVisible(true)}>指令执行</Button>
+            </div>
+          </div>
+          
+          <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
+            {/* 左侧行情区域 */}
+            <div style={{ width: 300, background: '#fff', borderRight: '1px solid #e8e8e8', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
+              <div style={{ padding: 12, borderBottom: '1px solid #e8e8e8' }}>
+                <Space>
+                  <Button size="small" icon={renderIcon('PlusOutlined')}>自选1</Button>
+                  <Button size="small" icon={renderIcon('PlusOutlined')}>自选2</Button>
+                  <Button size="small" icon={renderIcon('PlusOutlined')}>自选3</Button>
+                </Space>
+              </div>
+              <div style={{ padding: 12, borderBottom: '1px solid #e8e8e8' }}>
+                <Select value={selectedContract} onChange={setSelectedContract} style={{ width: '100%' }}>
+                  <Select.Option value="CU2401">CU2401</Select.Option>
+                  <Select.Option value="AL2401">AL2401</Select.Option>
+                </Select>
+              </div>
+              <div style={{ padding: 12, flex: 1, overflow: 'auto' }}>
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 24, fontWeight: 'bold', color: currentMarket.change >= 0 ? 'red' : 'green' }}>
+                    {currentMarket.latest}
+                  </div>
+                  <div style={{ fontSize: 12, color: currentMarket.change >= 0 ? 'red' : 'green' }}>
+                    {currentMarket.change >= 0 ? '+' : ''}{currentMarket.change} ({currentMarket.changePercent >= 0 ? '+' : ''}{currentMarket.changePercent}%)
+                  </div>
+                </div>
+                <Divider />
+                <div style={{ marginBottom: 8 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <span style={{ color: '#999' }}>持仓量</span>
+                    <span>{currentMarket.openInterest.toLocaleString()}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <span style={{ color: '#999' }}>成交量</span>
+                    <span>{currentMarket.volume.toLocaleString()}</span>
+                  </div>
+                </div>
+                <Divider />
+                <div>
+                  <div style={{ fontSize: 12, marginBottom: 8, color: '#999' }}>五档盘口</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <div style={{ flex: 1, textAlign: 'right' }}>
+                      {currentMarket.ask.slice().reverse().map((price, i) => (
+                        <div key={i} style={{ color: 'red', fontSize: 12 }}>{price}</div>
+                      ))}
+                    </div>
+                    <div style={{ flex: 1, textAlign: 'left', marginLeft: 8 }}>
+                      {currentMarket.bid.map((price, i) => (
+                        <div key={i} style={{ color: 'green', fontSize: 12 }}>{price}</div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* 中间下单区域 */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <div style={{ padding: 16, background: '#fff', borderBottom: '1px solid #e8e8e8' }}>
+                <Tabs defaultActiveKey="auto">
+                  <Tabs.TabPane tab="自动开平" key="auto">
+                    <Form form={orderForm} layout="inline">
+                      <Form.Item label="保值方案" name="hedgePlan" style={{ width: 200 }}>
+                        <Select placeholder="选择保值方案" value={selectedHedgePlan} onChange={setSelectedHedgePlan}>
+                          {availableHedgePlans.map(hp => (
+                            <Select.Option key={hp.id} value={hp.name}>{hp.name}</Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item label="合约" name="contract" initialValue={selectedContract}>
+                        <Input style={{ width: 120 }} />
+                      </Form.Item>
+                      <Space style={{ marginLeft: 16 }}>
+                        <Button type="primary" danger style={{ width: 80 }}>买开</Button>
+                        <Button type="default" style={{ width: 80 }}>平仓</Button>
+                        <Button type="primary" style={{ width: 80 }}>卖开</Button>
+                      </Space>
+                      <Form.Item label="数量" name="qty" initialValue={1}>
+                        <InputNumber min={1} style={{ width: 100 }} />
+                      </Form.Item>
+                      <Form.Item label="价格" name="price" initialValue={currentMarket.latest}>
+                        <InputNumber style={{ width: 120 }} />
+                      </Form.Item>
+                      <Button type="primary" onClick={handleSubmitOrder}>提交</Button>
+                    </Form>
+                  </Tabs.TabPane>
+                  <Tabs.TabPane tab="传统下单" key="traditional">
+                    <Form form={orderForm} layout="vertical">
+                      <Space wrap>
+                        <Form.Item label="合约" name="contract" style={{ width: 150 }}>
+                          <Input />
+                        </Form.Item>
+                        <Form.Item label="方向" name="direction" style={{ width: 100 }}>
+                          <Select>
+                            <Select.Option value="买入">买入</Select.Option>
+                            <Select.Option value="卖出">卖出</Select.Option>
+                          </Select>
+                        </Form.Item>
+                        <Form.Item label="价格类型" name="priceType" style={{ width: 120 }}>
+                          <Select>
+                            <Select.Option value="限价">限价</Select.Option>
+                            <Select.Option value="对价">对价</Select.Option>
+                            <Select.Option value="市价">市价</Select.Option>
+                          </Select>
+                        </Form.Item>
+                        <Form.Item label="开平" name="openClose" style={{ width: 100 }}>
+                          <Select>
+                            <Select.Option value="开仓">开仓</Select.Option>
+                            <Select.Option value="平仓">平仓</Select.Option>
+                          </Select>
+                        </Form.Item>
+                        <Form.Item label="数量" name="qty" style={{ width: 100 }}>
+                          <InputNumber min={1} />
+                        </Form.Item>
+                        <Button type="primary" onClick={handleSubmitOrder}>提交</Button>
+                      </Space>
+                    </Form>
+                  </Tabs.TabPane>
+                </Tabs>
+              </div>
+              
+              {/* 右侧数据面板 */}
+              <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#fff' }}>
+                  <Tabs defaultActiveKey="position" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Tabs.TabPane tab="持仓" key="position">
+                      <Table
+                        size="small"
+                        columns={[
+                          { title: '方向', dataIndex: 'direction', width: 80, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
+                          { title: '合约', dataIndex: 'contract', width: 100 },
+                          { title: '手数', dataIndex: 'qty', width: 80, align: 'right' },
+                          { title: '均价', dataIndex: 'avgPrice', width: 100, align: 'right' },
+                          { title: '浮盈亏', dataIndex: 'floatingPnL', width: 100, align: 'right', render: (v) => <span style={{ color: v >= 0 ? 'red' : 'green' }}>{v >= 0 ? '+' : ''}{v}</span> },
+                          { title: '保值方案', dataIndex: 'hedgePlan', width: 150 },
+                          { title: '投保', dataIndex: 'insurance', width: 80 }
+                        ]}
+                        dataSource={filteredPositions}
+                        rowKey="id"
+                        pagination={false}
+                        scroll={{ y: 'calc(100vh - 500px)' }}
+                      />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="委托" key="order">
+                      <Table
+                        size="small"
+                        columns={[
+                          { title: '状态', dataIndex: 'status', width: 80, render: (s) => <Tag>{s}</Tag> },
+                          { title: '报单时间', dataIndex: 'orderTime', width: 160 },
+                          { title: '触发方式', dataIndex: 'triggerType', width: 100 },
+                          { title: '关联指令', dataIndex: 'relatedInstruction', width: 120 },
+                          { title: '合约', dataIndex: 'contract', width: 100 },
+                          { title: '方向', dataIndex: 'direction', width: 80, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
+                          { title: '价格', dataIndex: 'price', width: 100, align: 'right' },
+                          { title: '数量', dataIndex: 'qty', width: 80, align: 'right' },
+                          { title: '操作', key: 'action', width: 80, render: () => <Button size="small" type="link">撤单</Button> }
+                        ]}
+                        dataSource={filteredOrders}
+                        rowKey="id"
+                        pagination={false}
+                        scroll={{ y: 'calc(100vh - 500px)' }}
+                      />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="成交" key="fill">
+                      <Table
+                        size="small"
+                        columns={[
+                          { title: '时间', dataIndex: 'time', width: 160 },
+                          { title: '合约', dataIndex: 'contract', width: 100 },
+                          { title: '方向', dataIndex: 'direction', width: 80, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
+                          { title: '价格', dataIndex: 'price', width: 100, align: 'right' },
+                          { title: '数量', dataIndex: 'qty', width: 80, align: 'right' },
+                          { title: '手续费', dataIndex: 'fee', width: 100, align: 'right' },
+                          { title: '撮合编号', dataIndex: 'matchNo', width: 120 }
+                        ]}
+                        dataSource={mockFills}
+                        rowKey="id"
+                        pagination={false}
+                        scroll={{ y: 'calc(100vh - 500px)' }}
+                      />
+                    </Tabs.TabPane>
+                    <Tabs.TabPane tab="资金" key="fund">
+                      <div style={{ padding: 16 }}>
+                        <Space direction="vertical" style={{ width: '100%' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>权益：</span>
+                            <strong>{mockFunds.equity.toLocaleString()}</strong>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>可用：</span>
+                            <strong style={{ color: 'green' }}>{mockFunds.available.toLocaleString()}</strong>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>占用：</span>
+                            <strong>{mockFunds.occupied.toLocaleString()}</strong>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>风险度：</span>
+                            <strong style={{ color: mockFunds.riskDegree > 0.8 ? 'red' : 'green' }}>{(mockFunds.riskDegree * 100).toFixed(2)}%</strong>
+                          </div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>保证金：</span>
+                            <strong>{mockFunds.margin.toLocaleString()}</strong>
+                          </div>
+                        </Space>
+                      </div>
+                    </Tabs.TabPane>
+                  </Tabs>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* 指令执行抽屉 */}
+          <Drawer
+            title="指令执行"
+            placement="right"
+            width={800}
+            open={instructionDrawerVisible}
+            onClose={() => setInstructionDrawerVisible(false)}
+          >
+            <Table
+              columns={[
+                { title: '指令类型', dataIndex: 'type', width: 150 },
+                { title: '来源', dataIndex: 'source', width: 80 },
+                { title: '合同', dataIndex: 'contract', width: 120 },
+                { title: '合约', dataIndex: 'futures', width: 100 },
+                { title: '方向', dataIndex: 'direction', width: 80, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
+                { title: '数量', dataIndex: 'qty', width: 80, align: 'right' },
+                { title: '执行方式', dataIndex: 'execType', width: 100 },
+                { title: '进度', dataIndex: 'progress', width: 100, render: (p) => <Tag>{p}</Tag> },
+                { title: '操作', key: 'action', width: 150, render: () => (
+                  <Space>
+                    <Button size="small" type="primary">接收</Button>
+                    <Button size="small">拒绝</Button>
+                  </Space>
+                )}
+              ]}
+              dataSource={instructionData}
+              rowKey="id"
+              pagination={false}
+            />
+          </Drawer>
+        </div>
+      );
+    };
+
+    // 现货数据页面
+    const SpotData = () => {
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ padding: 12, background: '#fff', borderBottom: '1px solid #e8e8e8', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
+            <span style={{ fontWeight: 600 }}>现货数据</span>
+            <Button icon={renderIcon('ReloadOutlined')} onClick={() => {
+              const iframe = document.getElementById('spot-data-iframe');
+              if (iframe) iframe.src = iframe.src;
+            }}>刷新</Button>
+          </div>
+          <div style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+            <iframe
+              id="spot-data-iframe"
+              src="https://edb.shinnytech.com/"
+              style={{ width: '100%', height: '100%', border: 'none' }}
+              title="现货数据"
+            />
+          </div>
+        </div>
+      );
+    };
+
+    // 交易日历页面
+    const TradeCalendar = () => {
+      const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+      const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
+      const [remarkModalVisible, setRemarkModalVisible] = useState(false);
+      const [selectedDate, setSelectedDate] = useState(null);
+      const [remarkForm] = Form.useForm();
+      const [remarks, setRemarks] = useState(() => {
+        const saved = localStorage.getItem(`trade-calendar-remarks-${mockPersons[0]?.id || 'default'}`);
+        return saved ? JSON.parse(saved) : {};
+      });
+      
+      const currentUser = mockPersons[0];
+      const userId = currentUser?.id || 'default';
+      
+      // 生成日历数据
+      const calendarData = useMemo(() => {
+        const year = selectedYear;
+        const month = selectedMonth;
+        const firstDay = new Date(year, month - 1, 1);
+        const lastDay = new Date(year, month, 0);
+        const daysInMonth = lastDay.getDate();
+        const startDayOfWeek = firstDay.getDay();
+        
+        const days = [];
+        // 填充空白
+        for (let i = 0; i < startDayOfWeek; i++) {
+          days.push(null);
+        }
+        // 填充日期
+        for (let day = 1; day <= daysInMonth; day++) {
+          const date = new Date(year, month - 1, day);
+          const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+          const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          
+          // 模拟交易日历数据
+          const isTradingDay = !isWeekend; // 简单逻辑：工作日是交易日
+          const exchanges = isTradingDay ? ['上期所', '大商所', '郑商所', '中金所'] : [];
+          const openTime = isTradingDay ? '09:00' : '-';
+          const closeTime = isTradingDay ? '15:00' : '-';
+          
+          days.push({
+            date: dateStr,
+            day,
+            isTradingDay,
+            exchanges,
+            openTime,
+            closeTime,
+            remark: remarks[dateStr] || ''
+          });
+        }
+        return days;
+      }, [selectedYear, selectedMonth, remarks]);
+      
+      const handleDateClick = (dateStr) => {
+        setSelectedDate(dateStr);
+        remarkForm.setFieldsValue({ remark: remarks[dateStr] || '' });
+        setRemarkModalVisible(true);
+      };
+      
+      const handleSaveRemark = () => {
+        remarkForm.validateFields().then(values => {
+          const newRemarks = { ...remarks };
+          if (values.remark && values.remark.trim()) {
+            newRemarks[selectedDate] = values.remark.trim();
+          } else {
+            delete newRemarks[selectedDate];
+          }
+          setRemarks(newRemarks);
+          localStorage.setItem(`trade-calendar-remarks-${userId}`, JSON.stringify(newRemarks));
+          message.success('备注已保存');
+          setRemarkModalVisible(false);
+        });
+      };
+      
+      const yearOptions = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - 2 + i);
+      const monthOptions = Array.from({ length: 12 }, (_, i) => i + 1);
+      
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-filter-bar" style={{ flexShrink: 0 }}>
+            <div className="erp-filter-item">
+              <label>年份：</label>
+              <Select value={selectedYear} onChange={setSelectedYear} style={{ width: 120 }}>
+                {yearOptions.map(year => (
+                  <Select.Option key={year} value={year}>{year}</Select.Option>
+                ))}
+              </Select>
+            </div>
+            <div className="erp-filter-item">
+              <label>月份：</label>
+              <Select value={selectedMonth} onChange={setSelectedMonth} style={{ width: 120 }}>
+                {monthOptions.map(month => (
+                  <Select.Option key={month} value={month}>{month}月</Select.Option>
+                ))}
+              </Select>
+            </div>
+          </div>
+          
+          <div style={{ flex: 1, padding: 16, overflow: 'auto', background: '#fff' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8 }}>
+              {['日', '一', '二', '三', '四', '五', '六'].map(day => (
+                <div key={day} style={{ textAlign: 'center', fontWeight: 600, padding: 8, background: '#f5f5f5' }}>
+                  {day}
+                </div>
+              ))}
+              {calendarData.map((dayData, index) => {
+                if (!dayData) {
+                  return <div key={`empty-${index}`} />;
+                }
+                const { date, day, isTradingDay, exchanges, openTime, closeTime, remark } = dayData;
+                return (
+                  <Card
+                    key={date}
+                    size="small"
+                    style={{
+                      minHeight: 120,
+                      cursor: 'pointer',
+                      border: remark ? '2px solid #1677ff' : '1px solid #e8e8e8'
+                    }}
+                    onClick={() => handleDateClick(date)}
+                  >
+                    <div style={{ textAlign: 'center', marginBottom: 8 }}>
+                      <div style={{ fontSize: 16, fontWeight: 600 }}>{day}</div>
+                      <Tag color={isTradingDay ? 'green' : 'default'} style={{ marginTop: 4 }}>
+                        {isTradingDay ? '交易日' : '非交易日'}
+                      </Tag>
+                    </div>
+                    {isTradingDay && (
+                      <div style={{ fontSize: 11, color: '#666' }}>
+                        <div>交易所：{exchanges.join('、')}</div>
+                        <div>开市：{openTime}</div>
+                        <div>收市：{closeTime}</div>
+                        {remark && (
+                          <div style={{ marginTop: 4, color: '#1677ff', fontWeight: 600 }}>
+                            备注：{remark}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+          
+          <Modal
+            {...MODAL_TEXTS}
+            title={`编辑备注 - ${selectedDate}`}
+            open={remarkModalVisible}
+            onCancel={() => setRemarkModalVisible(false)}
+            onOk={handleSaveRemark}
+          >
+            <Form form={remarkForm} layout="vertical">
+              <Form.Item label="备注" name="remark">
+                <Input.TextArea rows={4} placeholder="请输入备注信息" />
+              </Form.Item>
+            </Form>
+          </Modal>
+        </div>
+      );
+    };
+
+    // 跨期价差矩阵页面
+    const SpreadMatrix = () => {
+      const [selectedVariety, setSelectedVariety] = useState('cat-1-1'); // 默认选择铜
+      const [contracts, setContracts] = useState([]);
+      const [prices, setPrices] = useState({});
+      const [detailModalVisible, setDetailModalVisible] = useState(false);
+      const [selectedCell, setSelectedCell] = useState(null);
+      
+      // 生成12个月合约
+      const generateContracts = (varietyCode) => {
+        const year = new Date().getFullYear();
+        const contracts = [];
+        for (let month = 1; month <= 12; month++) {
+          const monthStr = String(month).padStart(2, '0');
+          const code = `${varietyCode}${year}${monthStr}`;
+          contracts.push({
+            code,
+            name: `${varietyCode}${year}${monthStr}`,
+            month
+          });
+        }
+        return contracts;
+      };
+      
+      // 初始化合约和价格
+      useEffect(() => {
+        const variety = mockSpotCategories
+          .flatMap(cat => cat.children || [])
+          .find(c => c.key === selectedVariety);
+        if (variety) {
+          const varietyCode = variety.title === '铜' ? 'CU' : variety.title === '铝' ? 'AL' : 'CU';
+          const newContracts = generateContracts(varietyCode);
+          setContracts(newContracts);
+          
+          // 初始化价格（模拟）
+          const initialPrices = {};
+          newContracts.forEach(contract => {
+            initialPrices[contract.code] = 5000 + Math.random() * 1000;
+          });
+          setPrices(initialPrices);
+        }
+      }, [selectedVariety]);
+      
+      // 模拟价格刷新
+      useEffect(() => {
+        const interval = setInterval(() => {
+          setPrices(prev => {
+            const newPrices = { ...prev };
+            Object.keys(newPrices).forEach(code => {
+              const change = (Math.random() - 0.5) * 0.01; // ±0.5%变化
+              newPrices[code] = newPrices[code] * (1 + change);
+            });
+            return newPrices;
+          });
+        }, 3000);
+        return () => clearInterval(interval);
+      }, []);
+      
+      const handleRefresh = () => {
+        const variety = mockSpotCategories
+          .flatMap(cat => cat.children || [])
+          .find(c => c.key === selectedVariety);
+        if (variety) {
+          const varietyCode = variety.title === '铜' ? 'CU' : variety.title === '铝' ? 'AL' : 'CU';
+          const newContracts = generateContracts(varietyCode);
+          setContracts(newContracts);
+          
+          const newPrices = {};
+          newContracts.forEach(contract => {
+            newPrices[contract.code] = 5000 + Math.random() * 1000;
+          });
+          setPrices(newPrices);
+          message.success('合约列表已刷新');
+        }
+      };
+      
+      const calculateSpread = (rowCode, colCode) => {
+        if (rowCode === colCode) return null;
+        const rowPrice = prices[rowCode] || 0;
+        const colPrice = prices[colCode] || 0;
+        return rowPrice - colPrice;
+      };
+      
+      const handleCellClick = (rowCode, colCode) => {
+        if (rowCode === colCode) return;
+        setSelectedCell({ rowCode, colCode, rowPrice: prices[rowCode], colPrice: prices[colCode] });
+        setDetailModalVisible(true);
+      };
+      
+      const handleExport = () => {
+        message.success('导出功能（模拟）');
+      };
+      
+      const varietyOptions = mockSpotCategories.flatMap(cat => 
+        (cat.children || []).map(child => ({
+          label: `${cat.title} - ${child.title}`,
+          value: child.key
+        }))
+      );
+      
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div className="erp-filter-bar" style={{ flexShrink: 0 }}>
+            <div className="erp-filter-item">
+              <label>期货品种：</label>
+              <Select value={selectedVariety} onChange={setSelectedVariety} style={{ width: 200 }}>
+                {varietyOptions.map(opt => (
+                  <Select.Option key={opt.value} value={opt.value}>{opt.label}</Select.Option>
+                ))}
+              </Select>
+            </div>
+            <Space style={{ marginLeft: 'auto' }}>
+              <Button icon={renderIcon('ReloadOutlined')} onClick={handleRefresh}>刷新合约列表</Button>
+              <Button icon={renderIcon('DownloadOutlined')} onClick={handleExport}>导出价差矩阵</Button>
+            </Space>
+          </div>
+          
+          <div style={{ flex: 1, overflow: 'auto', padding: 16, background: '#fff' }}>
+            <Table
+              size="small"
+              columns={[
+                {
+                  title: '合约',
+                  dataIndex: 'code',
+                  key: 'code',
+                  fixed: 'left',
+                  width: 100,
+                  render: (code) => <strong>{code}</strong>
+                },
+                ...contracts.map(contract => ({
+                  title: contract.code,
+                  key: contract.code,
+                  width: 120,
+                  align: 'right',
+                  render: (_, record) => {
+                    const spread = calculateSpread(record.code, contract.code);
+                    if (spread === null) {
+                      return <span style={{ color: '#999' }}>--</span>;
+                    }
+                    const color = spread >= 0 ? 'red' : 'green';
+                    return (
+                      <span
+                        style={{ color, cursor: 'pointer', fontWeight: 600 }}
+                        onClick={() => handleCellClick(record.code, contract.code)}
+                      >
+                        {spread.toFixed(2)}
+                      </span>
+                    );
+                  }
+                }))
+              ]}
+              dataSource={contracts.map(c => ({ code: c.code, key: c.code }))}
+              pagination={false}
+              scroll={{ x: 'max-content' }}
+            />
+          </div>
+          
+          <Modal
+            {...MODAL_TEXTS}
+            title="价差详情"
+            open={detailModalVisible}
+            onCancel={() => setDetailModalVisible(false)}
+            footer={[
+              <Button key="close" onClick={() => setDetailModalVisible(false)}>关闭</Button>
+            ]}
+          >
+            {selectedCell && (
+              <div>
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  <div>
+                    <strong>行合约：</strong>{selectedCell.rowCode} - 价格：{selectedCell.rowPrice?.toFixed(2)}
+                  </div>
+                  <div>
+                    <strong>列合约：</strong>{selectedCell.colCode} - 价格：{selectedCell.colPrice?.toFixed(2)}
+                  </div>
+                  <Divider />
+                  <div>
+                    <strong>价差：</strong>
+                    <span style={{ color: (selectedCell.rowPrice - selectedCell.colPrice) >= 0 ? 'red' : 'green', fontSize: 18, fontWeight: 600 }}>
+                      {(selectedCell.rowPrice - selectedCell.colPrice).toFixed(2)}
+                    </span>
+                  </div>
+                </Space>
+              </div>
+            )}
+          </Modal>
+        </div>
+      );
+    };
+
     const MobileWorkbench = ({ user, roles, workbenches, onEnterDesktop }) => {
       const [activeWorkbench, setActiveWorkbench] = useState(null);
 
@@ -2857,9 +5618,27 @@
           { key: 'contract-report', label: '报表', icon: 'BarChartOutlined' }
         ],
         instruction: [
-          { key: 'instruction-settings', label: '指令设置', icon: 'SettingOutlined' },
+          { 
+            key: 'instruction-settings', 
+            label: '指令权限设置', 
+            icon: 'SettingOutlined',
+            children: [
+              { key: 'person-instruction-permission', label: '人员指令权限设置', icon: 'UserOutlined' },
+              { key: 'customer-instruction-permission', label: '客商指令权限设置', icon: 'TeamOutlined' },
+              { key: 'avg-price-auto-instruction', label: '均价自动指令启停', icon: 'PoweroffOutlined' }
+            ]
+          },
           { key: 'instruction-workbench', label: '各岗位的指令工作台', icon: 'DesktopOutlined' },
           { key: 'instruction-report', label: '报表', icon: 'BarChartOutlined' }
+        ],
+        match: [
+          { key: 'match-remark', label: '匹配宝与委托备注', icon: 'FileTextOutlined' }
+        ],
+        trade: [
+          { key: 'web-trade', label: 'Web交易终端', icon: 'StockOutlined' },
+          { key: 'spot-data', label: '现货数据', icon: 'DatabaseOutlined' },
+          { key: 'trade-calendar', label: '交易日历', icon: 'CalendarOutlined' },
+          { key: 'spread-matrix', label: '跨期价差矩阵', icon: 'TableOutlined' }
         ],
         settings: [
           { key: 'spot-brand', label: '现货品种与价格', icon: 'DatabaseOutlined' },
@@ -2962,6 +5741,22 @@
             return <ContractManagement contractType="purchase" />;
           case 'instruction-workbench':
             return <InstructionWorkbench />;
+          case 'person-instruction-permission':
+            return <PersonInstructionPermission />;
+          case 'customer-instruction-permission':
+            return <CustomerInstructionPermission />;
+          case 'avg-price-auto-instruction':
+            return <AvgPriceAutoInstruction />;
+          case 'match-remark':
+            return <MatchAndRemark />;
+          case 'web-trade':
+            return <WebTradeTerminal />;
+          case 'spot-data':
+            return <SpotData />;
+          case 'trade-calendar':
+            return <TradeCalendar />;
+          case 'spread-matrix':
+            return <SpreadMatrix />;
           default:
             return <div style={{ padding: 40, textAlign: 'center', color: '#8a94a6' }}>请选择菜单项</div>;
         }
