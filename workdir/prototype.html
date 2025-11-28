@@ -252,6 +252,57 @@
       flex-direction: column;
     }
 
+    .erp-table-wrapper {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .erp-fill-tabs {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .erp-fill-tabs .ant-tabs-content-holder,
+    .erp-fill-tabs .ant-tabs-content,
+    .erp-fill-tabs .ant-tabs-tabpane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .erp-fill-tabs .ant-tabs-tabpane > div {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .erp-table-wrapper .ant-table-wrapper,
+    .erp-table-wrapper .ant-spin-nested-loading,
+    .erp-table-wrapper .ant-spin-container,
+    .erp-table-wrapper .ant-table,
+    .erp-table-wrapper .ant-table-container,
+    .erp-table-wrapper .ant-table-content {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .erp-table-wrapper .ant-table-body {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+
     .erp-filter-bar {
       display: flex;
       gap: 12px;
@@ -507,7 +558,8 @@
     const {
       Layout, Menu, Tabs, Space, Input, InputNumber, Button, Avatar, Badge, Dropdown,
       ConfigProvider, theme, Select, Tooltip, Tree, Card, Tag, Divider, Table, Form,
-      Drawer, DatePicker, Modal, message, Radio, Checkbox, Switch, TreeSelect, Empty, Alert
+      Drawer, DatePicker, Modal, message, Radio, Checkbox, Switch, TreeSelect, Empty, Alert,
+      List, Descriptions, Timeline
     } = antd;
     const { Header, Sider, Content } = Layout;
     const icons = window.icons;
@@ -1176,7 +1228,7 @@
                   自定义列
                 </Button>
               </div>
-              <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <div className="erp-table-wrapper">
                 <Table
                   rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
                   columns={tableColumns}
@@ -1864,7 +1916,7 @@
                   自定义列
                 </Button>
               </div>
-              <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+              <div className="erp-table-wrapper">
                 <Table
                   rowSelection={{ 
                     type: 'radio',
@@ -2119,7 +2171,7 @@
             </Button>
           </div>
           <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <div className="erp-table-wrapper">
               <Table
                 rowSelection={{ 
                   type: 'radio',
@@ -2361,7 +2413,7 @@
             </Button>
           </div>
           <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <div className="erp-table-wrapper">
               <Table
                 rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
                 columns={tableColumns}
@@ -2594,7 +2646,7 @@
             </Button>
           </div>
           <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <div className="erp-table-wrapper">
               <Table
                 rowSelection={{ 
                   type: 'radio',
@@ -2864,7 +2916,7 @@
             </Button>
           </div>
           <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <div className="erp-table-wrapper">
               <Table
                 rowSelection={{ 
                   type: 'radio',
@@ -2918,6 +2970,416 @@
             <ColumnEditor
               allColumns={allCols}
               visibleColumns={personRoleVisibleColumns}
+              onSave={handleColumnSave}
+              onCancel={() => setColumnEditorVisible(false)}
+              onRestoreDefault={handleColumnRestoreDefault}
+            />
+          )}
+        </div>
+      );
+    };
+
+    // 自定义字段配置页面
+    const CustomFieldManagement = () => {
+      const [selectedEntityType, setSelectedEntityType] = useState('customer');
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [editModalVisible, setEditModalVisible] = useState(false);
+      const [form] = Form.useForm();
+
+      // 实体类型列表
+      const entityTypes = [
+        { key: 'customer', label: '客商', icon: 'TeamOutlined' },
+        { key: 'contract', label: '合同', icon: 'FileTextOutlined' },
+        { key: 'spot_brand', label: '现货品种', icon: 'DatabaseOutlined' },
+        { key: 'spot_futures_remark', label: '期现备注', icon: 'FileTextOutlined' },
+        { key: 'entrust_order', label: '期货委托单', icon: 'ShoppingCartOutlined' },
+        { key: 'person', label: '人员', icon: 'UserOutlined' },
+        { key: 'futures_account', label: '期货账户', icon: 'AccountBookOutlined' }
+      ];
+
+      // 模拟数据
+      const [customFields, setCustomFields] = useState({
+        customer: [
+          { id: 1, fieldCode: 'industry', fieldName: '所属行业', fieldType: 'text', isRequired: false, sortOrder: 1, isActive: true },
+          { id: 2, fieldCode: 'business_area', fieldName: '业务区域', fieldType: 'text', isRequired: false, sortOrder: 2, isActive: true }
+        ],
+        contract: [
+          { id: 3, fieldCode: 'project_number', fieldName: '项目编号', fieldType: 'text', isRequired: false, sortOrder: 1, isActive: true },
+          { id: 4, fieldCode: 'warehouse', fieldName: '可选仓库', fieldType: 'select', isRequired: false, sortOrder: 2, isActive: true, options: '仓库A|仓库A\n仓库B|仓库B\n仓库C|仓库C\n仓库D|仓库D\n仓库E|仓库E' }
+        ],
+        spot_brand: [],
+        spot_futures_remark: [],
+        entrust_order: [],
+        person: [],
+        futures_account: []
+      });
+
+      // 字段类型选项
+      const fieldTypeOptions = [
+        { value: 'text', label: '文本' },
+        { value: 'textarea', label: '长文本' },
+        { value: 'number', label: '数字' },
+        { value: 'date', label: '日期' },
+        { value: 'datetime', label: '日期时间' },
+        { value: 'select', label: '下拉选择' },
+        { value: 'multiselect', label: '多选下拉' },
+        { value: 'boolean', label: '布尔（是/否）' }
+      ];
+
+      // 当前实体类型的字段列表
+      const currentFields = customFields[selectedEntityType] || [];
+
+      // 所有可用列定义
+      const allColumnDefinitions = [
+        { key: 'fieldName', title: '字段名称', dataIndex: 'fieldName', width: 200 },
+        { key: 'fieldCode', title: '字段编码', dataIndex: 'fieldCode', width: 150 },
+        { 
+          key: 'fieldType', 
+          title: '字段类型', 
+          dataIndex: 'fieldType', 
+          width: 120,
+          render: (type) => {
+            const typeMap = {
+              'text': '文本',
+              'textarea': '长文本',
+              'number': '数字',
+              'date': '日期',
+              'datetime': '日期时间',
+              'select': '下拉选择',
+              'multiselect': '多选下拉',
+              'boolean': '布尔（是/否）'
+            };
+            return typeMap[type] || type;
+          }
+        },
+        { 
+          key: 'isRequired', 
+          title: '是否必填', 
+          dataIndex: 'isRequired', 
+          width: 100,
+          render: (required) => required ? <Tag color="red">必填</Tag> : <Tag>选填</Tag>
+        },
+        {
+          key: 'options',
+          title: '选项列表',
+          dataIndex: 'options',
+          width: 200,
+          render: (options, record) => {
+            if (record.fieldType === 'select' || record.fieldType === 'multiselect') {
+              if (options) {
+                const optionList = options.split('\n').filter(o => o.trim()).slice(0, 3);
+                const displayText = optionList.map(opt => {
+                  const parts = opt.split('|');
+                  return parts.length > 1 ? parts[1] : parts[0];
+                }).join('、');
+                const moreCount = options.split('\n').filter(o => o.trim()).length - 3;
+                return (
+                  <Tooltip title={options.split('\n').map(opt => {
+                    const parts = opt.split('|');
+                    return parts.length > 1 ? `${parts[1]}(${parts[0]})` : opt;
+                  }).join('\n')}>
+                    <span>{displayText}{moreCount > 0 ? ` 等${moreCount + 3}项` : ''}</span>
+                  </Tooltip>
+                );
+              }
+              return <Tag color="orange">未配置</Tag>;
+            }
+            return '-';
+          }
+        },
+        { 
+          key: 'isActive', 
+          title: '状态', 
+          dataIndex: 'isActive', 
+          width: 100,
+          render: (active) => (
+            <span className={`erp-status-badge ${active ? 'enabled' : 'disabled'}`}>
+              {active ? '启用' : '禁用'}
+            </span>
+          )
+        },
+        { key: 'sortOrder', title: '排序', dataIndex: 'sortOrder', width: 80, align: 'right' }
+      ];
+
+      const defaultVisibleColumns = allColumnDefinitions;
+
+      const {
+        tableColumns,
+        columnEditorVisible,
+        setColumnEditorVisible,
+        handleColumnSave,
+        handleColumnRestoreDefault,
+        allColumnDefinitions: allCols,
+        defaultVisibleColumns: defaultCols,
+        visibleColumns: customFieldVisibleColumns
+      } = useColumnManager('custom-field', allColumnDefinitions, defaultVisibleColumns, {
+        onRowSelect: setSelectedRowKeys
+      });
+
+      const handleAdd = () => {
+        form.resetFields();
+        form.setFieldsValue({
+          fieldType: 'text',
+          isRequired: false,
+          isActive: true,
+          sortOrder: currentFields.length + 1
+        });
+        setEditModalVisible(true);
+      };
+
+      const handleEdit = () => {
+        if (selectedRowKeys.length !== 1) {
+          message.warning('请选择一条记录进行编辑');
+          return;
+        }
+        const record = currentFields.find(f => f.id === selectedRowKeys[0]);
+        if (record) {
+          form.setFieldsValue(record);
+          setEditModalVisible(true);
+        }
+      };
+
+      const handleDelete = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要删除的记录');
+          return;
+        }
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: '确认删除',
+          content: `确定要删除选中的 ${selectedRowKeys.length} 条自定义字段吗？删除后历史数据将保留。`,
+          onOk: () => {
+            const newFields = currentFields.filter(f => !selectedRowKeys.includes(f.id));
+            setCustomFields({
+              ...customFields,
+              [selectedEntityType]: newFields
+            });
+            message.success('删除成功');
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      const handleSave = () => {
+        form.validateFields().then(values => {
+          const editingId = form.getFieldValue('id');
+          
+          // 验证：如果是select或multiselect类型，必须配置选项列表
+          if ((values.fieldType === 'select' || values.fieldType === 'multiselect') && !values.options?.trim()) {
+            message.error('下拉选择和多选下拉类型的字段必须配置选项列表');
+            return;
+          }
+          
+          const newField = {
+            ...values,
+            id: editingId || Date.now(),
+            fieldCode: values.fieldCode || values.fieldName.toLowerCase().replace(/\s+/g, '_')
+          };
+
+          if (editingId) {
+            // 编辑
+            const newFields = currentFields.map(f => f.id === editingId ? newField : f);
+            setCustomFields({
+              ...customFields,
+              [selectedEntityType]: newFields
+            });
+          } else {
+            // 新增
+            // 检查字段编码是否重复
+            const exists = currentFields.some(f => f.fieldCode === newField.fieldCode);
+            if (exists) {
+              message.error('字段编码已存在，请使用其他编码');
+              return;
+            }
+            setCustomFields({
+              ...customFields,
+              [selectedEntityType]: [...currentFields, newField]
+            });
+          }
+          
+          message.success('保存成功');
+          setEditModalVisible(false);
+          form.resetFields();
+          setSelectedRowKeys([]);
+        });
+      };
+
+      const handleToggleStatus = () => {
+        if (selectedRowKeys.length === 0) {
+          message.warning('请选择要操作的记录');
+          return;
+        }
+        const hasDisabled = currentFields.some(f => selectedRowKeys.includes(f.id) && !f.isActive);
+        const action = hasDisabled ? '启用' : '禁用';
+        Modal.confirm({
+          ...MODAL_TEXTS,
+          title: `确认${action}`,
+          content: `确定要${action}选中的 ${selectedRowKeys.length} 条记录吗？`,
+          onOk: () => {
+            const newFields = currentFields.map(f => 
+              selectedRowKeys.includes(f.id) ? { ...f, isActive: !f.isActive } : f
+            );
+            setCustomFields({
+              ...customFields,
+              [selectedEntityType]: newFields
+            });
+            message.success(`${action}成功`);
+            setSelectedRowKeys([]);
+          }
+        });
+      };
+
+      return (
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', flex: 1, minHeight: 0, gap: 9 }}>
+            {/* 左侧实体类型列表 */}
+            <div style={{ 
+              width: 200, 
+              backgroundColor: '#fff', 
+              borderRadius: 12, 
+              padding: 8,
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 12px 30px rgba(22, 119, 255, 0.05)'
+            }}>
+              <div style={{ 
+                padding: '8px 12px', 
+                borderBottom: '1px solid #f0f0f0',
+                fontWeight: 500,
+                color: '#1677ff'
+              }}>
+                实体类型
+              </div>
+              <div style={{ flex: 1, overflow: 'auto', paddingTop: 8 }}>
+                {entityTypes.map(entity => (
+                  <div
+                    key={entity.key}
+                    onClick={() => {
+                      setSelectedEntityType(entity.key);
+                      setSelectedRowKeys([]);
+                    }}
+                    style={{
+                      padding: '10px 12px',
+                      cursor: 'pointer',
+                      borderRadius: 6,
+                      marginBottom: 4,
+                      backgroundColor: selectedEntityType === entity.key ? 'rgba(22, 119, 255, 0.1)' : 'transparent',
+                      color: selectedEntityType === entity.key ? '#1677ff' : '#333',
+                      fontWeight: selectedEntityType === entity.key ? 500 : 400,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8
+                    }}
+                  >
+                    {renderIcon(entity.icon)}
+                    <span>{entity.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 右侧字段列表 */}
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <div className="erp-toolbar">
+                <Space wrap>
+                  <Button type="primary" icon={renderIcon('PlusOutlined')} onClick={handleAdd}>增加</Button>
+                  <Button icon={renderIcon('EditOutlined')} onClick={handleEdit} disabled={selectedRowKeys.length !== 1}>编辑</Button>
+                  <Button danger icon={renderIcon('DeleteOutlined')} onClick={handleDelete} disabled={selectedRowKeys.length === 0}>删除</Button>
+                  <Button icon={renderIcon('PoweroffOutlined')} onClick={handleToggleStatus} disabled={selectedRowKeys.length === 0}>禁用/启用</Button>
+                  <Button icon={renderIcon('DownloadOutlined')}>导出</Button>
+                </Space>
+                <Button 
+                  icon={renderIcon('SettingOutlined')} 
+                  onClick={() => setColumnEditorVisible(true)}
+                  style={{ marginLeft: 'auto' }}
+                >
+                  自定义列
+                </Button>
+              </div>
+              <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
+                <div className="erp-table-wrapper">
+                  <Table
+                    rowSelection={{ 
+                      type: 'radio',
+                      selectedRowKeys, 
+                      onChange: setSelectedRowKeys 
+                    }}
+                    columns={tableColumns}
+                    dataSource={currentFields}
+                    rowKey="id"
+                    scroll={{ x: 'max-content', y: 'calc(100vh - 400px)' }}
+                    pagination={createPaginationConfig()}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 编辑弹窗 */}
+          <Modal
+            {...MODAL_TEXTS}
+            title="编辑自定义字段"
+            open={editModalVisible}
+            onCancel={() => { 
+              setEditModalVisible(false); 
+              form.resetFields(); 
+            }}
+            width={600}
+            onOk={handleSave}
+          >
+            <Form form={form} layout="vertical">
+              <Form.Item label="字段名称" name="fieldName" required rules={[{ required: true, message: '请输入字段名称' }]}>
+                <Input placeholder="请输入字段名称" />
+              </Form.Item>
+              <Form.Item label="字段编码" name="fieldCode" required rules={[{ required: true, message: '请输入字段编码' }, { pattern: /^[a-z][a-z0-9_]*$/, message: '字段编码只能包含小写字母、数字和下划线，且必须以字母开头' }]}>
+                <Input placeholder="字段编码（自动生成或手动输入）" />
+              </Form.Item>
+              <Form.Item label="字段类型" name="fieldType" required rules={[{ required: true, message: '请选择字段类型' }]}>
+                <Select placeholder="请选择字段类型">
+                  {fieldTypeOptions.map(opt => (
+                    <Select.Option key={opt.value} value={opt.value}>{opt.label}</Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+              <Form.Item 
+                noStyle 
+                shouldUpdate={(prevValues, currentValues) => prevValues.fieldType !== currentValues.fieldType}
+              >
+                {({ getFieldValue }) => {
+                  const fieldType = getFieldValue('fieldType');
+                  if (fieldType === 'select' || fieldType === 'multiselect') {
+                    return (
+                      <Form.Item 
+                        label="选项列表" 
+                        name="options" 
+                        rules={[{ required: true, message: '请输入选项列表' }]}
+                        extra="每行一个选项，格式：选项值|选项显示名称 或直接输入选项名称（值默认为名称）。例如：仓库A|仓库A 或直接输入：仓库A"
+                      >
+                        <Input.TextArea 
+                          placeholder="每行一个选项，例如：&#10;仓库A|仓库A&#10;仓库B|仓库B&#10;仓库C|仓库C"
+                          rows={6}
+                        />
+                      </Form.Item>
+                    );
+                  }
+                  return null;
+                }}
+              </Form.Item>
+              <Form.Item label="是否必填" name="isRequired" valuePropName="checked">
+                <Switch />
+              </Form.Item>
+              <Form.Item label="排序" name="sortOrder">
+                <InputNumber min={1} style={{ width: '100%' }} />
+              </Form.Item>
+              <Form.Item label="状态" name="isActive" valuePropName="checked">
+                <Switch />
+              </Form.Item>
+            </Form>
+          </Modal>
+          {columnEditorVisible && (
+            <ColumnEditor
+              allColumns={allCols}
+              visibleColumns={customFieldVisibleColumns}
               onSave={handleColumnSave}
               onCancel={() => setColumnEditorVisible(false)}
               onRestoreDefault={handleColumnRestoreDefault}
@@ -2997,7 +3459,7 @@
             </Button>
           </div>
           <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <div className="erp-table-wrapper">
               <Table
                 rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
                 columns={tableColumns}
@@ -3236,6 +3698,55 @@
               <Form.Item label="交割日期" name="deliveryDate" required><DatePicker style={{ width: '100%' }} /></Form.Item>
               <Form.Item label="均价起止日" name="avgDateRange"><DatePicker.RangePicker style={{ width: '100%' }} /></Form.Item>
               <Form.Item label="点价截止日" name="priceDeadline"><DatePicker style={{ width: '100%' }} /></Form.Item>
+              
+              {/* 自定义字段区域 - 这些字段由管理员在"全局设置 > 自定义字段配置"中动态配置 */}
+              <Divider orientation="left" style={{ marginTop: 16, marginBottom: 16 }}>自定义字段</Divider>
+              
+              {/* 
+                示例：可选仓库（下拉选择类型 - select）
+                字段类型：下拉选择（select）
+                配置说明：在自定义字段配置中，字段类型选择"下拉选择"，选项列表配置为：
+                  - 仓库A
+                  - 仓库B
+                  - 仓库C
+                  - 仓库D
+                  - 仓库E
+                实际实现时，这些选项会从自定义字段定义中动态加载
+              */}
+              <Form.Item label="可选仓库" name="customWarehouse">
+                <Select placeholder="请选择仓库">
+                  <Select.Option value="warehouse_a">仓库A</Select.Option>
+                  <Select.Option value="warehouse_b">仓库B</Select.Option>
+                  <Select.Option value="warehouse_c">仓库C</Select.Option>
+                  <Select.Option value="warehouse_d">仓库D</Select.Option>
+                  <Select.Option value="warehouse_e">仓库E</Select.Option>
+                </Select>
+              </Form.Item>
+              
+              {/* 
+                示例：可选仓库（多选下拉类型 - multiselect）
+                如果管理员在配置时将字段类型设置为"多选下拉"，则显示为多选模式
+                字段类型：多选下拉（multiselect）
+                实际实现时，根据字段定义中的类型动态渲染为单选或多选
+              */}
+              {/* <Form.Item label="可选仓库（多选）" name="customWarehouseMultiple">
+                <Select mode="multiple" placeholder="请选择仓库（可多选）">
+                  <Select.Option value="warehouse_a">仓库A</Select.Option>
+                  <Select.Option value="warehouse_b">仓库B</Select.Option>
+                  <Select.Option value="warehouse_c">仓库C</Select.Option>
+                  <Select.Option value="warehouse_d">仓库D</Select.Option>
+                  <Select.Option value="warehouse_e">仓库E</Select.Option>
+                </Select>
+              </Form.Item> */}
+              
+              {/* 
+                注意：实际实现时，自定义字段应该根据当前实体的自定义字段定义动态渲染
+                系统需要：
+                1. 查询合同实体的所有启用的自定义字段定义
+                2. 根据字段类型动态渲染对应的表单控件
+                3. 支持字段的排序、分组显示
+                4. 根据字段定义中的"是否必填"属性设置表单验证规则
+              */}
             </Form>
           </Modal>
           {columnEditorVisible && (
@@ -3323,7 +3834,7 @@
             </Button>
           </div>
           <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <div className="erp-table-wrapper">
               <Table
                 rowSelection={{ selectedRowKeys, onChange: setSelectedRowKeys }}
                 columns={tableColumns}
@@ -3529,7 +4040,7 @@
             </Button>
           </div>
           <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <div className="erp-table-wrapper">
               <Table
                 rowSelection={{ 
                   type: 'radio',
@@ -3789,7 +4300,7 @@
             </Button>
           </div>
           <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <div className="erp-table-wrapper">
               <Table
                 rowSelection={{ 
                   type: 'radio',
@@ -3947,7 +4458,7 @@
               description="本表格数据来源于人员指令权限设置中针对保值方案设置了'保值方案均价净值套保指令'或'均价合同套保指令'的记录。启动后，系统将每日自动进行按保值方案或按合同的均价指令发起。默认状态为禁用。"
               style={{ marginBottom: 16 }}
             />
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <div className="erp-table-wrapper">
               <Table
                 rowSelection={{ 
                   type: 'radio',
@@ -4401,7 +4912,7 @@
             </Space>
           </div>
           <div className="erp-table-panel" style={{ flex: 1, minHeight: 0 }}>
-            <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+            <div className="erp-table-wrapper">
               <Table
                 rowSelection={{ 
                   type: 'radio',
@@ -4761,345 +5272,950 @@
     // Web交易终端页面
     const WebTradeTerminal = () => {
       const [selectedAccount, setSelectedAccount] = useState(mockFuturesAccounts[0]?.account || '');
-      const [selectedHedgePlan, setSelectedHedgePlan] = useState(null);
-      const [instructionDrawerVisible, setInstructionDrawerVisible] = useState(false);
-      const [orderForm] = Form.useForm();
+      const [selectedHedgePlan, setSelectedHedgePlan] = useState(mockHedgePlans[0]?.name || null);
       const [selectedContract, setSelectedContract] = useState('CU2401');
-      
-      // 模拟持仓数据
+      const [selectedInstructionTab, setSelectedInstructionTab] = useState('mine');
+      const [selectedWatchlistTab, setSelectedWatchlistTab] = useState('自选1');
+      const [instructionDrawerVisible, setInstructionDrawerVisible] = useState(false);
+      const [activeInstruction, setActiveInstruction] = useState(null);
+      const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+      const [selectedInstructionId, setSelectedInstructionId] = useState(null);
+      const [assignModalVisible, setAssignModalVisible] = useState(false);
+      const [currentAssignOrderId, setCurrentAssignOrderId] = useState(null);
+      const [assignForm] = Form.useForm();
+      const [orderForm] = Form.useForm();
+
+      const mockInstructionCards = [
+        {
+          id: 'INS-001',
+          type: '均价合同指令',
+          status: '待认领',
+          hedgePlan: '整体保值方案A',
+          initiator: '福建石油',
+          contractNo: 'HT2025-0001',
+          tradeType: '销售',
+          contractQty: 1000,
+          contractPrice: 4670,
+          futuresDirection: '买',
+          futuresQty: 200,
+          futuresContract: 'CU2401',
+          futuresPrice: 5300,
+          customer: '福建石油',
+          tags: ['长单保值'],
+          scopes: ['mine', 'all'],
+          updatedAt: '2025-11-24 10:02',
+          detail: {
+            pricing: {
+              method: '点价',
+              window: '2025-11-20 ~ 2025-11-25',
+              basis: 120,
+              doneQty: 600,
+              undoneQty: 400,
+              logistics: '自提',
+              warehouse: '上海保税仓'
+            },
+            children: [
+              { id: 'INS-001-1', type: '子指令-均价', status: '执行中', operator: '交易员A', qty: 80, direction: '买' },
+              { id: 'INS-001-2', type: '子指令-移仓', status: '待执行', operator: '交易员B', qty: 50, direction: '卖' }
+            ],
+            remarks: [
+              { id: 1, author: '风控员', content: '请注意客商敞口，优先完成当日均价', time: '2025-11-24 09:50' },
+              { id: 2, author: '交易员A', content: '上午已完成50手，待匹配现货', time: '2025-11-24 11:20' }
+            ],
+            logs: [
+              { id: 1, content: '发起指令，系统自动生成期货需求200手', time: '2025-11-24 09:00' },
+              { id: 2, content: '合同更新：数量+100吨', time: '2025-11-24 09:45' }
+            ]
+          }
+        },
+        {
+          id: 'INS-002',
+          type: '点价合同指令',
+          status: '认领中',
+          hedgePlan: '单单保值方案B',
+          initiator: '嘉禾化工',
+          contractNo: 'HT2025-0008',
+          tradeType: '采购',
+          contractQty: 800,
+          contractPrice: 4520,
+          futuresDirection: '卖',
+          futuresQty: 120,
+          futuresContract: 'AL2401',
+          futuresPrice: 5240,
+          customer: '嘉禾化工',
+          tags: ['点价'],
+          scopes: ['claim', 'all'],
+          updatedAt: '2025-11-24 11:30',
+          detail: {
+            pricing: {
+              method: '点价',
+              window: '2025-11-24 09:00 ~ 15:00',
+              basis: -80,
+              doneQty: 400,
+              undoneQty: 400,
+              logistics: '送到',
+              warehouse: '无锡仓'
+            },
+            children: [
+              { id: 'INS-002-1', type: '子指令-点价', status: '已完成', operator: '交易员B', qty: 60, direction: '卖' },
+              { id: 'INS-002-2', type: '子指令-点价', status: '待完成', operator: '交易员C', qty: 60, direction: '卖' }
+            ],
+            remarks: [
+              { id: 1, author: '匹配员', content: '已匹配客商嘉禾化工发运批次', time: '2025-11-24 12:10' }
+            ],
+            logs: [
+              { id: 1, content: '嘉禾提交点价申请，确认基差-80', time: '2025-11-24 10:05' }
+            ]
+          }
+        }
+      ];
+
+      const mockWatchlists = {
+        '自选1': [
+          { key: 'CU2401', code: 'CU2401', name: '沪铜主力', trend: '+0.42%', latest: 5300, buyPrice: 5299, buyQty: 24, sellPrice: 5301, sellQty: 26 },
+          { key: 'AL2401', code: 'AL2401', name: '沪铝主力', trend: '-0.18%', latest: 18230, buyPrice: 18225, buyQty: 12, sellPrice: 18235, sellQty: 10 }
+        ],
+        '自选2': [
+          { key: 'ZN2401', code: 'ZN2401', name: '沪锌主力', trend: '+0.12%', latest: 21650, buyPrice: 21645, buyQty: 8, sellPrice: 21655, sellQty: 9 }
+        ],
+        '自选3': [],
+        '外盘行情(延时)': [
+          { key: 'GC2402', code: 'GC2402', name: 'COMEX金', trend: '-0.21%', latest: 2045.3, buyPrice: 2045.1, buyQty: 6, sellPrice: 2045.8, sellQty: 8 }
+        ]
+      };
+
+      const mockMarketData = {
+        CU2401: {
+          latest: 5300,
+          change: 50,
+          changePercent: 0.95,
+          volume: 10000,
+          openInterest: 50000,
+          high: 5320,
+          low: 5230,
+          open: 5250,
+          prevClose: 5250,
+          limitUp: 5500,
+          limitDown: 5000,
+          increase: 1200,
+          amplitude: '0.71%',
+          bid: [5299, 5298, 5297, 5296, 5295],
+          bidVol: [24, 20, 18, 16, 12],
+          ask: [5301, 5302, 5303, 5304, 5305],
+          askVol: [22, 21, 19, 17, 15]
+        },
+        AL2401: {
+          latest: 18230,
+          change: -30,
+          changePercent: -0.16,
+          volume: 8000,
+          openInterest: 42000,
+          high: 18320,
+          low: 18120,
+          open: 18280,
+          prevClose: 18260,
+          limitUp: 18900,
+          limitDown: 17600,
+          increase: -600,
+          amplitude: '0.55%',
+          bid: [18228, 18226, 18224, 18222, 18220],
+          bidVol: [14, 12, 10, 8, 6],
+          ask: [18232, 18234, 18236, 18238, 18240],
+          askVol: [13, 11, 9, 7, 5]
+        }
+      };
+
+      const mockMatchOrders = [
+        {
+          id: 1,
+          instructionId: 'INS-001',
+          futuresAccount: 'ACC001',
+          hedgePlan: '整体保值方案A',
+          dateTime: '2025-11-24 10:30',
+          shortNo: 'NO001',
+          contract: 'CU2401',
+          direction: '买入',
+          avgPrice: 5300,
+          tradedQty: 50,
+          orderPrice: 5300,
+          unmatchedQty: 20,
+          orderStatus: '部成',
+          orderRemark: '',
+          spotRemarks: [
+            { id: 1, qty: 20, spotQty: 100, pricingPrice: 5300, tag: '长单保值', remark: '待匹配', customer: '供应商A', contractNo: 'HT2025-0001', isMatched: false }
+          ]
+        },
+        {
+          id: 2,
+          instructionId: 'INS-002',
+          futuresAccount: 'ACC002',
+          hedgePlan: '单单保值方案B',
+          dateTime: '2025-11-24 11:00',
+          shortNo: 'NO002',
+          contract: 'AL2401',
+          direction: '卖出',
+          avgPrice: 5250,
+          tradedQty: 30,
+          orderPrice: 5250,
+          unmatchedQty: 10,
+          orderStatus: '全成',
+          orderRemark: '点价组合',
+          spotRemarks: [
+            { id: 2, qty: 15, spotQty: 80, pricingPrice: 5250, tag: '点价', remark: '嘉禾第一批', customer: '嘉禾化工', contractNo: 'HT2025-0008', isMatched: true }
+          ]
+        },
+        {
+          id: 3,
+          instructionId: 'INS-001',
+          futuresAccount: 'ACC001',
+          hedgePlan: '整体保值方案A',
+          dateTime: '2025-11-24 13:20',
+          shortNo: 'NO003',
+          contract: 'CU2402',
+          direction: '卖出',
+          avgPrice: 5340,
+          tradedQty: 0,
+          orderPrice: 5340,
+          unmatchedQty: 40,
+          orderStatus: '未成',
+          orderRemark: '',
+          spotRemarks: []
+        }
+      ];
+
+      const selectedInstruction = useMemo(
+        () => mockInstructionCards.find(item => item.id === selectedInstructionId) || null,
+        [mockInstructionCards, selectedInstructionId]
+      );
+
+      const selectedOrder = useMemo(
+        () => mockMatchOrders.find(order => order.id === selectedRowKeys[0]) || null,
+        [mockMatchOrders, selectedRowKeys]
+      );
+
+      const assignOrder = useMemo(
+        () => mockMatchOrders.find(order => order.id === currentAssignOrderId) || null,
+        [currentAssignOrderId, mockMatchOrders]
+      );
+
       const mockPositions = [
-        { id: 1, direction: '买入', contract: 'CU2401', qty: 10, avgPrice: 5300, floatingPnL: 5000, hedgePlan: '整体保值方案A', insurance: '投机' },
-        { id: 2, direction: '卖出', contract: 'AL2401', qty: 5, avgPrice: 5250, floatingPnL: -2000, hedgePlan: '单单保值方案B', insurance: '套保' }
+        { id: 1, user: '交易员A', contract: 'CU2401', direction: '买入', qty: 120, avgPrice: 5280, lastPrice: 5305, floatingPnL: 3000, realizedPnL: 1200, margin: 450000, hedgePlan: '整体保值方案A' },
+        { id: 2, user: '交易员B', contract: 'AL2401', direction: '卖出', qty: 80, avgPrice: 18260, lastPrice: 18230, floatingPnL: 2400, realizedPnL: 600, margin: 220000, hedgePlan: '单单保值方案B' }
       ];
-      
-      // 模拟委托数据
-      const mockOrders = [
-        { id: 1, status: '部成', orderTime: '2025-11-24 10:30:00', triggerType: '手动', relatedInstruction: '指令001', contract: 'CU2401', direction: '买入', price: 5300, qty: 10 },
-        { id: 2, status: '全成', orderTime: '2025-11-24 11:00:00', triggerType: '自动', relatedInstruction: '指令002', contract: 'AL2401', direction: '卖出', price: 5250, qty: 5 }
-      ];
-      
-      // 模拟成交数据
+
       const mockFills = [
-        { id: 1, price: 5300, qty: 10, fee: 50, matchNo: 'M001', contract: 'CU2401', direction: '买入', time: '2025-11-24 10:30:15' },
-        { id: 2, price: 5250, qty: 5, fee: 25, matchNo: 'M002', contract: 'AL2401', direction: '卖出', time: '2025-11-24 11:00:20' }
+        { id: 1, contract: 'CU2401', direction: '买入', openClose: '开仓', price: 5300, qty: 10, fee: 50, matchNo: 'M001', time: '2025-11-24 10:30:15' },
+        { id: 2, contract: 'AL2401', direction: '卖出', openClose: '平仓', price: 5250, qty: 5, fee: 25, matchNo: 'M002', time: '2025-11-24 11:00:20' }
       ];
-      
-      // 模拟资金数据
+
+      const mockClosed = [
+        { id: 1, contract: 'CU2401', direction: '卖出', openPrice: 5200, closePrice: 5300, qty: 5, pnl: 5000, time: '2025-11-24 14:00', settlement: '现金' }
+      ];
+
       const mockFunds = {
         equity: 1000000,
         available: 800000,
         occupied: 200000,
         riskDegree: 0.25,
-        margin: 200000
+        margin: 200000,
+        floatingPnL: 32000,
+        realizedPnL: 8500
       };
-      
-      // 模拟行情数据
-      const mockMarketData = {
-        'CU2401': { latest: 5300, change: 50, changePercent: 0.95, volume: 10000, openInterest: 50000, bid: [5299, 5298, 5297, 5296, 5295], ask: [5301, 5302, 5303, 5304, 5305] },
-        'AL2401': { latest: 5250, change: -30, changePercent: -0.57, volume: 8000, openInterest: 30000, bid: [5249, 5248, 5247, 5246, 5245], ask: [5251, 5252, 5253, 5254, 5255] }
+
+      const currentMarket = mockMarketData[selectedContract] || mockMarketData.CU2401;
+      const lastClose = currentMarket.prevClose || (currentMarket.latest - currentMarket.change);
+
+      const filteredInstructions = useMemo(() => {
+        if (selectedInstructionTab === 'all') return mockInstructionCards;
+        return mockInstructionCards.filter(item => item.scopes.includes(selectedInstructionTab));
+      }, [selectedInstructionTab, mockInstructionCards]);
+
+      const watchlistColumns = [
+        { title: '合约', dataIndex: 'code', width: 90 },
+        { title: '名称', dataIndex: 'name', width: 120 },
+        { title: '走势', dataIndex: 'trend', width: 100 },
+        { title: '最新', dataIndex: 'latest', width: 90 },
+        { title: '买一价/量', dataIndex: 'buyPrice', width: 110, render: (_, record) => `${record.buyPrice} / ${record.buyQty}` },
+        { title: '卖一价/量', dataIndex: 'sellPrice', width: 110, render: (_, record) => `${record.sellPrice} / ${record.sellQty}` }
+      ];
+
+      const spotRemarkColumns = [
+        { title: '手数', dataIndex: 'qty', width: 70 },
+        { title: '现货数量', dataIndex: 'spotQty', width: 90 },
+        { title: '点价价格', dataIndex: 'pricingPrice', width: 90 },
+        { title: '标签', dataIndex: 'tag', width: 100, render: (tag) => tag ? <Tag color="blue">{tag}</Tag> : '-' },
+        { title: '备注', dataIndex: 'remark', width: 120 },
+        { title: '客商', dataIndex: 'customer', width: 110 },
+        { title: '合同号', dataIndex: 'contractNo', width: 120 },
+        { title: '是否匹配', dataIndex: 'isMatched', width: 90, render: (matched) => <Tag color={matched ? 'green' : 'default'}>{matched ? '是' : '否'}</Tag> }
+      ];
+
+      const orderColumns = [
+        { title: '指令编号', dataIndex: 'instructionId', width: 110 },
+        { title: '期货账户', dataIndex: 'futuresAccount', width: 110 },
+        { title: '保值方案', dataIndex: 'hedgePlan', width: 150 },
+        { title: '日期时间', dataIndex: 'dateTime', width: 160 },
+        { title: '短编号', dataIndex: 'shortNo', width: 100 },
+        { title: '合约', dataIndex: 'contract', width: 90 },
+        { title: '方向', dataIndex: 'direction', width: 70, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
+        { title: '成交均价', dataIndex: 'avgPrice', width: 100, align: 'right' },
+        { title: '成交手数', dataIndex: 'tradedQty', width: 100, align: 'right' },
+        { title: '报单价格', dataIndex: 'orderPrice', width: 100, align: 'right' },
+        { title: '未匹配手数', dataIndex: 'unmatchedQty', width: 110, align: 'right' },
+        { title: '挂单状态', dataIndex: 'orderStatus', width: 110, render: (status) => <Tag color={status === '全成' ? 'green' : status === '未成' ? 'default' : 'orange'}>{status}</Tag> },
+        { title: '委托备注', dataIndex: 'orderRemark', width: 180, render: (text) => text ? <Tooltip title={text}>{text}</Tooltip> : '-' },
+        { title: '期现备注', dataIndex: 'spotRemarks', width: 120, render: (value) => value?.length ? <Tag color="blue">{value.length} 条</Tag> : '-' }
+      ];
+
+      const positionColumns = [
+        { title: '用户', dataIndex: 'user', width: 100 },
+        { title: '合约', dataIndex: 'contract', width: 100 },
+        { title: '方向', dataIndex: 'direction', width: 70, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
+        { title: '总仓', dataIndex: 'qty', width: 90, align: 'right' },
+        { title: '均价', dataIndex: 'avgPrice', width: 90, align: 'right' },
+        { title: '最新价', dataIndex: 'lastPrice', width: 90, align: 'right' },
+        { title: '浮盈亏', dataIndex: 'floatingPnL', width: 100, align: 'right', render: (v) => <span style={{ color: v >= 0 ? 'red' : 'green' }}>{v >= 0 ? '+' : ''}{v}</span> },
+        { title: '平仓盈亏', dataIndex: 'realizedPnL', width: 100, align: 'right' },
+        { title: '占用保证金', dataIndex: 'margin', width: 120, align: 'right' },
+        { title: '保值方案', dataIndex: 'hedgePlan', width: 150 }
+      ];
+
+      const tradeColumns = [
+        { title: '时间', dataIndex: 'time', width: 150 },
+        { title: '合约', dataIndex: 'contract', width: 100 },
+        { title: '方向', dataIndex: 'direction', width: 70, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
+        { title: '开平', dataIndex: 'openClose', width: 70 },
+        { title: '价格', dataIndex: 'price', width: 90, align: 'right' },
+        { title: '数量', dataIndex: 'qty', width: 80, align: 'right' },
+        { title: '手续费', dataIndex: 'fee', width: 80, align: 'right' },
+        { title: '撮合编号', dataIndex: 'matchNo', width: 120 }
+      ];
+
+      const closedColumns = [
+        { title: '平仓时间', dataIndex: 'time', width: 150 },
+        { title: '合约', dataIndex: 'contract', width: 100 },
+        { title: '方向', dataIndex: 'direction', width: 70 },
+        { title: '开仓价格', dataIndex: 'openPrice', width: 100, align: 'right' },
+        { title: '平仓价格', dataIndex: 'closePrice', width: 100, align: 'right' },
+        { title: '数量', dataIndex: 'qty', width: 80, align: 'right' },
+        { title: '平仓盈亏', dataIndex: 'pnl', width: 110, align: 'right', render: (v) => <span style={{ color: v >= 0 ? 'red' : 'green' }}>{v >= 0 ? '+' : ''}{v}</span> },
+        { title: '结算方式', dataIndex: 'settlement', width: 100 }
+      ];
+
+      const colorByDelta = (value) => (value >= lastClose ? '#f5222d' : '#52c41a');
+      const marketMetrics = [
+        { label: '卖一', value: `${currentMarket.ask[0]} / ${currentMarket.askVol[0]}`, color: colorByDelta(currentMarket.ask[0]) },
+        { label: '买一', value: `${currentMarket.bid[0]} / ${currentMarket.bidVol[0]}`, color: colorByDelta(currentMarket.bid[0]) },
+        { label: '最新价', value: currentMarket.latest, color: colorByDelta(currentMarket.latest) },
+        { label: '昨结', value: currentMarket.prevClose, color: '#1f2430' },
+        { label: '今开', value: currentMarket.open, color: colorByDelta(currentMarket.open) },
+        { label: '昨收', value: currentMarket.prevClose, color: '#1f2430' },
+        { label: '涨跌', value: currentMarket.change, color: colorByDelta(currentMarket.latest) },
+        { label: '最高', value: currentMarket.high, color: colorByDelta(currentMarket.high) },
+        { label: '幅度', value: `${currentMarket.changePercent}%`, color: colorByDelta(currentMarket.changePercent) },
+        { label: '最低', value: currentMarket.low, color: colorByDelta(currentMarket.low) },
+        { label: '总手', value: currentMarket.volume.toLocaleString(), color: '#1f2430' },
+        { label: '涨停', value: currentMarket.limitUp, color: colorByDelta(currentMarket.limitUp) },
+        { label: '持仓', value: currentMarket.openInterest.toLocaleString(), color: '#1f2430' },
+        { label: '跌停', value: currentMarket.limitDown, color: colorByDelta(currentMarket.limitDown) },
+        { label: '增仓', value: currentMarket.increase.toLocaleString(), color: currentMarket.increase >= 0 ? '#f5222d' : '#52c41a' },
+        { label: '振幅', value: currentMarket.amplitude, color: '#1f2430' }
+      ];
+
+      const currentTagOptions = useMemo(() => {
+        const plan = mockHedgePlans.find(hp => hp.name === selectedHedgePlan);
+        const source = plan?.tags?.length ? plan.tags : defaultTags;
+        return source.map(tag => ({ label: tag, value: tag }));
+      }, [selectedHedgePlan]);
+
+      useEffect(() => {
+        orderForm.setFieldsValue({ hedgePlan: selectedHedgePlan });
+      }, [selectedHedgePlan, orderForm]);
+
+      useEffect(() => {
+        orderForm.setFieldsValue({ contract: selectedContract, price: currentMarket.latest });
+      }, [selectedContract, currentMarket.latest, orderForm]);
+
+      useEffect(() => {
+        if (currentTagOptions.length) {
+          orderForm.setFieldsValue({ tag: currentTagOptions[0].value });
+        } else {
+          orderForm.setFieldsValue({ tag: undefined });
+        }
+      }, [currentTagOptions, orderForm]);
+
+      useEffect(() => {
+        orderForm.setFieldsValue({ direction: 'buy', openClose: 'open', priceType: '对价', qty: 1 });
+      }, [orderForm]);
+
+      const handleInstructionAction = (item, action) => {
+        message.success(`${action} - ${item.id}（模拟）`);
       };
-      
-      const currentMarket = mockMarketData[selectedContract] || mockMarketData['CU2401'];
-      
-      // 获取当前交易员支持的保值方案
-      const availableHedgePlans = useMemo(() => {
-        return mockHedgePlans.filter(hp => {
-          const traders = mockPersonRoles.find(pr => pr.roleName === '交易员');
-          return traders?.personNames?.some(name => hp.traders?.includes(name));
+
+      const handleInstructionClick = (item) => {
+        setActiveInstruction(item);
+        setInstructionDrawerVisible(true);
+      };
+
+      const handleFillOrderForm = (item) => {
+        setSelectedHedgePlan(item.hedgePlan);
+        setSelectedContract(item.futuresContract);
+        orderForm.setFieldsValue({
+          instructionId: item.id,
+          hedgePlan: item.hedgePlan,
+          contract: item.futuresContract,
+          direction: item.futuresDirection === '买' ? 'buy' : 'sell',
+          openClose: 'open',
+          qty: item.futuresQty,
+          price: item.futuresPrice,
+          tag: item.tags?.[0]
         });
-      }, []);
-      
-      // 获取指令数据（从指令工作台）
-      const instructionData = useMemo(() => {
-        return [
-          { id: 1, type: '期货交易指令', source: '人员', contract: 'HT2025-0001', futures: 'CU2401', direction: '买入', qty: 100, execType: '人工', progress: '待执行' },
-          { id: 2, type: '点价指令', source: '客商', contract: 'HT2025-0002', futures: 'AL2401', direction: '卖出', qty: 200, execType: '自动', progress: '执行中' }
-        ];
-      }, []);
-      
-      const filteredPositions = useMemo(() => {
-        if (!selectedHedgePlan) return mockPositions;
-        return mockPositions.filter(p => p.hedgePlan === selectedHedgePlan);
-      }, [selectedHedgePlan]);
-      
-      const filteredOrders = useMemo(() => {
-        if (!selectedHedgePlan) return mockOrders;
-        return mockOrders.filter(o => {
-          const pos = mockPositions.find(p => p.contract === o.contract);
-          return pos?.hedgePlan === selectedHedgePlan;
+        message.info(`已填充指令 ${item.id} 至下单板`);
+      };
+
+      const handleAddWatchlist = (value) => {
+        if (value) {
+          message.success(`已添加 ${value} 至 ${selectedWatchlistTab}`);
+        }
+      };
+
+      const handleOrderAction = (record, action) => {
+        message.info(`${action} - ${record.shortNo}`);
+      };
+
+      const handleOrderToolbarAction = (action) => {
+        if (!selectedOrder) {
+          message.warning('请选择一条委托单');
+          return;
+        }
+        handleOrderAction(selectedOrder, action);
+      };
+
+      const handleAssignInstruction = (orderId) => {
+        const targetOrderId = orderId || selectedRowKeys[0];
+        if (!selectedInstructionId) {
+          message.warning('请选择一条指令');
+          return;
+        }
+        if (!targetOrderId) {
+          message.warning('请选择一条委托单');
+          return;
+        }
+        const order = mockMatchOrders.find(o => o.id === targetOrderId);
+        setCurrentAssignOrderId(targetOrderId);
+        assignForm.setFieldsValue({
+          futuresQty: order?.unmatchedQty || 0,
+          contractQty: order?.contractQty || order?.tradedQty || null,
+          contractPrice: order?.orderPrice || null
         });
-      }, [selectedHedgePlan]);
-      
+        setAssignModalVisible(true);
+      };
+
+      const handleConfirmAssign = () => {
+        assignForm.validateFields().then(values => {
+          message.success(`指令 ${selectedInstructionId} 已配入委托 ${currentAssignOrderId}`);
+          setAssignModalVisible(false);
+          assignForm.resetFields();
+        });
+      };
+
+      const handleCancelAssign = () => {
+        setAssignModalVisible(false);
+        assignForm.resetFields();
+      };
+
       const handleSubmitOrder = () => {
         orderForm.validateFields().then(values => {
-          message.success('下单成功（模拟）');
-          orderForm.resetFields();
+          message.success(`下单成功（模拟）：${values.contract} / ${values.qty}`);
         });
       };
-      
+
+      const instructionTabs = [
+        { key: 'mine', label: '我发起的' },
+        { key: 'claim', label: '我认领的' },
+        { key: 'all', label: '全部' }
+      ];
+
+      const instructionTabItems = instructionTabs.map(tab => ({
+        key: tab.key,
+        label: tab.label
+      }));
+
+      const orderRowSelection = {
+        type: 'radio',
+        selectedRowKeys,
+        onChange: setSelectedRowKeys
+      };
+
+      const orderItemStyle = { marginBottom: 4 };
+
+      const expandedRowRender = (record) => {
+        if (!record.spotRemarks?.length) {
+          return <div style={{ padding: 8 }}>暂无期现备注</div>;
+        }
+        return (
+          <Table
+            size="small"
+            columns={spotRemarkColumns}
+            dataSource={record.spotRemarks.map(item => ({ key: item.id, ...item }))}
+            pagination={false}
+          />
+        );
+      };
+
+      const watchlistGroupKeys = Object.keys(mockWatchlists);
+
+      const ordersTable = (
+        <Table
+          size="small"
+          rowSelection={orderRowSelection}
+          columns={orderColumns}
+          dataSource={mockMatchOrders}
+          rowKey="id"
+          pagination={false}
+          expandable={{ expandedRowRender, rowExpandable: (record) => record.spotRemarks?.length > 0 }}
+          scroll={{ x: 1400 }}
+        />
+      );
+
+      const orderToolbar = (
+        <div className="erp-toolbar" style={{ padding: '4px 8px', borderBottom: '1px solid #f0f2f5', background: '#f8f9fb', flexShrink: 0 }}>
+          <Space wrap size={8}>
+            <Button size="small" icon={renderIcon('FileTextOutlined')} onClick={() => handleOrderToolbarAction('期现备注')} disabled={!selectedOrder}>期现备注</Button>
+            <Button size="small" icon={renderIcon('EditOutlined')} onClick={() => handleOrderToolbarAction('委托备注')} disabled={!selectedOrder}>委托备注</Button>
+            <Button size="small" type="primary" icon={renderIcon('LinkOutlined')} onClick={() => handleAssignInstruction()} disabled={!selectedInstructionId || !selectedOrder}>配入指令</Button>
+            <Button size="small" icon={renderIcon('DownloadOutlined')} onClick={() => message.info('导出（模拟）')}>导出</Button>
+            <Button size="small" icon={renderIcon('ReloadOutlined')} onClick={() => message.success('已刷新')}>刷新</Button>
+          </Space>
+          <div style={{ marginLeft: 'auto', fontSize: 12, color: '#8a94a6' }}>
+            {selectedInstruction ? `已选指令：${selectedInstruction.id}` : '未选指令'}
+          </div>
+        </div>
+      );
+
+      const ordersTabContent = (
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          {orderToolbar}
+          <div style={{ flex: 1, minHeight: 0 }}>
+            {ordersTable}
+          </div>
+        </div>
+      );
+
+      const positionsTable = (
+        <Table
+          size="small"
+          columns={positionColumns}
+          dataSource={mockPositions}
+          rowKey="id"
+          pagination={false}
+          scroll={{ x: 1000 }}
+        />
+      );
+
+      const tradesTable = (
+        <Table
+          size="small"
+          columns={tradeColumns}
+          dataSource={mockFills}
+          rowKey="id"
+          pagination={false}
+          scroll={{ x: 900 }}
+        />
+      );
+
+      const closedTable = (
+        <Table
+          size="small"
+          columns={closedColumns}
+          dataSource={mockClosed}
+          rowKey="id"
+          pagination={false}
+          scroll={{ x: 900 }}
+        />
+      );
+
+      const fundsSummary = (
+        <Space direction="vertical" style={{ width: '100%' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>权益：</span>
+            <strong>{mockFunds.equity.toLocaleString()}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>可用：</span>
+            <strong style={{ color: 'green' }}>{mockFunds.available.toLocaleString()}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>占用：</span>
+            <strong>{mockFunds.occupied.toLocaleString()}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>风险度：</span>
+            <strong style={{ color: mockFunds.riskDegree > 0.8 ? 'red' : 'green' }}>{(mockFunds.riskDegree * 100).toFixed(2)}%</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span>保证金：</span>
+            <strong>{mockFunds.margin.toLocaleString()}</strong>
+          </div>
+        </Space>
+      );
+
+      const renderTabContent = (content, padding = 6) => (
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <div style={{ flex: 1, minHeight: 0, padding }}>
+            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+              <div className="erp-table-wrapper">
+                {content}
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+
+      const orderTabItems = [
+        { key: 'orders', label: '委托列表', children: renderTabContent(ordersTabContent, 0) },
+        { key: 'positions', label: '持仓列表', children: renderTabContent(positionsTable) },
+        { key: 'trades', label: '成交列表', children: renderTabContent(tradesTable) },
+        { key: 'closed', label: '平仓明细', children: renderTabContent(closedTable) },
+        { key: 'funds', label: '资金', children: renderTabContent(fundsSummary) }
+      ];
+
       return (
-        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#f5f5f5' }}>
-          {/* 顶部状态条 */}
-          <div style={{ padding: '8px 16px', background: '#fff', borderBottom: '1px solid #e8e8e8', display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-            <Select value={selectedAccount} onChange={setSelectedAccount} style={{ width: 150 }}>
-              {mockFuturesAccounts.map(acc => (
-                <Select.Option key={acc.id} value={acc.account}>{acc.account}</Select.Option>
-              ))}
-            </Select>
-            <Space>
-              <Badge status="success" text="行情连接" />
-              <Badge status="success" text="交易连接" />
-            </Space>
-            <div style={{ marginLeft: 'auto', display: 'flex', gap: 16, alignItems: 'center' }}>
-              <span>风险度：<strong style={{ color: mockFunds.riskDegree > 0.8 ? 'red' : 'green' }}>{(mockFunds.riskDegree * 100).toFixed(1)}%</strong></span>
-              <span>可用资金：<strong>{mockFunds.available.toLocaleString()}</strong></span>
-              <Button type="primary" icon={renderIcon('FileTextOutlined')} onClick={() => setInstructionDrawerVisible(true)}>指令执行</Button>
-            </div>
-          </div>
-          
-          <div style={{ flex: 1, display: 'flex', minHeight: 0, overflow: 'hidden' }}>
-            {/* 左侧行情区域 */}
-            <div style={{ width: 300, background: '#fff', borderRight: '1px solid #e8e8e8', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-              <div style={{ padding: 12, borderBottom: '1px solid #e8e8e8' }}>
-                <Space>
-                  <Button size="small" icon={renderIcon('PlusOutlined')}>自选1</Button>
-                  <Button size="small" icon={renderIcon('PlusOutlined')}>自选2</Button>
-                  <Button size="small" icon={renderIcon('PlusOutlined')}>自选3</Button>
-                </Space>
-              </div>
-              <div style={{ padding: 12, borderBottom: '1px solid #e8e8e8' }}>
-                <Select value={selectedContract} onChange={setSelectedContract} style={{ width: '100%' }}>
-                  <Select.Option value="CU2401">CU2401</Select.Option>
-                  <Select.Option value="AL2401">AL2401</Select.Option>
+        <ConfigProvider componentSize="small">
+        <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#eef2f6' }}>
+          <div style={{ flex: 1, padding: '4px 8px 8px', overflow: 'hidden' }}>
+            <div
+              style={{
+                height: '100%',
+                display: 'grid',
+                gridTemplateColumns: 'repeat(12, minmax(0, 1fr))',
+                gridTemplateRows: '36px repeat(11, minmax(0, 1fr))',
+                gap: 8
+              }}
+            >
+              {/* 左侧指令列表 */}
+              <Card
+                style={{ gridColumn: '1 / span 3', gridRow: '1 / span 12', display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}
+                bodyStyle={{ padding: 0, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}
+              >
+                <Tabs
+                  size="small"
+                  activeKey={selectedInstructionTab}
+                  onChange={setSelectedInstructionTab}
+                  tabBarStyle={{ paddingLeft: 8 }}
+                  items={instructionTabItems}
+                />
+                <div style={{ padding: 8, flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <List
+                    size="small"
+                    dataSource={filteredInstructions}
+                    renderItem={(item) => (
+                      <List.Item style={{ padding: 0, border: 'none' }}>
+                        <Card
+                          size="small"
+                          hoverable
+                          style={{ width: '100%', borderColor: selectedInstructionId === item.id ? '#1677ff' : undefined }}
+                          onClick={() => setSelectedInstructionId(item.id)}
+                        >
+                          <Space direction="vertical" style={{ width: '100%' }} size={6}>
+                            <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                              <span style={{ fontWeight: 600 }}>{item.type}</span>
+                              <Tag color={item.status === '待认领' ? 'orange' : 'blue'}>{item.status}</Tag>
+                            </Space>
+                            <div style={{ color: '#8a94a6', fontSize: 12 }}>
+                              合同 {item.contractNo} · 客商 {item.initiator} · 更新时间 {item.updatedAt}
+                            </div>
+                            <div style={{ fontSize: 12 }}>
+                              合同 {item.tradeType} {item.contractQty} 吨 · 期货 {item.futuresDirection} {item.futuresQty} 手 {item.futuresContract}
+                            </div>
+                            <Space wrap size={4}>
+                              <Button size="small" onClick={(e) => { e.stopPropagation(); handleInstructionAction(item, '认领/取消认领'); }}>认领</Button>
+                              <Button size="small" onClick={(e) => { e.stopPropagation(); handleInstructionAction(item, '同意/拒绝'); }}>撤销处理</Button>
+                              <Button size="small" onClick={(e) => { e.stopPropagation(); handleInstructionAction(item, '完成指令'); }}>完成</Button>
+                              <Button size="small" onClick={(e) => { e.stopPropagation(); handleInstructionAction(item, '备注'); }}>备注</Button>
+                              <Button size="small" type="link" onClick={(e) => { e.stopPropagation(); handleFillOrderForm(item); }}>填入下单板</Button>
+                              <Button size="small" type="link" onClick={(e) => { e.stopPropagation(); handleInstructionClick(item); }}>查看</Button>
+                            </Space>
+                          </Space>
+                        </Card>
+                      </List.Item>
+                    )}
+                  />
+                </div>
+              </Card>
+
+              {/* 顶部账户资金区域 */}
+              <div style={{ gridColumn: '4 / span 9', gridRow: '1 / span 1', display: 'flex', alignItems: 'center', gap: 12, padding: '0 8px' }}>
+                <Select size="small" value={selectedAccount} onChange={setSelectedAccount} style={{ width: 160 }}>
+                  {mockFuturesAccounts.map(acc => (
+                    <Select.Option key={acc.id} value={acc.account}>{acc.account}</Select.Option>
+                  ))}
                 </Select>
+                <Space size={14} wrap>
+                  <span>风险度：<strong style={{ color: mockFunds.riskDegree > 0.8 ? '#f5222d' : '#52c41a' }}>{(mockFunds.riskDegree * 100).toFixed(1)}%</strong></span>
+                  <span>可用：<strong>{mockFunds.available.toLocaleString()}</strong></span>
+                  <span>持仓盈亏：<strong style={{ color: mockFunds.floatingPnL >= 0 ? '#f5222d' : '#52c41a' }}>{mockFunds.floatingPnL >= 0 ? '+' : ''}{mockFunds.floatingPnL.toLocaleString()}</strong></span>
+                  <span>平仓盈亏：<strong style={{ color: mockFunds.realizedPnL >= 0 ? '#f5222d' : '#52c41a' }}>{mockFunds.realizedPnL >= 0 ? '+' : ''}{mockFunds.realizedPnL.toLocaleString()}</strong></span>
+                </Space>
+                <span style={{ marginLeft: 'auto', fontSize: 12, color: '#389e0d' }}>登录成功</span>
               </div>
-              <div style={{ padding: 12, flex: 1, overflow: 'auto' }}>
-                <div style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: 24, fontWeight: 'bold', color: currentMarket.change >= 0 ? 'red' : 'green' }}>
-                    {currentMarket.latest}
-                  </div>
-                  <div style={{ fontSize: 12, color: currentMarket.change >= 0 ? 'red' : 'green' }}>
-                    {currentMarket.change >= 0 ? '+' : ''}{currentMarket.change} ({currentMarket.changePercent >= 0 ? '+' : ''}{currentMarket.changePercent}%)
-                  </div>
-                </div>
-                <Divider />
-                <div style={{ marginBottom: 8 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ color: '#999' }}>持仓量</span>
-                    <span>{currentMarket.openInterest.toLocaleString()}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ color: '#999' }}>成交量</span>
-                    <span>{currentMarket.volume.toLocaleString()}</span>
-                  </div>
-                </div>
-                <Divider />
-                <div>
-                  <div style={{ fontSize: 12, marginBottom: 8, color: '#999' }}>五档盘口</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <div style={{ flex: 1, textAlign: 'right' }}>
-                      {currentMarket.ask.slice().reverse().map((price, i) => (
-                        <div key={i} style={{ color: 'red', fontSize: 12 }}>{price}</div>
-                      ))}
+
+              {/* 中间：盘口 + 下单板 */}
+              <Card
+                style={{ gridColumn: '4 / span 2', gridRow: '2 / span 4', display: 'flex', flexDirection: 'column', minHeight: 0 }}
+                bodyStyle={{ padding: 10, flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}
+              >
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
+                  {marketMetrics.map(metric => (
+                    <div key={metric.label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                      <span style={{ color: '#8a94a6' }}>{metric.label}</span>
+                      <strong style={{ color: metric.color }}>{metric.value}</strong>
                     </div>
-                    <div style={{ flex: 1, textAlign: 'left', marginLeft: 8 }}>
-                      {currentMarket.bid.map((price, i) => (
-                        <div key={i} style={{ color: 'green', fontSize: 12 }}>{price}</div>
-                      ))}
-                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              <Card
+                style={{ gridColumn: '4 / span 2', gridRow: '6 / span 7', display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}
+                bodyStyle={{ padding: 12, display: 'flex', flexDirection: 'column', gap: 8, flex: 1, minHeight: 0 }}
+              >
+                <Form form={orderForm} layout="vertical" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'auto' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: 4 }}>
+                    <Form.Item label="指令编号" name="instructionId" style={orderItemStyle}>
+                      <Input placeholder="可输入或从指令填充" />
+                    </Form.Item>
+                    <Form.Item label="保值方案" name="hedgePlan" style={orderItemStyle}>
+                      <Select
+                        placeholder="选择保值方案"
+                        value={selectedHedgePlan}
+                        onChange={setSelectedHedgePlan}
+                      >
+                        {mockHedgePlans.map(plan => (
+                          <Select.Option key={plan.id} value={plan.name}>{plan.name}</Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                    <Form.Item label="合约代码" name="contract" style={orderItemStyle}>
+                      <Input placeholder="如 CU2401" />
+                    </Form.Item>
+                    <Form.Item label="方向" name="direction" style={orderItemStyle}>
+                      <Radio.Group optionType="button" buttonStyle="solid">
+                        <Radio.Button value="buy">买入</Radio.Button>
+                        <Radio.Button value="sell">卖出</Radio.Button>
+                      </Radio.Group>
+                    </Form.Item>
+                    <Form.Item label="开平方向" name="openClose" style={orderItemStyle}>
+                      <Radio.Group optionType="button" buttonStyle="solid">
+                        <Radio.Button value="open">开仓</Radio.Button>
+                        <Radio.Button value="close">平仓</Radio.Button>
+                        <Radio.Button value="closeToday">平今</Radio.Button>
+                        <Radio.Button value="auto">自动</Radio.Button>
+                      </Radio.Group>
+                    </Form.Item>
+                    <Form.Item label="价格类型" name="priceType" style={orderItemStyle}>
+                      <Radio.Group optionType="button" buttonStyle="solid">
+                        <Radio.Button value="对价">对价</Radio.Button>
+                        <Radio.Button value="挂价">挂价</Radio.Button>
+                        <Radio.Button value="市价">市价</Radio.Button>
+                        <Radio.Button value="指定">指定</Radio.Button>
+                      </Radio.Group>
+                    </Form.Item>
+                    <Form.Item label="标签" name="tag" style={orderItemStyle}>
+                      <Select options={currentTagOptions} placeholder="请选择标签" />
+                    </Form.Item>
+                    <Form.Item label="数量(手)" name="qty" style={orderItemStyle}>
+                      <InputNumber min={1} style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item label="价格" name="price" style={orderItemStyle}>
+                      <InputNumber style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item label="套保" name="hedgeFlag" valuePropName="checked" style={orderItemStyle}>
+                      <Checkbox>启用套保标记</Checkbox>
+                    </Form.Item>
+                    <Form.Item label="保证金" style={orderItemStyle}>
+                      <Input disabled value={(orderForm.getFieldValue('qty') || 0) * 1000} />
+                    </Form.Item>
+                    <Form.Item label="手续费" style={orderItemStyle}>
+                      <Input disabled value={(orderForm.getFieldValue('qty') || 0) * 5} />
+                    </Form.Item>
                   </div>
+                  <Space style={{ marginTop: 2 }}>
+                    <Button type="primary" icon={renderIcon('CheckCircleOutlined')} onClick={handleSubmitOrder}>下单</Button>
+                    <Button onClick={() => orderForm.resetFields()}>重置</Button>
+                  </Space>
+                </Form>
+              </Card>
+
+              {/* 右侧：自选与数据列表 */}
+              <Card
+                style={{ gridColumn: '6 / span 7', gridRow: '2 / span 3', display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}
+                bodyStyle={{ padding: 12, flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}
+              >
+                <Input.Search
+                  size="small"
+                  placeholder="输入合约代码加入自选"
+                  enterButton="添加"
+                  allowClear
+                  onSearch={handleAddWatchlist}
+                  addonBefore={
+                    <Select
+                      size="small"
+                      value={selectedWatchlistTab}
+                      onChange={setSelectedWatchlistTab}
+                      style={{ width: 120 }}
+                    >
+                      {watchlistGroupKeys.map(key => (
+                        <Select.Option key={key} value={key}>{key}</Select.Option>
+                      ))}
+                    </Select>
+                  }
+                  style={{ marginBottom: 8 }}
+                />
+                <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
+                  <Table
+                    size="small"
+                    columns={watchlistColumns}
+                    dataSource={mockWatchlists[selectedWatchlistTab] || []}
+                    rowKey="key"
+                    pagination={false}
+                  />
                 </div>
-              </div>
-            </div>
-            
-            {/* 中间下单区域 */}
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-              <div style={{ padding: 16, background: '#fff', borderBottom: '1px solid #e8e8e8' }}>
-                <Tabs defaultActiveKey="auto">
-                  <Tabs.TabPane tab="自动开平" key="auto">
-                    <Form form={orderForm} layout="inline">
-                      <Form.Item label="保值方案" name="hedgePlan" style={{ width: 200 }}>
-                        <Select placeholder="选择保值方案" value={selectedHedgePlan} onChange={setSelectedHedgePlan}>
-                          {availableHedgePlans.map(hp => (
-                            <Select.Option key={hp.id} value={hp.name}>{hp.name}</Select.Option>
-                          ))}
-                        </Select>
-                      </Form.Item>
-                      <Form.Item label="合约" name="contract" initialValue={selectedContract}>
-                        <Input style={{ width: 120 }} />
-                      </Form.Item>
-                      <Space style={{ marginLeft: 16 }}>
-                        <Button type="primary" danger style={{ width: 80 }}>买开</Button>
-                        <Button type="default" style={{ width: 80 }}>平仓</Button>
-                        <Button type="primary" style={{ width: 80 }}>卖开</Button>
-                      </Space>
-                      <Form.Item label="数量" name="qty" initialValue={1}>
-                        <InputNumber min={1} style={{ width: 100 }} />
-                      </Form.Item>
-                      <Form.Item label="价格" name="price" initialValue={currentMarket.latest}>
-                        <InputNumber style={{ width: 120 }} />
-                      </Form.Item>
-                      <Button type="primary" onClick={handleSubmitOrder}>提交</Button>
-                    </Form>
-                  </Tabs.TabPane>
-                  <Tabs.TabPane tab="传统下单" key="traditional">
-                    <Form form={orderForm} layout="vertical">
-                      <Space wrap>
-                        <Form.Item label="合约" name="contract" style={{ width: 150 }}>
-                          <Input />
-                        </Form.Item>
-                        <Form.Item label="方向" name="direction" style={{ width: 100 }}>
-                          <Select>
-                            <Select.Option value="买入">买入</Select.Option>
-                            <Select.Option value="卖出">卖出</Select.Option>
-                          </Select>
-                        </Form.Item>
-                        <Form.Item label="价格类型" name="priceType" style={{ width: 120 }}>
-                          <Select>
-                            <Select.Option value="限价">限价</Select.Option>
-                            <Select.Option value="对价">对价</Select.Option>
-                            <Select.Option value="市价">市价</Select.Option>
-                          </Select>
-                        </Form.Item>
-                        <Form.Item label="开平" name="openClose" style={{ width: 100 }}>
-                          <Select>
-                            <Select.Option value="开仓">开仓</Select.Option>
-                            <Select.Option value="平仓">平仓</Select.Option>
-                          </Select>
-                        </Form.Item>
-                        <Form.Item label="数量" name="qty" style={{ width: 100 }}>
-                          <InputNumber min={1} />
-                        </Form.Item>
-                        <Button type="primary" onClick={handleSubmitOrder}>提交</Button>
-                      </Space>
-                    </Form>
-                  </Tabs.TabPane>
-                </Tabs>
-              </div>
-              
-              {/* 右侧数据面板 */}
-              <div style={{ flex: 1, display: 'flex', minHeight: 0 }}>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#fff' }}>
-                  <Tabs defaultActiveKey="position" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <Tabs.TabPane tab="持仓" key="position">
-                      <Table
-                        size="small"
-                        columns={[
-                          { title: '方向', dataIndex: 'direction', width: 80, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
-                          { title: '合约', dataIndex: 'contract', width: 100 },
-                          { title: '手数', dataIndex: 'qty', width: 80, align: 'right' },
-                          { title: '均价', dataIndex: 'avgPrice', width: 100, align: 'right' },
-                          { title: '浮盈亏', dataIndex: 'floatingPnL', width: 100, align: 'right', render: (v) => <span style={{ color: v >= 0 ? 'red' : 'green' }}>{v >= 0 ? '+' : ''}{v}</span> },
-                          { title: '保值方案', dataIndex: 'hedgePlan', width: 150 },
-                          { title: '投保', dataIndex: 'insurance', width: 80 }
-                        ]}
-                        dataSource={filteredPositions}
-                        rowKey="id"
-                        pagination={false}
-                        scroll={{ y: 'calc(100vh - 500px)' }}
-                      />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab="委托" key="order">
-                      <Table
-                        size="small"
-                        columns={[
-                          { title: '状态', dataIndex: 'status', width: 80, render: (s) => <Tag>{s}</Tag> },
-                          { title: '报单时间', dataIndex: 'orderTime', width: 160 },
-                          { title: '触发方式', dataIndex: 'triggerType', width: 100 },
-                          { title: '关联指令', dataIndex: 'relatedInstruction', width: 120 },
-                          { title: '合约', dataIndex: 'contract', width: 100 },
-                          { title: '方向', dataIndex: 'direction', width: 80, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
-                          { title: '价格', dataIndex: 'price', width: 100, align: 'right' },
-                          { title: '数量', dataIndex: 'qty', width: 80, align: 'right' },
-                          { title: '操作', key: 'action', width: 80, render: () => <Button size="small" type="link">撤单</Button> }
-                        ]}
-                        dataSource={filteredOrders}
-                        rowKey="id"
-                        pagination={false}
-                        scroll={{ y: 'calc(100vh - 500px)' }}
-                      />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab="成交" key="fill">
-                      <Table
-                        size="small"
-                        columns={[
-                          { title: '时间', dataIndex: 'time', width: 160 },
-                          { title: '合约', dataIndex: 'contract', width: 100 },
-                          { title: '方向', dataIndex: 'direction', width: 80, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
-                          { title: '价格', dataIndex: 'price', width: 100, align: 'right' },
-                          { title: '数量', dataIndex: 'qty', width: 80, align: 'right' },
-                          { title: '手续费', dataIndex: 'fee', width: 100, align: 'right' },
-                          { title: '撮合编号', dataIndex: 'matchNo', width: 120 }
-                        ]}
-                        dataSource={mockFills}
-                        rowKey="id"
-                        pagination={false}
-                        scroll={{ y: 'calc(100vh - 500px)' }}
-                      />
-                    </Tabs.TabPane>
-                    <Tabs.TabPane tab="资金" key="fund">
-                      <div style={{ padding: 16 }}>
-                        <Space direction="vertical" style={{ width: '100%' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>权益：</span>
-                            <strong>{mockFunds.equity.toLocaleString()}</strong>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>可用：</span>
-                            <strong style={{ color: 'green' }}>{mockFunds.available.toLocaleString()}</strong>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>占用：</span>
-                            <strong>{mockFunds.occupied.toLocaleString()}</strong>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>风险度：</span>
-                            <strong style={{ color: mockFunds.riskDegree > 0.8 ? 'red' : 'green' }}>{(mockFunds.riskDegree * 100).toFixed(2)}%</strong>
-                          </div>
-                          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <span>保证金：</span>
-                            <strong>{mockFunds.margin.toLocaleString()}</strong>
-                          </div>
-                        </Space>
-                      </div>
-                    </Tabs.TabPane>
-                  </Tabs>
+              </Card>
+
+              <Card
+                style={{ gridColumn: '6 / span 7', gridRow: '5 / span 8', display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}
+                bodyStyle={{ padding: 0, display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}
+              >
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+                <Tabs
+                    defaultActiveKey="orders"
+                    items={orderTabItems}
+                    tabBarStyle={{ paddingLeft: 8 }}
+                  style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}
+                  className="erp-fill-tabs"
+                  />
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
-          
-          {/* 指令执行抽屉 */}
+
+          <div style={{ height: 40, background: '#fff', borderTop: '1px solid #e5e8ef', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px' }}>
+            <Space>
+              <Badge status="processing" text="行情正常" />
+              <Badge status="processing" text="交易正常" />
+            </Space>
+            <span>更新时间：{new Date().toLocaleString()}</span>
+          </div>
+
+          <Modal
+            title="配入指令"
+            open={assignModalVisible}
+            onOk={handleConfirmAssign}
+            onCancel={handleCancelAssign}
+            destroyOnClose
+          >
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Alert
+                type="info"
+                showIcon
+                message={selectedInstruction && assignOrder ? `指令 ${selectedInstruction.id} → 委托 ${assignOrder.shortNo}` : '请选择指令与委托后提交'}
+              />
+              <Form form={assignForm} layout="vertical">
+                <Form.Item label="期货数量(手)" name="futuresQty" rules={[{ required: true, message: '请输入期货数量' }]}>
+                  <InputNumber min={1} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item label="合同数量(吨)" name="contractQty" rules={[{ required: true, message: '请输入合同数量' }]}>
+                  <InputNumber min={1} style={{ width: '100%' }} />
+                </Form.Item>
+                <Form.Item label="合同价格" name="contractPrice" rules={[{ required: true, message: '请输入合同价格' }]}>
+                  <InputNumber min={0} style={{ width: '100%' }} />
+                </Form.Item>
+              </Form>
+            </Space>
+          </Modal>
+
           <Drawer
-            title="指令执行"
+            title={activeInstruction ? `指令详情 · ${activeInstruction.id}` : '指令详情'}
             placement="right"
-            width={800}
+            width={720}
             open={instructionDrawerVisible}
             onClose={() => setInstructionDrawerVisible(false)}
           >
-            <Table
-              columns={[
-                { title: '指令类型', dataIndex: 'type', width: 150 },
-                { title: '来源', dataIndex: 'source', width: 80 },
-                { title: '合同', dataIndex: 'contract', width: 120 },
-                { title: '合约', dataIndex: 'futures', width: 100 },
-                { title: '方向', dataIndex: 'direction', width: 80, render: (d) => <Tag color={d === '买入' ? 'red' : 'green'}>{d}</Tag> },
-                { title: '数量', dataIndex: 'qty', width: 80, align: 'right' },
-                { title: '执行方式', dataIndex: 'execType', width: 100 },
-                { title: '进度', dataIndex: 'progress', width: 100, render: (p) => <Tag>{p}</Tag> },
-                { title: '操作', key: 'action', width: 150, render: () => (
-                  <Space>
-                    <Button size="small" type="primary">接收</Button>
-                    <Button size="small">拒绝</Button>
-                  </Space>
-                )}
-              ]}
-              dataSource={instructionData}
-              rowKey="id"
-              pagination={false}
-            />
+            {activeInstruction ? (
+              <Space direction="vertical" size={16} style={{ width: '100%' }}>
+                <Card size="small" title="基础信息">
+                  <Descriptions column={2} size="small" bordered>
+                    <Descriptions.Item label="指令编号">{activeInstruction.id}</Descriptions.Item>
+                    <Descriptions.Item label="状态">{activeInstruction.status}</Descriptions.Item>
+                    <Descriptions.Item label="保值方案">{activeInstruction.hedgePlan}</Descriptions.Item>
+                    <Descriptions.Item label="发起人">{activeInstruction.initiator}</Descriptions.Item>
+                    <Descriptions.Item label="合同编号">{activeInstruction.contractNo}</Descriptions.Item>
+                    <Descriptions.Item label="交易类型">{activeInstruction.tradeType}</Descriptions.Item>
+                    <Descriptions.Item label="合同数量">{activeInstruction.contractQty} 吨</Descriptions.Item>
+                    <Descriptions.Item label="合同价格">{activeInstruction.contractPrice}</Descriptions.Item>
+                    <Descriptions.Item label="期货需求">{activeInstruction.futuresDirection}{activeInstruction.futuresQty} 手 {activeInstruction.futuresContract}</Descriptions.Item>
+                    <Descriptions.Item label="最后更新时间">{activeInstruction.updatedAt}</Descriptions.Item>
+                  </Descriptions>
+                </Card>
+                <Card size="small" title="合同详情">
+                  <Descriptions column={2} size="small" bordered>
+                    <Descriptions.Item label="点价方式">{activeInstruction.detail.pricing?.method}</Descriptions.Item>
+                    <Descriptions.Item label="点价窗口">{activeInstruction.detail.pricing?.window}</Descriptions.Item>
+                    <Descriptions.Item label="基差">{activeInstruction.detail.pricing?.basis}</Descriptions.Item>
+                    <Descriptions.Item label="已点/未点">{activeInstruction.detail.pricing ? `${activeInstruction.detail.pricing.doneQty}/${activeInstruction.detail.pricing.undoneQty}` : '-'}</Descriptions.Item>
+                    <Descriptions.Item label="物流">{activeInstruction.detail.pricing?.logistics}</Descriptions.Item>
+                    <Descriptions.Item label="仓库">{activeInstruction.detail.pricing?.warehouse}</Descriptions.Item>
+                  </Descriptions>
+                </Card>
+                <Card size="small" title="子指令与敞口结构">
+                  <Table
+                    size="small"
+                    columns={[
+                      { title: '子指令ID', dataIndex: 'id', width: 130 },
+                      { title: '类型', dataIndex: 'type', width: 140 },
+                      { title: '状态', dataIndex: 'status', width: 100 },
+                      { title: '操作人', dataIndex: 'operator', width: 100 },
+                      { title: '方向', dataIndex: 'direction', width: 70 },
+                      { title: '影响手数', dataIndex: 'qty', width: 90 }
+                    ]}
+                    dataSource={activeInstruction.detail.children.map(child => ({ key: child.id, ...child }))}
+                    pagination={false}
+                  />
+                  <Divider />
+                  <Timeline
+                    items={activeInstruction.detail.logs.map(log => ({
+                      children: `${log.time} ${log.content}`
+                    }))}
+                  />
+                </Card>
+                <Card size="small" title="备注与日志">
+                  <List
+                    size="small"
+                    dataSource={activeInstruction.detail.remarks}
+                    renderItem={(item) => (
+                      <List.Item>
+                        <Space direction="vertical" size={4}>
+                          <strong>{item.author}</strong>
+                          <span>{item.content}</span>
+                          <span style={{ color: '#8a94a6', fontSize: 12 }}>{item.time}</span>
+                        </Space>
+                      </List.Item>
+                    )}
+                  />
+                </Card>
+                <Space>
+                  <Button type="primary" onClick={() => handleInstructionAction(activeInstruction, '认领/取消认领')}>认领/取消认领</Button>
+                  <Button onClick={() => handleInstructionAction(activeInstruction, '同意/拒绝')}>撤销处理</Button>
+                  <Button onClick={() => handleInstructionAction(activeInstruction, '完成指令')}>完成指令</Button>
+                  <Button onClick={() => handleFillOrderForm(activeInstruction)}>填入下单板</Button>
+                </Space>
+              </Space>
+            ) : (
+              <Empty description="请选择左侧指令" />
+            )}
           </Drawer>
         </div>
+        </ConfigProvider>
       );
     };
 
@@ -5653,7 +6769,8 @@
               { key: 'person', label: '人员管理', icon: 'UserOutlined' },
               { key: 'person-role', label: '人员角色管理', icon: 'TeamOutlined' }
             ]
-          }
+          },
+          { key: 'custom-field', label: '自定义字段配置', icon: 'FileTextOutlined' }
         ]
       };
 
@@ -5733,6 +6850,8 @@
             return <PersonManagement />;
           case 'person-role':
             return <PersonRoleManagement />;
+          case 'custom-field':
+            return <CustomFieldManagement />;
           case '采购合同管理':
             return <ContractManagement contractType="purchase" />;
           case '销售合同管理':
