@@ -1,0 +1,3061 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>期现业务框架 - 快期产业服务中心</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #1a2f4f;
+            --primary-mid: #2d5a8f;
+            --primary-light: #4a7fb8;
+            --accent-cyan: #5ec4c4;
+            --accent-teal: #4a9d9d;
+            --accent-yellow: #d4af37;
+            --border-glow: rgba(94, 196, 196, 0.6);
+            --card-bg: rgba(45, 90, 143, 0.3);
+            --card-border: rgba(94, 196, 196, 0.4);
+            
+            /* 第一行配色：蓝绿色调（基础功能）- 清新明亮 */
+            --row1-group-bg: rgba(30, 80, 110, 0.45);
+            --row1-group-border: rgba(94, 196, 196, 0.6);
+            --row1-title-color: #5ec4c4;
+            --row1-module-bg: rgba(45, 120, 160, 0.3);
+            --row1-module-border: rgba(94, 196, 196, 0.45);
+            --row1-module-hover: rgba(94, 196, 196, 0.25);
+            
+            /* 第二行配色：深蓝色调（管理功能）- 稳重专业 */
+            --row2-group-bg: rgba(50, 80, 120, 0.45);
+            --row2-group-border: rgba(100, 150, 220, 0.6);
+            --row2-title-color: #6496dc;
+            --row2-module-bg: rgba(65, 100, 150, 0.3);
+            --row2-module-border: rgba(100, 150, 220, 0.45);
+            --row2-module-hover: rgba(100, 150, 220, 0.25);
+            
+            /* 第三行配色：橙金色调（数据功能）- 温暖活力 */
+            --row3-group-bg: rgba(110, 75, 50, 0.45);
+            --row3-group-border: rgba(255, 180, 80, 0.6);
+            --row3-title-color: #ffb450;
+            --row3-module-bg: rgba(140, 95, 65, 0.3);
+            --row3-module-border: rgba(255, 180, 80, 0.45);
+            --row3-module-hover: rgba(255, 180, 80, 0.25);
+            
+            /* 第四行配色：青绿色调（分析功能）- 冷静专业 */
+            --row4-group-bg: rgba(50, 110, 95, 0.45);
+            --row4-group-border: rgba(72, 209, 204, 0.6);
+            --row4-title-color: #48d1cc;
+            --row4-module-bg: rgba(65, 140, 125, 0.3);
+            --row4-module-border: rgba(72, 209, 204, 0.45);
+            --row4-module-hover: rgba(72, 209, 204, 0.25);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #1a2f4f 0%, #2d5a8f 50%, #3d6fa8 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .dark body {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a2f4f 50%, #2d5a8f 100%);
+        }
+
+        .page-layout {
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-out;
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .container {
+            flex: 1 1 100%; /* 占满整个宽度，以便纵向布局显示 5 列 */
+            min-width: 260px;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-glow);
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(94, 196, 196, 0.5);
+        }
+
+        .logo {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 700;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+            animation: slideIn 0.6s ease-out backwards;
+        }
+
+        .section:nth-child(2) { animation-delay: 0.1s; }
+        .section:nth-child(3) { animation-delay: 0.2s; }
+        .section:nth-child(4) { animation-delay: 0.3s; }
+        .section:nth-child(5) { animation-delay: 0.4s; }
+        .section:nth-child(6) { animation-delay: 0.5s; }
+        .section:nth-child(7) { animation-delay: 0.6s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .module-row {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-bottom: 0;
+        }
+
+        .module {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            border-radius: 8px;
+            padding: 0.65rem 1rem;
+            font-size: clamp(0.8rem, 1.4vw, 0.95rem);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            line-height: 1.4;
+            word-break: keep-all;
+            white-space: normal;
+        }
+        
+        /* 长文本模块可以跨列显示 */
+        .module.span-full {
+            grid-column: 1 / -1;
+        }
+
+        /* 主蓝图区的模块：自适应宽度（类似横向布局） */
+        .complex-layout .module {
+            width: fit-content; /* 根据内容自适应宽度 */
+            min-width: fit-content; /* 最小宽度适应内容 */
+            max-width: 100%; /* 最大宽度不超过容器 */
+        }
+
+        /* 横向布局中的模块：自适应宽度 */
+        .horizontal-layout .module {
+            width: fit-content; /* 根据内容自适应宽度 */
+            min-width: fit-content; /* 最小宽度适应内容 */
+            max-width: 100%; /* 最大宽度不超过容器 */
+        }
+
+        .module::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(94, 196, 196, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .module:hover::before {
+            left: 100%;
+        }
+
+        .module:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-cyan);
+            box-shadow: 0 5px 20px rgba(94, 196, 196, 0.4);
+            background: rgba(94, 196, 196, 0.2);
+        }
+
+        .module.highlight {
+            background: var(--accent-yellow);
+            color: var(--primary-dark);
+            border-color: var(--accent-yellow);
+            font-weight: 700;
+        }
+
+        .module.highlight:hover {
+            background: #f0c75e;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.6);
+        }
+
+        .module.purple {
+            background: rgba(147, 112, 219, 0.3);
+            border-color: rgba(186, 85, 211, 0.6);
+        }
+
+        .module.purple:hover {
+            border-color: #ba55d3;
+            box-shadow: 0 5px 20px rgba(186, 85, 211, 0.4);
+        }
+
+        .group {
+            background: rgba(26, 47, 79, 0.5);
+            border: 2px solid var(--accent-teal);
+            border-radius: 12px;
+            padding: 0.85rem;
+            margin-bottom: 0; /* 由网格 gap 控制纵向间距 */
+            backdrop-filter: blur(5px);
+        }
+
+        .group-title {
+            font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+            font-weight: 600;
+            margin-bottom: 0.65rem;
+            color: var(--accent-cyan);
+            padding-bottom: 0.4rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        /* 第一行配色方案 */
+        .row-1 .group {
+            background: var(--row1-group-bg);
+            border-color: var(--row1-group-border);
+        }
+
+        .row-1 .group-title {
+            color: var(--row1-title-color);
+            border-bottom-color: var(--row1-group-border);
+        }
+
+        .row-1 .module {
+            background: var(--row1-module-bg);
+            border-color: var(--row1-module-border);
+        }
+
+        .row-1 .module:hover {
+            border-color: var(--row1-title-color);
+            background: var(--row1-module-hover);
+            box-shadow: 0 5px 20px rgba(94, 196, 196, 0.5);
+        }
+
+        /* 第二行配色方案 */
+        .row-2 .group {
+            background: var(--row2-group-bg);
+            border-color: var(--row2-group-border);
+        }
+
+        .row-2 .group-title {
+            color: var(--row2-title-color);
+            border-bottom-color: var(--row2-group-border);
+        }
+
+        .row-2 .module {
+            background: var(--row2-module-bg);
+            border-color: var(--row2-module-border);
+        }
+
+        .row-2 .module:hover {
+            border-color: var(--row2-title-color);
+            background: var(--row2-module-hover);
+            box-shadow: 0 5px 20px rgba(100, 150, 220, 0.5);
+        }
+
+        /* 第三行配色方案 */
+        .row-3 .group {
+            background: var(--row3-group-bg);
+            border-color: var(--row3-group-border);
+        }
+
+        .row-3 .group-title {
+            color: var(--row3-title-color);
+            border-bottom-color: var(--row3-group-border);
+        }
+
+        .row-3 .module {
+            background: var(--row3-module-bg);
+            border-color: var(--row3-module-border);
+        }
+
+        .row-3 .module:hover {
+            border-color: var(--row3-title-color);
+            background: var(--row3-module-hover);
+            box-shadow: 0 5px 20px rgba(255, 180, 80, 0.5);
+        }
+
+        /* 第四行配色方案 */
+        .row-4 .group {
+            background: var(--row4-group-bg);
+            border-color: var(--row4-group-border);
+        }
+
+        .row-4 .group-title {
+            color: var(--row4-title-color);
+            border-bottom-color: var(--row4-group-border);
+        }
+
+        .row-4 .module {
+            background: var(--row4-module-bg);
+            border-color: var(--row4-module-border);
+        }
+
+        .row-4 .module:hover {
+            border-color: var(--row4-title-color);
+            background: var(--row4-module-hover);
+            box-shadow: 0 5px 20px rgba(72, 209, 204, 0.5);
+        }
+
+        /* module-row 内的模块间距调整 */
+        .complex-layout .module-row {
+            gap: 0.6rem;
+            margin-bottom: 0;
+        }
+
+        /* 横向布局中的 grid：flex 自适应宽度 */
+        .horizontal-layout .grid-2,
+        .horizontal-layout .grid-4 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .horizontal-layout .grid-3 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* 横向布局示例：顶部横向排列展示 */
+        .horizontal-layout-section {
+            margin-bottom: 1rem;
+        }
+
+        /* 通栏横向布局：占满整个视口宽度 */
+        .horizontal-layout-full {
+            margin-left: calc(50% - 50vw);
+            margin-right: calc(50% - 50vw);
+            width: 100vw;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            box-sizing: border-box;
+        }
+
+        .horizontal-layout-full .horizontal-layout {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .horizontal-layout-title {
+            font-size: clamp(0.9rem, 1.5vw, 1rem);
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin-bottom: 0.8rem;
+            padding: 0.5rem 1rem;
+            background: rgba(94, 196, 196, 0.1);
+            border-left: 3px solid var(--accent-cyan);
+            border-radius: 4px;
+        }
+
+        .horizontal-layout {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: nowrap; /* 不允许换行，始终保持同一行 */
+            padding: 0; /* 移除内边距，与纵向布局一致 */
+            background: transparent; /* 移除背景，与纵向布局一致 */
+            border: none; /* 移除外边框，与纵向布局一致 */
+            border-radius: 0;
+            backdrop-filter: none;
+        }
+
+        .horizontal-layout > .group {
+            flex: 2 1 0; /* 系统与解决方案：占五分之二宽度（2:3比例） */
+            min-width: 0; /* 允许flex收缩 */
+            background: rgba(45, 90, 143, 0.4);
+            border: 2px solid var(--card-border);
+            border-radius: 8px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 插件产品矩阵占用更多空间 */
+        .horizontal-layout > .group-large {
+            flex: 3 1 0; /* 插件产品矩阵：占五分之三宽度（3:2比例） */
+            min-width: 0; /* 允许flex收缩 */
+        }
+
+        /* 通栏横向布局中的全宽group */
+        .horizontal-layout > .group-full-width {
+            flex: 1 1 100%;
+            width: 100%;
+        }
+
+        .horizontal-layout .group-title {
+            font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--accent-cyan);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        /* 主蓝图区：按行组织，每行内按比例分配 */
+        .complex-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        /* 每一行使用 flex 布局 */
+        .complex-layout > .layout-row {
+            display: flex;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        /* 比例分配：2/5 宽度 */
+        .complex-layout .group-ratio-2 {
+            flex: 2 1 0;
+            min-width: 0;
+        }
+
+        /* 比例分配：1/5 宽度 */
+        .complex-layout .group-ratio-1 {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+
+        /* 通栏宽度 */
+        .complex-layout .group-full-width {
+            flex: 1 1 100%;
+            width: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            /* 中等屏幕：仍然保持2:3比例，允许适当收缩 */
+            .horizontal-layout > .group {
+                flex: 2 1 0;
+                min-width: 200px;
+            }
+            
+            .horizontal-layout > .group-large {
+                flex: 3 1 0;
+                min-width: 300px;
+            }
+
+            .complex-layout > .layout-row {
+                flex-wrap: wrap;
+            }
+
+            .complex-layout .group-ratio-1,
+            .complex-layout .group-ratio-2 {
+                flex: 1 1 calc(50% - 0.5rem);
+                min-width: 280px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .complex-layout > .layout-row {
+                flex-direction: column;
+            }
+
+            .complex-layout .group-ratio-1,
+            .complex-layout .group-ratio-2,
+            .complex-layout .group-full-width {
+                flex: 1 1 100%;
+                width: 100%;
+            }
+        }
+
+        .vertical-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .small-modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 0.6rem;
+        }
+
+        .small-modules .module {
+            padding: 0.6rem;
+            text-align: center;
+            font-size: clamp(0.75rem, 1.3vw, 0.9rem);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            /* grid 布局已改为 flex，模块会根据内容自适应宽度并自动换行 */
+            
+            .complex-layout {
+                column-count: 1; /* 移动端单列显示 */
+            }
+            
+            .horizontal-layout {
+                flex-direction: column; /* 移动端改为纵向排列 */
+            }
+            
+            .horizontal-layout > .group,
+            .horizontal-layout > .group-large,
+            .horizontal-layout > .group-full-width {
+                flex: 0 0 100%; /* 移动端占满宽度 */
+                min-width: 100%;
+            }
+            
+            /* 移动端：通栏布局去掉负边距，使用正常边距 */
+            .horizontal-layout-full {
+                width: 100%;
+                left: 0;
+                right: 0;
+                margin-left: 0;
+                margin-right: 0;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .small-modules {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            }
+
+            .module {
+                padding: 1rem;
+                text-align: center;
+            }
+        }
+
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+            border-top: 1px solid var(--card-border);
+        }
+
+        /* Decorative background elements */
+        .bg-decoration {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .bg-decoration:nth-child(1) {
+            top: -100px;
+            right: -100px;
+            background: radial-gradient(circle, var(--accent-cyan) 0%, transparent 70%);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .bg-decoration:nth-child(2) {
+            bottom: -100px;
+            left: -100px;
+            background: radial-gradient(circle, var(--accent-teal) 0%, transparent 70%);
+            animation: float 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            50% {
+                transform: translate(30px, -30px) scale(1.1);
+            }
+        }
+
+        /* 右侧抽屉区域：浮动覆盖在页面之上，不挤占下层布局 */
+        .drawer-wrapper {
+            position: fixed;
+            inset: 0;
+            display: none; /* 初始不常驻显示 */
+            align-items: stretch;
+            justify-content: flex-end;
+            background: radial-gradient(circle at top left, rgba(26, 47, 79, 0.18), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(0, 0, 0, 0.32), transparent 60%),
+                        rgba(2, 8, 23, 0.45); /* 下层内容蒙版效果（更浅、更通透） */
+            backdrop-filter: blur(2px);
+            z-index: 40;
+            opacity: 0;
+            transition: opacity 0.25s ease-out;
+        }
+
+        .drawer-wrapper.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        .drawer-card {
+            position: relative;
+            width: min(80vw, 1200px); /* 增大宽度，更适合PPT演示 */
+            margin: 1.5rem 1.5rem 1.5rem 2rem;
+            background: radial-gradient(circle at top left, rgba(94, 196, 196, 0.22), transparent 55%),
+                        radial-gradient(circle at bottom right, rgba(212, 175, 55, 0.18), transparent 55%),
+                        rgba(7, 16, 32, 0.85);
+            border-radius: 16px;
+            border: 1px solid rgba(94, 196, 196, 0.4);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+            overflow: hidden;
+            backdrop-filter: blur(18px);
+            padding: 2rem 2.5rem 2rem; /* 增大内边距 */
+            min-height: 320px;
+            max-height: calc(100vh - 3rem);
+            overflow-y: auto;
+            transform: translateX(24px);
+            opacity: 0;
+            transition: transform 0.28s ease-out, opacity 0.28s ease-out;
+        }
+
+        .drawer-wrapper.open .drawer-card {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .drawer-title {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .drawer-title-badge {
+            width: 48px; /* 增大图标尺寸 */
+            height: 48px;
+            border-radius: 12px;
+            background: radial-gradient(circle at 30% 20%, #fff, rgba(94, 196, 196, 0.5)),
+                        linear-gradient(135deg, var(--accent-cyan), var(--accent-teal));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem; /* 增大图标字号 */
+            color: var(--primary-dark);
+            box-shadow: 0 0 18px rgba(94, 196, 196, 0.7);
+        }
+
+        .drawer-title-text-main {
+            font-size: 1.8rem; /* 从1.2rem增大到1.8rem */
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            line-height: 1.3;
+        }
+
+        .drawer-title-text-sub {
+            font-size: 1.15rem; /* 从0.85rem增大到1.15rem */
+            opacity: 0.85;
+            line-height: 1.4;
+        }
+
+        .drawer-close {
+            border: none;
+            outline: none;
+            background: rgba(10, 24, 48, 0.9);
+            color: #d6e4ff;
+            width: 40px; /* 增大关闭按钮 */
+            height: 40px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 0 1px rgba(94, 196, 196, 0.5);
+            transition: all 0.22s ease;
+            font-size: 1.2rem; /* 增大关闭按钮文字 */
+        }
+
+        .drawer-close:hover {
+            background: rgba(220, 53, 69, 0.95);
+            box-shadow: 0 0 0 1px rgba(255, 190, 190, 0.85), 0 0 16px rgba(220, 53, 69, 0.8);
+        }
+
+        .drawer-body {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* 增大间距 */
+            margin-top: 0.5rem;
+        }
+
+        .drawer-main {
+            border-radius: 12px;
+            padding: 1.8rem 2rem; /* 增大内边距 */
+            background: linear-gradient(135deg, rgba(18, 46, 90, 0.9), rgba(26, 47, 79, 0.9));
+            box-shadow: inset 0 0 0 1px rgba(148, 192, 255, 0.18);
+            width: 100%; /* 占满宽度 */
+        }
+
+        .drawer-main h3 {
+            font-size: 1.5rem; /* 从0.95rem增大到1.5rem */
+            margin-bottom: 1rem; /* 增大底部间距 */
+            color: var(--accent-cyan);
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        .drawer-main p {
+            font-size: 1.15rem; /* 从0.85rem增大到1.15rem */
+            line-height: 1.8; /* 增大行高 */
+            margin-bottom: 0.9rem; /* 增大段落间距 */
+            color: #e6f0ff;
+        }
+
+        .drawer-main p strong {
+            color: #ffdd8a;
+            font-weight: 600;
+        }
+
+        .drawer-main ul {
+            padding-left: 1.8rem; /* 增大左侧内边距 */
+            margin: 0.5rem 0 1rem; /* 增大上下间距 */
+        }
+
+        .drawer-main li {
+            font-size: 1.1rem; /* 从0.84rem增大到1.1rem */
+            line-height: 1.8; /* 增大行高 */
+            margin-bottom: 0.5rem; /* 增大列表项间距 */
+        }
+
+        .drawer-main .tagline {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.9rem; /* 增大内边距 */
+            background: rgba(94, 196, 196, 0.1);
+            border-radius: 999px;
+            font-size: 1rem; /* 从0.78rem增大到1rem */
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 0.8rem; /* 增大底部间距 */
+        }
+
+        .drawer-main .tagline span {
+            width: 8px; /* 增大圆点 */
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-cyan);
+            box-shadow: 0 0 12px rgba(94, 196, 196, 0.9);
+        }
+
+        .drawer-side {
+            border-radius: 12px;
+            padding: 1.8rem 1.8rem; /* 增大内边距 */
+            background: radial-gradient(circle at top, rgba(94, 196, 196, 0.23), transparent 60%),
+                        rgba(8, 23, 55, 0.95);
+            box-shadow: inset 0 0 0 1px rgba(94, 196, 196, 0.28);
+            width: 100%; /* 占满宽度 */
+        }
+
+        .drawer-side-title {
+            font-size: 1.25rem; /* 从0.9rem增大到1.25rem */
+            margin-bottom: 1rem; /* 增大底部间距 */
+            color: #ffdd8a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .drawer-side-title::before {
+            content: '';
+            width: 10px; /* 增大装饰条 */
+            height: 24px;
+            border-radius: 99px;
+            background: linear-gradient(180deg, var(--accent-cyan), var(--accent-teal));
+            box-shadow: 0 0 12px rgba(94, 196, 196, 0.9);
+        }
+
+        .drawer-side p {
+            font-size: 1.05rem; /* 从0.82rem增大到1.05rem */
+            line-height: 1.8; /* 增大行高 */
+            margin-bottom: 0.8rem; /* 增大段落间距 */
+        }
+
+        .drawer-side .pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem; /* 增大间距 */
+            margin-top: 0.8rem; /* 增大顶部间距 */
+        }
+
+        .drawer-side .pill {
+            font-size: 0.95rem; /* 从0.75rem增大到0.95rem */
+            padding: 0.4rem 0.9rem; /* 增大内边距 */
+            border-radius: 999px;
+            background: rgba(10, 26, 58, 0.95);
+            border: 1px solid rgba(94, 196, 196, 0.6);
+        }
+
+        .drawer-illustration {
+            margin-top: 1rem; /* 增大顶部间距 */
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            background: transparent; /* 改为透明背景，让PNG图片的透明底正常显示 */
+            width: 100%;
+            /* 移除固定高度，让图片自适应 */
+        }
+
+        /* 图片行容器，支持多图片横向排列 */
+        .drawer-images-row {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .drawer-images-row .drawer-illustration {
+            flex: 1 1 calc(50% - 0.5rem); /* 两个图片时各占一半 */
+            min-width: 300px;
+        }
+
+        .drawer-images-row .drawer-illustration:only-child {
+            flex: 1 1 100%; /* 单个图片时占满宽度 */
+        }
+
+        /* 图片容器可以更大 */
+        .drawer-illustration.large {
+            min-height: 450px;
+        }
+
+        .drawer-illustration img {
+            width: 100%;
+            height: auto; /* 改为 auto，让图片根据宽度自适应高度 */
+            object-fit: contain; /* 改为 contain 以确保完整显示图片 */
+            display: block;
+            opacity: 0.95;
+            transition: opacity 0.3s ease;
+        }
+
+        /* 懒加载图片样式 */
+        .lazy-image {
+            opacity: 0;
+            background: rgba(26, 47, 79, 0.3);
+        }
+
+        .lazy-image[src] {
+            opacity: 0.95;
+        }
+
+        .drawer-illustration-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            font-size: 1.05rem; /* 从0.8rem增大到1.05rem */
+            color: #e6f0ff;
+        }
+
+        .drawer-illustration-placeholder span {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid rgba(175, 228, 255, 0.8);
+            border-top-color: transparent;
+            animation: spin 1.2s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .drawer-empty-hint {
+            font-size: 1.05rem; /* 从0.85rem增大到1.05rem */
+            color: #d4e3ff;
+            opacity: 0.9;
+            text-align: center;
+            padding: 0.8rem 0.2rem 0; /* 增大顶部内边距 */
+        }
+
+        .drawer-empty-hint span {
+            color: #ffdd8a;
+        }
+
+        .drawer-section-title {
+            font-size: 1.2rem; /* 从0.86rem增大到1.2rem */
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin: 0.8rem 0 0.5rem; /* 增大上下间距 */
+        }
+
+        /* 图文混排基础样式，可在内容中直接使用 */
+        .content-block {
+            display: flex;
+            gap: 0.8rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .content-block img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid rgba(94, 196, 196, 0.6);
+            box-shadow: 0 0 12px rgba(94, 196, 196, 0.5);
+        }
+
+        .content-block-text h4 {
+            font-size: 1.25rem; /* 从0.9rem增大到1.25rem */
+            margin-bottom: 0.4rem;
+            color: #ffdd8a;
+        }
+
+        .content-block-text p {
+            font-size: 1.05rem; /* 从0.82rem增大到1.05rem */
+            line-height: 1.8;
+        }
+
+        /* 移动端下抽屉位置调整：下方全宽浮层 */
+        @media (max-width: 1024px) {
+            .page-layout {
+                flex-direction: column;
+            }
+
+            .drawer-wrapper {
+                align-items: flex-end;
+            }
+
+            .drawer-card {
+                width: 100vw;
+                margin: 0;
+                border-radius: 16px 16px 0 0;
+                max-height: 80vh;
+                padding: 1.5rem 1.8rem; /* 移动端适当减小内边距 */
+            }
+
+            /* 移动端字号适当减小但仍保持可读性 */
+            .drawer-title-text-main {
+                font-size: 1.5rem;
+            }
+
+            .drawer-title-text-sub {
+                font-size: 1rem;
+            }
+
+            .drawer-main h3 {
+                font-size: 1.3rem;
+            }
+
+            .drawer-main p {
+                font-size: 1rem;
+            }
+
+            .drawer-main li {
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .drawer-body {
+                flex-direction: column; /* 移动端保持纵向布局 */
+            }
+
+            .drawer-images-row {
+                flex-direction: column; /* 移动端图片纵向排列 */
+            }
+
+            .drawer-images-row .drawer-illustration {
+                flex: 1 1 100%; /* 移动端图片占满宽度 */
+                min-width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="bg-decoration"></div>
+    <div class="bg-decoration"></div>
+
+    <div class="page-layout">
+        <div class="container">
+            <div class="header">
+                <h1>快期-期现服务全景图</h1>
+                <div class="logo">快期产业服务中心</div>
+            </div>
+
+            <!-- 系统与解决方案、插件产品矩阵：顶部横向排列 -->
+            <div class="horizontal-layout-section">
+                <div class="horizontal-layout">
+                    <!-- 系统与解决方案 -->
+                    <div class="group">
+                        <div class="group-title">众期期现系统</div>
+                        <div class="module-row">
+                            <div class="module" data-module="integrated_hedge_suite_overview">众期期现管理系统</div>
+                            <div class="module" data-module="integrated_hedge_suite_trade_solution">贸易解决方案</div>
+                            <div class="module" data-module="integrated_hedge_suite_production_solution">生产企业解决方案</div>
+                        </div>
+                    </div>
+                    <!-- 插件产品矩阵 -->
+                    <div class="group group-large">
+                        <div class="group-title">快期产业版-插件化产品</div>
+                        <div class="grid-4">
+                            <div class="module" data-module="basis_manage_overview">匹配宝</div>
+                            <div class="module" data-module="pricing_manage_overview">点价宝</div>
+                            <div class="module" data-module="instruction_manage_overview">指令宝</div>
+                            <div class="module" data-module="contract_manage_overview">合同宝</div>
+                            <div class="module" data-module="risk_manage_overview">风控宝</div>
+                            <div class="module" data-module="otc_options_overview">期权宝</div>
+                            <div class="module" data-module="cross_market_connect_overview">内外盘套利对接</div>
+                            <div class="module" data-module="industrial_terminal_overview">产业交易端</div>
+                            <div class="module" data-module="plugin_suite_pricing">版本价格</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="horizontal-layout-section horizontal-layout-full">
+                <div class="horizontal-layout">
+                    <!-- 服务定位 -->
+                    <div class="group group-full-width">
+                        <div class="group-title">服务定位</div>
+                        <div class="grid-4">
+                            <div class="module" data-module="service_futures">期货服务</div>
+                            <div class="module" data-module="service_contracts">合同服务</div>
+                            <div class="module" data-module="service_basis_relation">期现关系</div>
+                            <div class="module" data-module="service_trade_relation">采销关系</div>
+                            <div class="module" data-module="service_apply">申请服务</div>
+                            <div class="module" data-module="service_approve">审批服务</div>
+                            <div class="module" data-module="report_service">报表服务</div>
+                            <div class="module" data-module="databus_integration">数据对接</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 单页蓝图区：按行组织，每行按比例分配宽度 -->
+            <div class="section">
+                <div class="complex-layout">
+                    <!-- 第一行：基础设置(2/5) + 期货单据(2/5) + 现货合同(1/5) -->
+                    <div class="layout-row row-1">
+                        <div class="group group-ratio-2">
+                            <div class="group-title">基础设置</div>
+                            <div class="module-row">
+                                <div class="module" data-module="settings_spot_brand">现货品种与价格</div>
+                                <div class="module" data-module="settings_customer">客商管理</div>
+                                <div class="module" data-module="settings_hedge_plan">保值方案管理</div>
+                                <div class="module" data-module="settings_futures_account">期货账户管理</div>
+                                <div class="module" data-module="settings_person_manage">人员管理</div>
+                                <div class="module" data-module="settings_custom_field">自定义字段配置</div>
+                            </div>
+                        </div>
+                        <div class="group group-ratio-2">
+                            <div class="group-title">期货单据</div>
+                            <div class="module-row">
+                                <div class="module" data-module="futures_hedge_plan">保值方案</div>
+                                <div class="module" data-module="futures_delivery_doc">期货交割</div>
+                                <div class="module" data-module="futures_price_monitor">价格监测</div>
+                                <div class="module" data-module="futures_warehouse_warrant">仓单</div>
+                                <div class="module" data-module="futures_pledge_equity_change">质押权益变动</div>
+                                <div class="module" data-module="futures_margin_monitor">保证金及检测</div>
+                            </div>
+                        </div>
+                        <div class="group group-ratio-1">
+                            <div class="group-title">现货合同</div>
+                            <div class="module-row">
+                                <div class="module" data-module="spot_contract_fixed_price">一口价</div>
+                                <div class="module" data-module="spot_contract_temp_price">暂定价</div>
+                                <div class="module" data-module="spot_contract_avg_price">均价</div>
+                                <div class="module" data-module="spot_contract_avg_basis">均基差</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第二行：期现管理(2/5) + 风险管理(1/5) + 指令平台(2/5) -->
+                    <div class="layout-row row-2">
+                        <div class="group group-ratio-2">
+                            <div class="group-title">期现管理</div>
+                            <div class="module-row">
+                                <div class="module" data-module="basis_match_strategy">匹配策略</div>
+                                <div class="module" data-module="basis_contract_match">合同匹配</div>
+                                <div class="module" data-module="basis_match_workbench">期现匹配工作台</div>
+                                <div class="module" data-module="basis_delivery_link">期货交割</div>
+                                <div class="module" data-module="basis_order_match">委托匹配</div>
+                                <div class="module" data-module="basis_trade_record_match">交易记录匹配</div>
+                                <div class="module" data-module="basis_match_recon">期现匹配对账</div>
+                                <div class="module" data-module="basis_conversion">期现转换</div>
+                            </div>
+                        </div>
+                        <div class="group group-ratio-1">
+                            <div class="group-title">风险管理</div>
+                            <div class="module-row">
+                                <div class="module" data-module="risk_price">价格风险</div>
+                                <div class="module" data-module="risk_margin">期现保证金风险</div>
+                                <div class="module" data-module="risk_credit">信用风险</div>
+                                <div class="module" data-module="risk_operational">操作风险</div>
+                            </div>
+                        </div>
+                        <div class="group group-ratio-2">
+                            <div class="group-title">指令平台</div>
+                            <div class="module-row">
+                                <div class="module" data-module="instr_customer_futures">客商期货指令</div>
+                                <div class="module" data-module="instr_staff_futures">人员期货指令</div>
+                                <div class="module" data-module="instr_contract_create">合同创建指令</div>
+                                <div class="module" data-module="instr_contract_change">合同变更指令</div>
+                                <div class="module" data-module="instr_trade_terminal_flow">指令与交易端流程操作</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第三行：数据对接(通栏) -->
+                    <div class="layout-row row-3">
+                        <div class="group group-full-width">
+                            <div class="group-title">数据对接</div>
+                            <div class="module-row">
+                                <div class="module" data-module="databus_mgmt_unit">管理单元</div>
+                                <div class="module" data-module="databus_settlement">结算数据</div>
+                                <div class="module" data-module="databus_position_pnl">持仓盈亏</div>
+                                <div class="module" data-module="databus_strategy_pnl">策略盈亏</div>
+                                <div class="module" data-module="databus_trade_records">交易记录</div>
+                                <div class="module" data-module="databus_margin">保证金</div>
+                                <div class="module" data-module="databus_futures_contracts">期货合约</div>
+                                <div class="module" data-module="databus_futures_strategies">期货策略</div>
+                                <div class="module" data-module="databus_contract_pnl">合约盈亏</div>
+                                <div class="module" data-module="databus_futures_pnl">期货盈亏</div>
+                                <div class="module" data-module="databus_total_equity">总权益金额</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 第四行：统计分析(通栏) -->
+                    <div class="layout-row row-4">
+                        <div class="group group-full-width">
+                            <div class="group-title">统计分析</div>
+                            <div class="module-row">
+                                <div class="module" data-module="stats_position">头寸统计分析</div>
+                                <div class="module" data-module="stats_exposure">敞口统计分析</div>
+                                <div class="module" data-module="stats_basis_match_report">期现匹配报表</div>
+                                <div class="module" data-module="stats_spot_settlement_recon">现货结算对账</div>
+                                <div class="module" data-module="stats_contract_pnl">合约盈亏分析</div>
+                                <div class="module" data-module="stats_strategy_pnl">策略盈亏分析</div>
+                                <div class="module" data-module="stats_spot_pnl">现货盈亏分析</div>
+                                <div class="module" data-module="stats_futures_pnl">期货盈亏分析</div>
+                                <div class="module" data-module="stats_basis_total_pnl">期现盈亏分析</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="horizontal-layout-section horizontal-layout-full">
+                    <div class="horizontal-layout">
+                        <!-- 套期会计 -->
+                        <div class="group group-full-width">
+                            <div class="group-title">套期会计</div>
+                            <div class="grid-4">
+                                <div class="module" data-module="hedgeacct_cash_out">资金出金</div>
+                                <div class="module" data-module="hedgeacct_cash_in">资金入金</div>
+                                <div class="module" data-module="hedgeacct_pledge_in">质押仓单</div>
+                                <div class="module" data-module="hedgeacct_pledge_release">解押仓单</div>
+                                <div class="module" data-module="hedgeacct_interest_return">利息返还</div>
+                                <div class="module" data-module="hedgeacct_fee_return">手续费返还</div>
+                                <div class="module" data-module="hedgeacct_delivery_buy">期货交割-买</div>
+                                <div class="module" data-module="hedgeacct_delivery_sell">期货交割-卖</div>
+                                <div class="module" data-module="hedgeacct_realized_pnl">平仓损益</div>
+                                <div class="module" data-module="hedgeacct_unrealized_pnl">持仓浮动盈亏</div>
+                                <div class="module" data-module="hedgeacct_spot_basis_pnl">现货真实盈亏-基差</div>
+                                <div class="module" data-module="hedgeacct_spot_price_pnl">现货真实盈亏-价格</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <!-- 右侧抽屉区域：默认展示欢迎内容，点击模块后更新 -->
+        <aside class="drawer-wrapper">
+            <div class="drawer-card" id="drawer">
+                <div class="drawer-header">
+                    <div class="drawer-title">
+                        <div class="drawer-title-badge" id="drawer-icon">A</div>
+                        <div>
+                            <div class="drawer-title-text-main" id="drawer-title">请选择左侧模块</div>
+                            <div class="drawer-title-text-sub" id="drawer-subtitle">点击任意业务块，查看图文说明与流程示意</div>
+                        </div>
+                    </div>
+                    <button class="drawer-close" id="drawer-close" title="收起右侧说明">
+                        ✕
+                    </button>
+                </div>
+
+                <div class="drawer-body" id="drawer-content">
+                    <div class="drawer-main">
+                        <div class="tagline">
+                            <span></span>
+                            BUSINESS BLUEPRINT
+                        </div>
+                        <h3>期现一体化业务导航</h3>
+                        <p>
+                            在左侧，我们用模块化的方式呈现了整个期现业务框架；在右侧抽屉中，将为每一个块提供
+                            <strong>图文并茂</strong> 的说明，包括定位、核心功能、典型场景以及与上下游模块的衔接关系。
+                        </p>
+                        <p>
+                            建议按照流程顺序：从 <strong>账户服务 / 基础设置</strong> 入手，逐步延伸到合同、风控、会计与分析模块，
+                            形成一条完整的业务链路。
+                        </p>
+                        <p>
+                            也可以在实现过程中，把这里作为 <strong>产品文档 + 演示白板</strong> 使用，支撑对内方案沟通和对外演示。
+                        </p>
+                    </div>
+                    <div class="drawer-side">
+                        <div class="drawer-side-title">如何自定义图文内容？</div>
+                        <p>
+                            右侧内容由脚本中的 <code>moduleContents</code> 控制，可以为每个模块单独配置：
+                            标题、副标题、文字说明、要点列表，以及一张示意图片或插画。
+                        </p>
+                        <p>如果暂时没有准备插画，可沿用默认的渐变占位图，后续再替换为实际业务流程图。</p>
+                        <div class="pill-list">
+                            <div class="pill">产品规划</div>
+                            <div class="pill">业务培训</div>
+                            <div class="pill">项目汇报</div>
+                            <div class="pill">客户宣讲</div>
+                        </div>
+                        <div class="drawer-illustration">
+                            <div class="drawer-illustration-placeholder">
+                                <span></span>
+                                右侧区域支持插入示意图 / 流程图 / 看板截图
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // Dark mode support
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // 抽屉内容配置：为关键模块提供图文示例，其余按通用模版展示
+        const moduleContents = {
+            // 顶层系统与解决方案
+            'integrated_hedge_suite_overview': {
+                displayName: '众期期现管理系统',
+                title: '众期期现管理系统 · 一体化期现管理平台',
+                subtitle: '统一数据口径，打通"期货交易 / 期现业务 / 风险 / 结算 / 报表"全链路',
+                icon: '众',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        INTEGRATED HEDGE SUITE
+                    </div>
+                    <h3>一体化期现管理平台，统一数据口径打通全链路</h3>
+                    <p>
+                        众期期现管理系统是一套覆盖 <strong>"期货交易 / 期现业务 / 风险管理 / 每日结算 / 报表分析"</strong> 的一体化管理平台，
+                        用统一的数据口径把分散在 Excel、风控系统和会计系统里的信息拉到一张图上。系统支持多账户并行与风险隔离，
+                        每日自动结算并支持历史重算，让管理层能随时看清真实的敞口与盈亏，而不是事后对账。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">众期期现管理系统架构图</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="zq-hedge.svg" alt="众期期现管理系统架构图" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/products/zq-hedge" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>众期期现管理系统</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+
+            'integrated_hedge_suite_trade_solution': {
+                displayName: '贸易解决方案',
+                title: '贸易公司 · 基差与敞口管理方案',
+                subtitle: '围绕订单 / 合同 / 库存基差，统一贸易口径与风险视图',
+                icon: '贸',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        TRADE HEDGE SOLUTION
+                    </div>
+                    <h3>围绕订单、合同和库存基差，统一贸易口径与风险视图</h3>
+                    <p>
+                        面向贸易公司，系统围绕 <strong>"订单 / 合同 / 库存基差"</strong> 三条主线，打通合同建模、基差签约、
+                        期现匹配、敞口监控和报表输出。典型日常流程是：早上打开系统看敞口和预警，中午和收盘前看点价与成交归因，
+                        收盘后自动结算并生成按客户/品种/项目拆分的盈亏和敞口报表，大幅减少人工整理和沟通成本。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">贸易公司基差管理方案</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="showcase-1.webp" alt="库存基差报表" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="showcase-2.webp" alt="市场基差与库存基差走势图" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/solutions/basis-management-trading" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>贸易公司基差管理方案</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+
+            'integrated_hedge_suite_production_solution': {
+                displayName: '生产企业解决方案',
+                title: '生产企业 · 项目制套保方案',
+                subtitle: '以项目为主线，把套保效果落到每一个被套期项目',
+                icon: '产',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        PRODUCTION HEDGE SOLUTION
+                    </div>
+                    <h3>按"项目"来管理套保，而不是只看账户</h3>
+                    <p>
+                        面向生产企业，系统支持围绕 <strong>"项目 / 生产计划 / 采购与销售合同"</strong> 来搭建套保模型，
+                        把每一个被套期项目从下单、交收到会计和报表全程串起来。业务侧能看到每个项目对应的头寸与敞口，
+                        会计侧能直接生成凭证，管理层可以按项目维度看套保效果，而不再只是看总账户盈亏。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">生产企业套保管理流程</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="showcase-3.webp" alt="生产企业套保管理流程" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="showcase-4.webp" alt="生产企业套保管理方案" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/solutions/basis-management-trading" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>生产企业期现管理方案</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+
+            // 风险管理（点击任意风险块，统一进入这一说明）
+            'risk_price': {
+                displayName: '风险管理',
+                title: '风险管理：穿透式监控与预警',
+                subtitle: '保证金 · 库存 · 限额，一图看懂整体风险敞口',
+                icon: '风',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        RISK CONTROL
+                    </div>
+                    <h3>自上而下的风险视角</h3>
+                    <p>
+                        风险管理模块从 <strong>"价格波动""保证金与资金安全""客户信用"和"操作合规"</strong> 四个维度来监控风险：
+                        一方面跟踪账户和合约层的实时指标，一方面结合合同与项目看经营口径的敞口，并把触发的告警、
+                        下达的指令和后续处置过程都完整记录下来，方便之前有人担心的问题"到底有没有管到、谁负责"能说清楚。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">风险驾驶舱</div>
+                    <p>包括价格风险图、保证金风险卡片、风险事件列表。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            风险驾驶舱截图——包括价格风险图、保证金风险卡片、风险事件列表
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/products/risk-manager" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>风控宝风险规则与驾驶舱</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+            // 其它风控小块共用上述说明
+            'risk_margin': { extends: 'risk_price' },
+            'risk_credit': { extends: 'risk_price' },
+            'risk_operational': { extends: 'risk_price' },
+
+            // 套期会计（点击任意会计块，统一进入这一说明）
+            'hedgeacct_cash_out': {
+                displayName: '套期会计',
+                title: '套期会计：从交易到会计的一致性闭环',
+                subtitle: '兼容历史体系，又服务于期现一体的财务口径',
+                icon: '会',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        HEDGE ACCOUNTING
+                    </div>
+                    <h3>兼容老系统的同时推动标准化</h3>
+                    <p>
+                        套期会计模块以 <strong>"业务事件"</strong> 为入口，从出入金、质押、利息和手续费，到期货交割、平仓与现货结算，
+                        每一个事件都会生成相应的会计分录，并最终汇总到报表科目。结合一致性重算能力，可以在修正历史数据后快速重算相关报表，
+                        让财务和业务口径始终对得上。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">事件→分录→报表的桥接</div>
+                    <p>事件→分录→报表的桥接示意图，以及某类事件的分录示例截图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            事件→分录→报表的桥接示意图，以及某类事件的分录示例截图
+                        </div>
+                    </div>
+                `
+            },
+            // 其它套期会计小块共用上述说明
+            'hedgeacct_cash_in': { extends: 'hedgeacct_cash_out' },
+            'hedgeacct_pledge_in': { extends: 'hedgeacct_cash_out' },
+            'hedgeacct_pledge_release': { extends: 'hedgeacct_cash_out' },
+            'hedgeacct_interest_return': { extends: 'hedgeacct_cash_out' },
+            'hedgeacct_fee_return': { extends: 'hedgeacct_cash_out' },
+            'hedgeacct_delivery_buy': { extends: 'hedgeacct_cash_out' },
+            'hedgeacct_delivery_sell': { extends: 'hedgeacct_cash_out' },
+            'hedgeacct_realized_pnl': { extends: 'hedgeacct_cash_out' },
+            'hedgeacct_unrealized_pnl': { extends: 'hedgeacct_cash_out' },
+            'hedgeacct_spot_basis_pnl': { extends: 'hedgeacct_cash_out' },
+            'hedgeacct_spot_price_pnl': { extends: 'hedgeacct_cash_out' },
+
+            // 统计分析（期现盈亏分析：汇总视角）
+            'stats_basis_total_pnl': {
+                displayName: '账计分析',
+                title: '账计分析：从流水到洞察',
+                subtitle: '期现一体化视角下的多维分析工作台',
+                icon: '析',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        ANALYTICS
+                    </div>
+                    <h3>让复杂业务"看得见、算得清、讲得明白"</h3>
+                    <p>
+                        统计分析模块把前面所有业务和会计结果沉淀成一套报表体系，可以按账户、客户、品种、项目等多个维度拆开看头寸、敞口和盈亏，
+                        也可以用 <strong>"期货 + 现货 + 费用"</strong> 的盈亏桥图来解释某一段时间的整体表现，方便对内汇报和对外沟通。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">典型盈亏桥图或综合看板</div>
+                    <p>展示"期货盈亏 + 现货盈亏 + 期现对冲效果"的构成。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            典型盈亏桥图或综合看板截图，展示"期货盈亏 + 现货盈亏 + 期现对冲效果"的构成
+                        </div>
+                    </div>
+                `
+            },
+            // 其它统计分析模块共用上述说明
+            'stats_position': { extends: 'stats_basis_total_pnl' },
+            'stats_exposure': { extends: 'stats_basis_total_pnl' },
+            'stats_basis_match_report': { extends: 'stats_basis_total_pnl' },
+            'stats_spot_settlement_recon': { extends: 'stats_basis_total_pnl' },
+            'stats_contract_pnl': { extends: 'stats_basis_total_pnl' },
+            'stats_strategy_pnl': { extends: 'stats_basis_total_pnl' },
+            'stats_spot_pnl': { extends: 'stats_basis_total_pnl' },
+            'stats_futures_pnl': { extends: 'stats_basis_total_pnl' },
+
+            // 指令平台示例：直接嵌入外部网页（指令宝/点价宝相关页面）
+            // 注意：外部网站需要允许被 iframe 内嵌（X-Frame-Options/CSP 需放行），否则浏览器会拦截。
+            'instr_customer_futures': {
+                displayName: '客商期货指令',
+                title: '客商期货指令 · 在线演示页示例',
+                subtitle: '此示例通过 iframe 直接在抽屉中嵌入外部网页内容',
+                icon: '指',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        CUSTOMER FUTURES INSTRUCTION
+                    </div>
+                    <h3>客户直连场景下的指令管理</h3>
+                    <p>
+                        客商期货指令模块面向 <strong>"客户直连"</strong> 的场景，客户可以在授权范围内直接提交指令，
+                        系统自动根据合约、持仓上限和亏损限额等规则做校验，通过后再送往交易终端执行。
+                        整个过程对客户是透明可查的，对公司来说也有清晰的权限边界与责任链路。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">客商指令提交与状态查询</div>
+                    <p>客商指令提交与状态查询界面截图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            客商指令提交与状态查询界面截图
+                        </div>
+                    </div>
+                `
+            },
+
+            // 插件产品矩阵：匹配宝
+            'basis_manage_overview': {
+                displayName: '匹配宝',
+                title: '匹配宝 · 期现成交归因与合同匹配',
+                subtitle: '从 Excel 升级为在线工作台，把一单 8–12 分钟的活压缩到 1 分钟以内',
+                icon: '配',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        BASIS MANAGE
+                    </div>
+                    <h3>哪一笔期货成交对应哪一张合同，一目了然</h3>
+                    <p>
+                        匹配宝把"哪一笔期货成交对应哪一张合同/哪一批现货"这件事从 Excel 里拎出来，变成在线的匹配工作台。
+                        成交可以通过 <strong>"标识打点"</strong> 或 <strong>"选择合同"</strong> 的方式归因，系统会自动做一致性重算和报表汇总，
+                        把原来 8–12 分钟一单才能对完的活压缩到 1 分钟以内。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">匹配宝产品页或工作台界面</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="match-manager.svg" alt="匹配宝" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/products/match-manager" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>匹配宝产品介绍</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+
+            // 点价宝
+            'pricing_manage_overview': {
+                displayName: '点价宝',
+                title: '点价宝 · 客户自助点价与自动化下单',
+                subtitle: '覆盖白天与夜盘，把点价从"人工盯"变成"系统托管"',
+                icon: '价',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        PRICING MANAGE
+                    </div>
+                    <h3>客户点价不再靠电话和截图，进度一屏看清</h3>
+                    <p>
+                        点价宝把客户点价/询价的流程搬到线上，客户可以在 App 或网页上自行发起点价，系统自动做额度和容忍度校验，
+                        通过后直接下单并回写结果。白天和夜盘都能稳定处理大量点价请求，高峰期不再需要大量人工盯盘，
+                        客户和业务都能实时看到进度。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">点价宝流程示意或点价工作台界面</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="pricing-manager.svg" alt="点价宝" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/products/pricing-manager" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>点价宝产品介绍</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+
+            // 指令宝
+            'instruction_manage_overview': {
+                displayName: '指令宝',
+                title: '指令宝 · 指令交易与权限管理',
+                subtitle: '所有敏感操作，先变成一条条可审批、可审计的指令',
+                icon: '令',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        INSTRUCTION MANAGE
+                    </div>
+                    <h3>把"口头指令"变成"系统指令"，责任与权限一目了然</h3>
+                    <p>
+                        指令宝提供一套统一的 <strong>"指令开关"</strong>，无论是客户自己下单，还是业务经理代客操作，
+                        都先落在指令上，经过审批和权限校验后再进交易终端。每一条指令从创建、审批到执行过程都有记录，
+                        谁在什么前提下做了什么动作，一目了然，方便事后复盘和审计。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">指令列表与指令详情页面</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="order-manager.svg" alt="指令宝" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/products/order-manager" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>指令宝产品介绍</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+
+            // 合同宝
+            'contract_manage_overview': {
+                displayName: '合同宝',
+                title: '合同宝 · 合同全生命周期与虚拟库存',
+                subtitle: '统一管理一口价、后点价、均价、均基差等多种合同类型',
+                icon: '合',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        CONTRACT MANAGE
+                    </div>
+                    <h3>从签合同到交收，每一步都有据可查</h3>
+                    <p>
+                        合同宝把一口价、后点价、均价、均基差等不同合同都统一管起来，系统根据条款自动算出应收应付、定价状态和虚拟库存，
+                        并和期货持仓联动。这样一来，"这张合同赚了多少钱、对敞口的影响有多大"，不需要翻 Excel，用系统就能直接按合同维度看清楚。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">合同列表 + 单个合同详情页面</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="contract-manager.svg" alt="合同宝" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/products/contract-manager" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>合同宝产品介绍</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+
+            // 风控宝
+            'risk_manage_overview': {
+                displayName: '风控宝',
+                title: '风控宝 · 账户 + 经营 + 行情三维预警',
+                subtitle: '从账户到项目，一眼看到哪里有风险、谁该处理',
+                icon: '控',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        RISK MANAGE
+                    </div>
+                    <h3>不只看账户保证金，更看经营口径和行情波动</h3>
+                    <p>
+                        风控宝把账户风险、经营风险和行情波动放在一个驾驶舱里看：既能看到每个账户的保证金、权益和盈亏情况，
+                        也能按合同、项目或品种看经营敞口，还能按波动率和时段做规则。触发规则后，系统会自动通知相关人员，
+                        并与指令宝或审批流打通，形成 <strong>"发现风险 → 下达指令 → 落地处置 → 留痕复盘"</strong> 的闭环。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">风控宝驾驶舱界面</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="risk-manager.svg" alt="风控宝" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/products/risk-manager" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>风控宝产品介绍</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+
+            // 期权宝
+            'otc_options_overview': {
+                displayName: '期权宝',
+                title: '期权宝 · 场外期权方案配置与仿真',
+                subtitle: '三步生成"条款+收益曲线+风险提示"的完整方案',
+                icon: '权',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        OTC OPTIONS
+                    </div>
+                    <h3>从"拍脑袋设计结构"到"参数驱动的条款建议"</h3>
+                    <p>
+                        期权宝用 <strong>"情境 + 参数"</strong> 的方式帮业务设计场外期权方案：先选场景（如自有库存、无库存销售、采购保值），
+                        再输入目标价、预算、期限等参数，系统给出条款建议、收益分布和触发概率，帮助团队把原来需要多轮沟通和试算的工作压缩到几步之内完成。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">期权宝产品页或方案配置 + 收益曲线截图</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="option-manager.svg" alt="期权宝" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/products/option-manager" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>期权宝产品介绍</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+
+            // 产业交易端
+            'industrial_terminal_overview': {
+                displayName: '产业交易端',
+                title: '产业交易端 · 产业期货交易终端',
+                subtitle: 'PC 端 + 移动端，支持基础交易、点价工作流、指令工作流等多种交易模式',
+                icon: '端',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        INDUSTRIAL TERMINAL
+                    </div>
+                    <h3>专为产业客户优化的期货交易终端</h3>
+                    <p>
+                        产业交易端是专为产业客户设计的期货交易终端，提供 <strong>PC 端和移动端</strong> 双平台支持。
+                        支持基础交易、点价工作流、指令工作流等多种交易模式，与匹配宝、点价宝、指令宝等插件产品深度集成，
+                        实现从交易到期现匹配的完整闭环。
+                    </p>
+                    <p class="drawer-section-title">核心功能</p>
+                    <ul>
+                        <li>基础交易：标准的下单、改单、撤单和持仓/成交查询</li>
+                        <li>点价工作流：支持点价（询价）工作流期货处理</li>
+                        <li>指令工作流：支持指令工作流期货处理（ENTERPRISE 版本）</li>
+                        <li>历史数据：根据版本提供 1 年或永久历史委托数据存储</li>
+                    </ul>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">产业交易端界面</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="industrial-terminal.svg" alt="产业交易端" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                `
+            },
+
+            // 内外盘套利技术对接
+            'cross_market_connect_overview': {
+                displayName: '内外盘套利技术对接',
+                title: '内外盘套利 · 行情与交易一体化接入',
+                subtitle: '点差/比值触发，同屏看内外盘，自动并发下单与回退',
+                icon: '跨',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        CROSS-MARKET CONNECT
+                    </div>
+                    <h3>一套通道，支撑跨市场套利策略的稳定运行</h3>
+                    <p>
+                        这是一套内外盘套利的 <strong>"底层通道"</strong>，负责接行情、接交易、做同步下单和异常回退。
+                        系统可以根据点差、比值等条件自动发单，并对拒单、部分成交等情况做回滚或补单控制，
+                        帮助套利策略在跨市场、跨时区的环境下平稳落地。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">内外盘联动行情与同步下单流程</div>
+                    <div class="drawer-images-row">
+                        <div class="drawer-illustration">
+                            <img data-src="arbitrage-integration.svg" alt="内外盘套利技术对接" class="lazy-image" style="width: 100%; height: auto; object-fit: contain; display: block;">
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/products/arbitrage-integration" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>内外盘套利技术对接</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+            
+            // 版本价格
+            'plugin_suite_pricing': {
+                displayName: '版本价格',
+                title: '快期期现插件版 · 版本价格',
+                subtitle: 'BASIC / PRO / ENTERPRISE 三个版本，按企业期现管理成熟度逐步升级',
+                icon: '价',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        PLUGIN SUITE PRICING
+                    </div>
+                    <h3>从基础匹配到完整指令管理，覆盖不同规模与阶段的需求</h3>
+                    <p>
+                        快期期现插件版提供 <strong>BASIC / PRO / ENTERPRISE</strong> 三个版本，可按企业期现管理成熟度逐步升级：
+                        从基础的匹配与风控起步，到引入点价工作流，再到完整的指令管理与旗舰报表，覆盖不同规模与阶段的需求。
+                    </p>
+                    <p class="drawer-section-title">版本配置</p>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="font-size: 1.2rem; font-weight: 600; color: var(--accent-cyan); margin-bottom: 0.5rem;">
+                            <strong>BASIC：¥1,188/年</strong>
+                        </p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>匹配宝</strong></li>
+                            <li><strong>合同宝</strong></li>
+                            <li><strong>风控宝</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>针对品种合约进行拦截</li>
+                                </ul>
+                            </li>
+                            <li><strong>产业交易终端（基础版）</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>PC 端</li>
+                                    <li>移动端</li>
+                                    <li>历史委托数据存储：1 年</li>
+                                </ul>
+                            </li>
+                            <li><strong>设置项</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>现货品种与价格</li>
+                                    <li>期货账户管理（交易员只有超管）
+                                        <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                            <li>期货账户 ≤ 5</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="font-size: 1.2rem; font-weight: 600; color: var(--accent-cyan); margin-bottom: 0.5rem;">
+                            <strong>PRO：¥11,880/年</strong>
+                        </p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>BASIC 的功能全包</strong></li>
+                            <li><strong>点价宝（询价宝）</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>客商点价（询价）自动期货下单处理</li>
+                                    <li>客商点价（询价）手工期货下单处理</li>
+                                </ul>
+                            </li>
+                            <li><strong>产业交易终端</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>点价（询价）工作流期货处理</li>
+                                </ul>
+                            </li>
+                            <li><strong>设置项</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>客商管理</li>
+                                    <li>期货账户管理（交易员只有超管）
+                                        <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                            <li>期货账户 ≤ 10</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="font-size: 1.2rem; font-weight: 600; color: var(--accent-cyan); margin-bottom: 0.5rem;">
+                            <strong>ENTERPRISE：¥18,880/年</strong>
+                        </p>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                            <li><strong>PRO 的功能全包</strong></li>
+                            <li><strong>指令宝</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>完整的指令设置、指令权限、指令调用、指令执行</li>
+                                    <li>包含年内 3 条指令定制</li>
+                                </ul>
+                            </li>
+                            <li><strong>风控宝</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>风控驾驶舱</li>
+                                    <li>警告预设、事项处理</li>
+                                    <li>多级审批</li>
+                                </ul>
+                            </li>
+                            <li><strong>产业交易终端</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>指令工作流期货处理</li>
+                                    <li>历史委托数据存储：永久</li>
+                                </ul>
+                            </li>
+                            <li><strong>旗舰级报表</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>敞口、基差、盈亏</li>
+                                </ul>
+                            </li>
+                            <li><strong>设置项</strong>
+                                <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                    <li>人员管理
+                                        <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                            <li>人员 ≤ 10（>10 人按 ¥499/年/人扩展）</li>
+                                        </ul>
+                                    </li>
+                                    <li>期货账户管理（交易员只有超管）
+                                        <ul style="margin-left: 1.2rem; margin-top: 0.2rem;">
+                                            <li>期货账户 ≤ 20（>20 账户按 ¥999/年/账户扩展）</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">相关解决方案</div>
+                    <p>在插件版的基础上，可以组合出多种轻量方案，例如"仅做期现匹配和合同管理""加上点价来打通合同和期货""配合风控做三维预警"等。
+                    客户可以从最急迫的一两个问题入手，后续逐步扩展，而不必一口气上齐所有模块。</p>
+                    <p style="margin-top: 1rem;">
+                        <a href="https://www.shinnytech.com/solutions/simple-spot-futures-matching" target="_blank" rel="noopener noreferrer"
+                           style="display:inline-flex;align-items:center;gap:0.35rem;font-size:1rem;
+                                  padding:0.4rem 0.9rem;border-radius:999px;border:1px solid rgba(94,196,196,0.8);
+                                  color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                            <span>期现插件版相关解决方案</span>
+                            <span style="font-size:0.9em;">↗</span>
+                        </a>
+                    </p>
+                `
+            },
+
+            // 基础设置（全局设置）
+            'settings_spot_brand': {
+                displayName: '现货品种与价格',
+                title: '现货品种与价格 · 商品主数据',
+                subtitle: '统一定义品牌、规格、质量等级和计价单位',
+                icon: '现',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        SPOT BRAND & PRICE
+                    </div>
+                    <h3>商品主数据是整套期现系统的"字典表"</h3>
+                    <p>
+                        现货品种与价格是整套期现系统的 <strong>"字典表"</strong>，统一定义品牌、规格、质量等级和计价单位。
+                        所有合同、点价、匹配和报表都基于同一套商品档案，避免 A 表写成"螺纹钢 HRB400"，B 表写成"螺纹钢 HRB400E"导致的各种对不上号。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">现货品种与价格维护界面</div>
+                    <p>展示"品牌/规格/计量单位/价格"等字段与筛选条件。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            现货品种与价格维护界面——展示"品牌/规格/计量单位/价格"等字段与筛选条件
+                        </div>
+                    </div>
+                `
+            },
+
+            'settings_customer': {
+                displayName: '客商管理',
+                title: '客商管理 · 客户与供应商管理',
+                subtitle: '统一管理客户和供应商信息，支持权限配置和业务关联',
+                icon: '客',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        CUSTOMER MANAGEMENT
+                    </div>
+                    <h3>统一管理客户和供应商信息</h3>
+                    <p>
+                        客商管理模块统一管理客户和供应商信息，支持权限配置、信用额度设置和业务关联。
+                        可以与合同宝、点价宝、指令宝等模块联动，实现按客商维度的业务管理和权限控制。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">客商管理界面</div>
+                    <p>客商列表、详情和权限配置界面。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            客商管理界面——客商列表、详情和权限配置界面
+                        </div>
+                    </div>
+                `
+            },
+
+            'settings_hedge_plan': {
+                displayName: '保值方案管理',
+                title: '保值方案管理 · 套保方案配置',
+                subtitle: '管理保值方案，配置套保策略和风险参数',
+                icon: '保',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        HEDGE PLAN MANAGEMENT
+                    </div>
+                    <h3>管理保值方案，配置套保策略和风险参数</h3>
+                    <p>
+                        保值方案管理用于创建和管理保值方案，配置套保策略、风险参数和标签设置。
+                        保值方案是业务类型或流程，标签是业务中的具体操作分类。每笔期货都应该有保值方案，
+                        期现备注中的标签选项来源于对应保值方案设置的标签。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">保值方案管理界面</div>
+                    <p>保值方案列表、配置和标签设置界面。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            保值方案管理界面——保值方案列表、配置和标签设置界面
+                        </div>
+                    </div>
+                `
+            },
+
+            'settings_futures_account': {
+                displayName: '期货账户管理',
+                title: '期货账户管理 · 账户配置与权限',
+                subtitle: '管理系统中的期货账户，配置账户权限和风控限制',
+                icon: '账',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        FUTURES ACCOUNT MANAGEMENT
+                    </div>
+                    <h3>配置账户权限和风控限制</h3>
+                    <p>
+                        期货账户管理用于管理系统中的期货账户，配置账户权限、风控限制和交易员权限。
+                        支持按版本设置账户数量限制（BASIC ≤ 5，PRO ≤ 10，ENTERPRISE ≤ 20），
+                        并可设置账户级别的风控限制，包括持仓限额、亏损限额等。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">期货账户管理界面</div>
+                    <p>账户列表、权限配置和风控限制设置界面。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            期货账户管理界面——账户列表、权限配置和风控限制设置界面
+                        </div>
+                    </div>
+                `
+            },
+
+            'settings_person_manage': {
+                displayName: '人员管理',
+                title: '人员管理 · 人员与角色管理',
+                subtitle: '管理系统用户、角色和权限配置',
+                icon: '人',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        PERSON MANAGEMENT
+                    </div>
+                    <h3>管理系统用户、角色和权限配置</h3>
+                    <p>
+                        人员管理模块用于管理系统用户、角色和权限配置。支持人员管理（添加、编辑、禁用用户）和人员角色管理（配置角色权限）。
+                        在 ENTERPRISE 版本中，支持人员 ≤ 10（>10 人按 ¥499/年/人扩展），并可配置不同角色的系统权限和指令权限。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">人员管理界面</div>
+                    <p>人员列表、角色管理和权限配置界面。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            人员管理界面——人员列表、角色管理和权限配置界面
+                        </div>
+                    </div>
+                `
+            },
+
+            'settings_custom_field': {
+                displayName: '自定义字段配置',
+                title: '自定义字段配置 · 动态字段管理',
+                subtitle: '管理员可动态配置自定义字段，扩展业务数据模型',
+                icon: '自',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        CUSTOM FIELD CONFIGURATION
+                    </div>
+                    <h3>动态配置自定义字段，扩展业务数据模型</h3>
+                    <p>
+                        自定义字段配置允许管理员在系统中动态配置自定义字段，扩展业务数据模型。
+                        这些字段可以在合同、点价、匹配等模块中使用，支持文本、数字、日期、下拉、多选下拉等多种字段类型。
+                        字段定义包括字段名称、类型、是否必填等属性，系统会根据配置自动生成相应的表单和验证规则。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">自定义字段配置界面</div>
+                    <p>字段定义、类型配置和使用示例界面。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            自定义字段配置界面——字段定义、类型配置和使用示例界面
+                        </div>
+                    </div>
+                `
+            },
+
+            // 现货合同
+            'spot_contract_fixed_price': {
+                displayName: '一口价',
+                title: '一口价合同 · 固定价格合同',
+                subtitle: '适用于价格相对明确、双方更看重执行效率的场景',
+                icon: '一',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        SPOT CONTRACT FIXED PRICE
+                    </div>
+                    <h3>签合同时就把价格锁死，后续只关注履约与结算</h3>
+                    <p>
+                        一口价合同适用于价格相对明确、双方更看重执行效率的场景：签合同时就把价格锁死，后续只关注履约与结算。
+                        系统会基于一口价自动生成虚拟库存和预计盈亏，方便在匹配和报表中按合同维度查看表现。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">一口价合同详情</div>
+                    <p>一口价合同详情截图，突出"固定价格、数量、交货期"等字段。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            一口价合同详情截图，突出"固定价格、数量、交货期"等字段
+                        </div>
+                    </div>
+                `
+            },
+
+            'spot_contract_temp_price': {
+                displayName: '暂定价',
+                title: '暂定价合同 · 后点价合同',
+                subtitle: '适合暂时无法确定价格、但需要先锁定数量和基差的业务',
+                icon: '暂',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        SPOT CONTRACT TEMP PRICE
+                    </div>
+                    <h3>合同里只约定基差和定价规则，实际价格由后续点价确定</h3>
+                    <p>
+                        暂定价（后点价）合同适合暂时无法确定价格、但需要先锁定数量和基差的业务。合同里只约定基差和定价规则，
+                        实际价格由后续在点价宝中完成点价时确定，系统自动把结果回填到合同和报表中。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">暂定价合同详情与点价记录关联</div>
+                    <p>暂定价合同详情与点价记录关联截图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            暂定价合同详情与点价记录关联截图
+                        </div>
+                    </div>
+                `
+            },
+
+            'spot_contract_avg_price': {
+                displayName: '均价',
+                title: '均价合同 · 平均价格合同',
+                subtitle: '通过设定一段时间内的采样规则，把价格波动摊平',
+                icon: '均',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        SPOT CONTRACT AVG PRICE
+                    </div>
+                    <h3>系统负责自动取价、计算与存档，避免人工按 Excel 计算引入差错</h3>
+                    <p>
+                        均价合同通过设定一段时间内的采样规则（例如某几天的日均价、带权重的平均价），把价格波动摊平。
+                        系统负责自动取价、计算与存档，避免人工按 Excel 计算引入差错。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">均价合同中"价格期间与计算规则"配置界面</div>
+                    <p>均价合同中"价格期间与计算规则"配置界面。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            均价合同中"价格期间与计算规则"配置界面
+                        </div>
+                    </div>
+                `
+            },
+
+            'spot_contract_avg_basis': {
+                displayName: '均基差',
+                title: '均基差合同 · 平均基差合同',
+                subtitle: '适用于中长期稳定合作的客户，基差按平均基差来结算',
+                icon: '差',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        SPOT CONTRACT AVG BASIS
+                    </div>
+                    <h3>系统会根据约定的规则自动计算出最终基差</h3>
+                    <p>
+                        均基差合同适用于中长期稳定合作的客户，基差并不是按单笔确定，而是在一段时间内按平均基差来结算。
+                        系统会根据约定的规则自动计算出最终基差，并将结果同步到期现匹配和报表中。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">均基差计算示意图或合同示例</div>
+                    <p>均基差计算示意图或合同示例。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            均基差计算示意图或合同示例
+                        </div>
+                    </div>
+                `
+            },
+
+            // 指令平台其他模块
+            'instr_staff_futures': {
+                displayName: '人员期货指令',
+                title: '人员期货指令 · 业务经理代操',
+                subtitle: '面向"业务经理代操"的场景，客户把意向交给业务经理',
+                icon: '人',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        STAFF FUTURES INSTRUCTION
+                    </div>
+                    <h3>业务经理在系统里以指令方式记录并发起审批</h3>
+                    <p>
+                        人员期货指令模块面向 <strong>"业务经理代操"</strong> 的场景，客户把意向交给业务经理，业务经理在系统里以指令方式记录并发起审批，
+                        审批通过后再进终端执行，事后可以按指令维度查看盈亏和执行情况，避免"口头委托、事后难说清"的问题。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">代操指令从创建到审批再到执行的流程页面</div>
+                    <p>代操指令从创建到审批再到执行的流程页面截图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            代操指令从创建到审批再到执行的流程页面截图
+                        </div>
+                    </div>
+                `
+            },
+
+            'instr_contract_create': {
+                displayName: '合同创建指令',
+                title: '合同创建指令 · 标准化合同创建流程',
+                subtitle: '用于标准化"由谁发起、在什么前提下创建合同"这件事',
+                icon: '创',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        CONTRACT CREATE INSTRUCTION
+                    </div>
+                    <h3>通过指令来触发合同宝中的合同创建</h3>
+                    <p>
+                        合同创建指令用于标准化 <strong>"由谁发起、在什么前提下创建合同"</strong> 这件事，通过指令来触发合同宝中的合同创建，
+                        既方便审批控制，又能清晰记录每一份合同的来源与责任人。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">合同创建指令填写界面 + 生成合同的示例</div>
+                    <p>合同创建指令填写界面 + 生成合同的示例。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            合同创建指令填写界面 + 生成合同的示例
+                        </div>
+                    </div>
+                `
+            },
+
+            'instr_contract_change': {
+                displayName: '合同变更指令',
+                title: '合同变更指令 · 标准化合同变更流程',
+                subtitle: '把"改数量、改交货期、改价格条款"等敏感操作统一收敛到指令上',
+                icon: '变',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        CONTRACT CHANGE INSTRUCTION
+                    </div>
+                    <h3>必须先经过审批，再写回合同和相关报表</h3>
+                    <p>
+                        合同变更指令把 <strong>"改数量、改交货期、改价格条款"</strong> 等敏感操作统一收敛到一条条指令上，必须先经过审批，
+                        再写回合同和相关报表，并自动触发必要的期现匹配和会计重算，让重要变更都能说清楚"为什么改、谁批准的"。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">合同变更指令详情与审批记录</div>
+                    <p>合同变更指令详情与审批记录截图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            合同变更指令详情与审批记录截图
+                        </div>
+                    </div>
+                `
+            },
+
+            'instr_trade_terminal_flow': {
+                displayName: '指令与交易端流程操作',
+                title: '指令与交易端流程操作 · 端到端流程',
+                subtitle: '展示指令平台与产业交易终端的完整链路',
+                icon: '流',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        INSTRUCTION TRADE TERMINAL FLOW
+                    </div>
+                    <h3>业务、风控和交易的统一闭环</h3>
+                    <p>
+                        这一块展示指令平台与产业交易终端的完整链路：业务在指令平台里发起并审批指令，交易终端按权限执行，
+                        成交回执和盈亏结果再回写到指令、期现匹配、风控和会计模块。最终，管理层可以从一个闭环视角看
+                        <strong>"某条指令从提出到落地到底经历了什么"</strong>。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">端到端流程图或时序图</div>
+                    <p>指令 → 审批 → 下单 → 成交 → 归因/会计 的步骤。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            端到端流程图或时序图——指令 → 审批 → 下单 → 成交 → 归因/会计 的步骤
+                        </div>
+                    </div>
+                `
+            },
+
+            // 期货单据
+            'futures_hedge_plan': {
+                displayName: '保值方案',
+                title: '保值方案 · 现货承诺与期货头寸关联',
+                subtitle: '把"现货承诺"和"期货头寸"用一页纸串起来',
+                icon: '保',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        FUTURES HEDGE PLAN
+                    </div>
+                    <h3>清楚写明对应的合约、手数、到期月份和调整策略</h3>
+                    <p>
+                        保值方案把 <strong>"现货承诺"</strong> 和 <strong>"期货头寸"</strong> 用一页纸串起来，清楚写明对应的合约、手数、到期月份和调整策略。
+                        系统可以根据方案生成对应指令和报表，帮助业务和风控随时看到"这张合同目前保到什么程度"。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">保值方案配置界面</div>
+                    <p>"保值方案配置"界面截图，显示合约选择、手数和风险指标。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            "保值方案配置"界面截图，显示合约选择、手数和风险指标
+                        </div>
+                    </div>
+                `
+            },
+
+            'futures_delivery_doc': {
+                displayName: '期货交割',
+                title: '期货交割 · 交割单据管理',
+                subtitle: '承接交易所的结算结果，自动生成相应的仓单和会计分录',
+                icon: '交',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        FUTURES DELIVERY DOC
+                    </div>
+                    <h3>保证期货端、现货端和会计端三者完全对得上</h3>
+                    <p>
+                        期货交割单据承接交易所的结算结果，自动生成相应的仓单和会计分录。通过系统管理交割，可以保证期货端"平掉了哪部分头寸"、
+                        现货端"多了哪部分实货"，以及会计端"记了哪一笔账"三者完全对得上。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">期货交割单据详情</div>
+                    <p>期货交割单据详情截屏，标注关联的仓单与会计分录。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            期货交割单据详情截屏，标注关联的仓单与会计分录
+                        </div>
+                    </div>
+                `
+            },
+
+            'futures_price_monitor': {
+                displayName: '价格监测',
+                title: '价格监测 · 点价和交易执行质量监测',
+                subtitle: '看点价前后的滑点、触发价命中情况、关键时段的价格走势',
+                icon: '监',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        FUTURES PRICE MONITOR
+                    </div>
+                    <h3>监测点价和交易执行质量，评估系统处理效果</h3>
+                    <p>
+                        价格监测主要用于看点价和交易执行的质量，例如：点价前后的滑点、触发价命中情况、关键时段的价格走势等。
+                        通过价格监测，可以评估系统自动处理的效果，识别需要策略优化或人工干预的场景。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">价格监测看板</div>
+                    <p>价格监测看板截图，展示指标卡片与趋势图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            价格监测看板截图，展示指标卡片与趋势图
+                        </div>
+                    </div>
+                `
+            },
+
+            'futures_warehouse_warrant': {
+                displayName: '仓单',
+                title: '仓单 · 仓单台账管理',
+                subtitle: '记录每一张仓单的来源、当前状态以及对应合约和客户',
+                icon: '仓',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        FUTURES WAREHOUSE WARRANT
+                    </div>
+                    <h3>是资金和风险口径能落到实物上的关键一环</h3>
+                    <p>
+                        仓单模块记录每一张仓单的来源（哪一笔交割）、当前状态（在库、质押、解押、注销）以及对应合约和客户，
+                        是资金和风险口径能落到实物上的关键一环。通过系统管理仓单，可以减少"纸仓单""Excel 仓单"混乱带来的对账问题。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">仓单台账列表 + 单张仓单详情</div>
+                    <p>仓单台账列表 + 单张仓单详情截图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            仓单台账列表 + 单张仓单详情截图
+                        </div>
+                    </div>
+                `
+            },
+
+            'futures_pledge_equity_change': {
+                displayName: '质押权益变动',
+                title: '质押权益变动 · 质押解押事件记录',
+                subtitle: '记录仓单质押和解押的每一次动作',
+                icon: '质',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        FUTURES PLEDGE EQUITY CHANGE
+                    </div>
+                    <h3>可以清楚地展示对应账户权益、保证金占用和风险指标的变化轨迹</h3>
+                    <p>
+                        通过记录仓单质押和解押的每一次动作，系统可以清楚地展示对应账户权益、保证金占用和风险指标的变化轨迹。
+                        这样在回头看某个时点的风险时，可以说清楚"是因为质押了哪几张仓单、做了哪些操作"导致的。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">质押/解押事件明细与权益结构前后对比图</div>
+                    <p>质押/解押事件明细与权益结构前后对比图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            质押/解押事件明细与权益结构前后对比图
+                        </div>
+                    </div>
+                `
+            },
+
+            'futures_margin_monitor': {
+                displayName: '保证金及检测',
+                title: '保证金及检测 · 保证金占用监控',
+                subtitle: '集中展示每个账户、每个合约、每个组合的保证金占用情况',
+                icon: '保',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        FUTURES MARGIN MONITOR
+                    </div>
+                    <h3>可以在保证金逼近警戒线时提前提醒相关人员</h3>
+                    <p>
+                        保证金及检测模块集中展示每个账户、每个合约、每个组合的保证金占用情况，并支持配置不同档位的预警阈值。
+                        与风控宝联动后，可以在保证金逼近警戒线时提前提醒相关人员，而不是等到"被动追加"或强平才发现问题。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">保证金明细表与告警配置界面</div>
+                    <p>保证金明细表与告警配置界面截图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            保证金明细表与告警配置界面截图
+                        </div>
+                    </div>
+                `
+            },
+
+            // 期现管理
+            'basis_match_strategy': {
+                displayName: '匹配策略',
+                title: '匹配策略 · 自动匹配规则配置',
+                subtitle: '决定"成交进来之后，系统如何自动去找相应的合同和项目"',
+                icon: '策',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        BASIS MATCH STRATEGY
+                    </div>
+                    <h3>既支持严格审核的精细模式，也支持高频交易下的半自动模式</h3>
+                    <p>
+                        匹配策略决定了 <strong>"成交进来之后，系统如何自动去找相应的合同和项目"</strong>。可以按标识、合同、规则等多种方式组合，
+                        既支持严格审核的精细模式，也支持高频交易下的半自动模式，减少人工逐笔选择合同的工作量。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">匹配策略配置界面</div>
+                    <p>匹配策略配置界面，展示多个策略条目与启用状态。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            匹配策略配置界面，展示多个策略条目与启用状态
+                        </div>
+                    </div>
+                `
+            },
+
+            'basis_contract_match': {
+                displayName: '合同匹配',
+                title: '合同匹配 · 按合同视角回看成交',
+                subtitle: '让业务可以按"合同"这个视角来回看成交',
+                icon: '合',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        BASIS CONTRACT MATCH
+                    </div>
+                    <h3>系统会把对应的期货成交逐笔归在名下，自动算出合同维度的盈亏和敞口</h3>
+                    <p>
+                        合同匹配让业务可以按 <strong>"合同"</strong> 这个视角来回看成交：一张合同下去，系统会把对应的期货成交逐笔归在名下，
+                        自动算出合同维度的盈亏和敞口。这样在复盘一个客户或一个项目时，不需要在账户和 Excel 之间来回跳。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">按合同匹配工作台</div>
+                    <p>按合同匹配工作台截图，展示合同筛选与匹配结果。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            按合同匹配工作台截图，展示合同筛选与匹配结果
+                        </div>
+                    </div>
+                `
+            },
+
+            'basis_match_workbench': {
+                displayName: '期现匹配工作台',
+                title: '期现匹配工作台 · 操作员主界面',
+                subtitle: '一屏就能看到成交、合同、标识和当前的匹配状态',
+                icon: '工',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        BASIS MATCH WORKBENCH
+                    </div>
+                    <h3>期现匹配关系清晰可查，随时追溯期货成交的归属</h3>
+                    <p>
+                        期现匹配工作台是操作员的主界面，一屏就能看到成交、合同、标识和当前的匹配状态，可以按客户、品种、账户、交易员等条件筛选，
+                        支持批量匹配、撤销和历史回放，让"这单期货到底是给谁保的值"这个问题随时可以查清楚。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">期现匹配工作台全屏截图</div>
+                    <p>期现匹配工作台全屏截图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            期现匹配工作台全屏截图
+                        </div>
+                    </div>
+                `
+            },
+
+            'basis_delivery_link': {
+                displayName: '期货交割',
+                title: '期货交割 · 交割事件在匹配中的展示',
+                subtitle: '当期货从持仓变成交割，系统会把相应信息回填到期现匹配和报表里',
+                icon: '交',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        BASIS DELIVERY LINK
+                    </div>
+                    <h3>把原本的"期货敞口"转成"现货或仓单"，确保敞口和盈亏都反映真实状态</h3>
+                    <p>
+                        当期货从持仓变成交割，系统会把相应信息回填到期现匹配和报表里，把原本的"期货敞口"转成"现货或仓单"，
+                        确保敞口和盈亏都反映真实状态，而不是停留在理论头寸上。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">交割事件在匹配工作台中的展示方式</div>
+                    <p>交割事件在匹配工作台中的展示方式（例如特殊标记或专门视图）。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            交割事件在匹配工作台中的展示方式（例如特殊标记或专门视图）
+                        </div>
+                    </div>
+                `
+            },
+
+            'basis_order_match': {
+                displayName: '委托匹配',
+                title: '委托匹配 · 委托层面的前置归因',
+                subtitle: '适合那些需要在"还没成交前"就对冲管理的团队',
+                icon: '委',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        BASIS ORDER MATCH
+                    </div>
+                    <h3>成交落地后，系统会自动继承委托层的匹配关系</h3>
+                    <p>
+                        委托匹配适合那些需要在 <strong>"还没成交前"</strong> 就对冲管理的团队，例如对大批量挂单按意向合同进行前置归因。
+                        成交落地后，系统会自动继承委托层的匹配关系，只在有偏差时再做修正。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">委托层面的匹配界面</div>
+                    <p>委托层面的匹配界面，包含委托号、预期合同、匹配状态等。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            委托层面的匹配界面，包含委托号、预期合同、匹配状态等
+                        </div>
+                    </div>
+                `
+            },
+
+            'basis_trade_record_match': {
+                displayName: '交易记录匹配',
+                title: '交易记录匹配 · 多来源交易记录清洗合并',
+                subtitle: '对于同时接入柜台、OMS 或撮合引擎的情况',
+                icon: '记',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        BASIS TRADE RECORD MATCH
+                    </div>
+                    <h3>系统会先把多来源的交易记录清洗合并成一条"业务成交"</h3>
+                    <p>
+                        对于同时接入柜台、OMS 或撮合引擎的情况，系统会先把多来源的交易记录清洗合并成一条 <strong>"业务成交"</strong>，
+                        然后再做期现匹配和报表计算，避免不同系统的流水对不上导致的口径混乱。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">多来源交易记录对齐界面</div>
+                    <p>多来源交易记录对齐界面截图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            多来源交易记录对齐界面截图
+                        </div>
+                    </div>
+                `
+            },
+
+            'basis_match_recon': {
+                displayName: '期现匹配对账',
+                title: '期现匹配对账 · 匹配结果对账报表',
+                subtitle: '可以把系统里的匹配结果和外部 Excel、清算单或 ERP 数据逐字段对上',
+                icon: '对',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        BASIS MATCH RECON
+                    </div>
+                    <h3>自动标识差异，对账问题一目了然</h3>
+                    <p>
+                        期现匹配对账报表可以把系统里的匹配结果和外部 Excel、清算单或 ERP 数据逐字段对上，快速找出数量、价格或标识不一致的位置；
+                        对账问题不再靠人工一条条查，而是通过报表自动标识差异，异常情况一目了然。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">期现匹配对账报表</div>
+                    <p>期现匹配对账报表截图。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            期现匹配对账报表截图
+                        </div>
+                    </div>
+                `
+            },
+
+            'basis_conversion': {
+                displayName: '期现转换',
+                title: '期现转换 · 调整工具箱',
+                subtitle: '提供一套可审计的"调整工具箱"，用于修正历史错配、调整基差口径或重构项目',
+                icon: '转',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        BASIS CONVERSION
+                    </div>
+                    <h3>每一次调整都有记录，系统会自动重新计算敞口和盈亏</h3>
+                    <p>
+                        期现转换模块提供一套可审计的 <strong>"调整工具箱"</strong>，用于修正历史错配、调整基差口径或重构项目。
+                        每一次调整都有记录，系统会自动重新计算敞口和盈亏，确保调整后的结果能和前后的报表、会计口径一一对应。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">期现转换操作界面或调整记录列表</div>
+                    <p>期现转换操作界面或调整记录列表。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            期现转换操作界面或调整记录列表
+                        </div>
+                    </div>
+                `
+            },
+
+            // 数据对接（共用说明）
+            'databus_mgmt_unit': {
+                displayName: '数据对接',
+                title: '数据对接 · 数据总线',
+                subtitle: '负责把来自柜台、清算、OMS 等渠道的数据统一采集、清洗和对账',
+                icon: '数',
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        DATABUS
+                    </div>
+                    <h3>每个模块看到的数字都来自同一条数据链</h3>
+                    <p>
+                        数据总线负责把来自柜台、清算、OMS 等渠道的数据统一采集、清洗和对账，然后再按主题
+                        （如结算、持仓、盈亏、交易记录等）下发给匹配宝、风控宝、会计和报表。这样每个模块看到的数字都来自同一条数据链，减少"各讲各的"的情况。
+                    </p>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">数据流向与模块关系图</div>
+                    <p>展示"柜台/OMS → 数据总线 → 业务模块"的结构。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            数据流向与模块关系图——展示"柜台/OMS → 数据总线 → 业务模块"的结构
+                        </div>
+                    </div>
+                `
+            },
+            // 其它数据对接模块共用上述说明
+            'databus_settlement': { extends: 'databus_mgmt_unit' },
+            'databus_position_pnl': { extends: 'databus_mgmt_unit' },
+            'databus_strategy_pnl': { extends: 'databus_mgmt_unit' },
+            'databus_trade_records': { extends: 'databus_mgmt_unit' },
+            'databus_margin': { extends: 'databus_mgmt_unit' },
+            'databus_futures_contracts': { extends: 'databus_mgmt_unit' },
+            'databus_futures_strategies': { extends: 'databus_mgmt_unit' },
+            'databus_contract_pnl': { extends: 'databus_mgmt_unit' },
+            'databus_futures_pnl': { extends: 'databus_mgmt_unit' },
+            'databus_total_equity': { extends: 'databus_mgmt_unit' }
+        };
+
+        /**
+         * 通用内容模版：当某个模块未在 moduleContents 中单独配置时使用
+         */
+        function buildDefaultContent(displayName) {
+            return {
+                title: displayName + ' · 模块说明',
+                subtitle: '',
+                icon: displayName.charAt(0),
+                mainHtml: `
+                    <div class="tagline">
+                        <span></span>
+                        MODULE OVERVIEW
+                    </div>
+                    <h3>${displayName} · 说明占位</h3>
+                    <p>
+                        这里是 <strong>${displayName}</strong> 模块的说明区域，目前为通用占位文案。
+                        可以根据实际业务，补充模块定位、典型场景、上下游依赖等信息。
+                    </p>
+                    <p class="drawer-section-title">建议补充的内容要点</p>
+                    <ul>
+                        <li>该模块在整体期现业务中的角色与边界。</li>
+                        <li>与哪些上游 / 下游模块存在数据或流程依赖。</li>
+                        <li>实现优先级、最小可行范围（MVP）与后续规划。</li>
+                    </ul>
+                `,
+                sideHtml: `
+                    <div class="drawer-side-title">图文示意占位</div>
+                    <p>可以为 <strong>${displayName}</strong> 准备一张流程图、结构图或 UI 截图，用于对外演示。</p>
+                    <div class="drawer-illustration">
+                        <div class="drawer-illustration-placeholder">
+                            <span></span>
+                            ${displayName} 相关示意图占位区域
+                        </div>
+                    </div>
+                `
+            };
+        }
+
+        const drawerElement = document.getElementById('drawer');
+        const drawerWrapper = document.querySelector('.drawer-wrapper');
+        const drawerTitleEl = document.getElementById('drawer-title');
+        const drawerSubtitleEl = document.getElementById('drawer-subtitle');
+        const drawerIconEl = document.getElementById('drawer-icon');
+        const drawerContentEl = document.getElementById('drawer-content');
+        const drawerCloseBtn = document.getElementById('drawer-close');
+
+        // 简单的“继承”展开：支持某些配置通过 extends 关键字复用其它模块配置
+        function resolveModuleConfig(id, displayName) {
+            let base = moduleContents[id];
+
+            if (!base) {
+                return buildDefaultContent(displayName);
+            }
+
+            if (base.extends) {
+                const parent = moduleContents[base.extends];
+                if (parent) {
+                    base = Object.assign({}, parent, base);
+                }
+            }
+
+            // 若未显式给出 displayName，则回落到参数或原始配置
+            if (!base.displayName) {
+                base.displayName = displayName || base.title || '';
+            }
+
+            return base;
+        }
+
+        function closeDrawer() {
+            if (!drawerWrapper.classList.contains('open')) return;
+            drawerWrapper.classList.remove('open');
+            drawerElement.style.opacity = '1';
+            document.querySelectorAll('.module').forEach(m => m.classList.remove('active-module'));
+        }
+
+        function openDrawerForModule(moduleEl, event) {
+            const id = moduleEl.getAttribute('data-module') || '';
+            const displayName = moduleEl.textContent.trim();
+            const config = resolveModuleConfig(id, displayName);
+
+            // 标题、副标题、图标
+            drawerTitleEl.textContent = config.title || (displayName + ' · 模块说明');
+            drawerSubtitleEl.textContent = config.subtitle || '';
+            const iconSource = config.icon || (config.displayName && config.displayName.charAt(0)) || (displayName && displayName.charAt(0)) || 'M';
+            drawerIconEl.textContent = iconSource;
+
+            // 若配置了 externalUrl，则直接以 iframe 形式嵌入网页
+            if (config.externalUrl) {
+                drawerContentEl.innerHTML = `
+                    <div class="drawer-main" style="grid-column: 1 / -1; padding: 0; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+                        <div style="padding: 0.75rem 1rem 0.25rem; display: flex; justify-content: flex-end;">
+                            <a href="${config.externalUrl}" target="_blank" rel="noopener noreferrer"
+                               style="display:inline-flex;align-items:center;gap:0.35rem;font-size:0.8rem;
+                                      padding:0.25rem 0.75rem;border-radius:999px;border:1px solid rgba(148,192,255,0.8);
+                                      color:#e6f0ff;text-decoration:none;background:rgba(7,16,32,0.9);">
+                                <span>在新窗口打开页面</span>
+                                <span style="font-size:0.9em;">↗</span>
+                            </a>
+                        </div>
+                        <div style="flex:1 1 auto; border-top:1px solid rgba(94,196,196,0.25);">
+                            <iframe src="${config.externalUrl}"
+                                    style="width: 100%; height: calc(100vh - 260px); border: none; display: block;"
+                                    loading="lazy"
+                                    referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                        </div>
+                    </div>
+                `;
+            } else {
+                drawerContentEl.innerHTML = `
+                    <div class="drawer-main">
+                        ${config.mainHtml}
+                    </div>
+                    <div class="drawer-side">
+                        ${config.sideHtml}
+                    </div>
+                `;
+            }
+
+            // 显示抽屉，并强调当前选中模块
+            drawerWrapper.classList.add('open');
+            document.querySelectorAll('.module').forEach(m => m.classList.remove('active-module'));
+            moduleEl.classList.add('active-module');
+
+            drawerElement.style.opacity = '1';
+
+            // 懒加载图片：在抽屉打开后加载所有带有 data-src 的图片
+            setTimeout(() => {
+                const lazyImages = drawerContentEl.querySelectorAll('img[data-src]');
+                lazyImages.forEach(img => {
+                    const dataSrc = img.getAttribute('data-src');
+                    if (dataSrc) {
+                        // 创建新的 Image 对象预加载
+                        const imageLoader = new Image();
+                        imageLoader.onload = () => {
+                            img.src = dataSrc;
+                            img.removeAttribute('data-src');
+                            img.classList.remove('lazy-image');
+                        };
+                        imageLoader.onerror = () => {
+                            console.warn('Failed to load image:', dataSrc);
+                        };
+                        imageLoader.src = dataSrc;
+                    }
+                });
+            }, 100); // 延迟100ms确保DOM已渲染
+        }
+
+        // Add interactive effects to modules：水波纹 + 打开右侧抽屉
+        document.querySelectorAll('.module').forEach(module => {
+            module.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const ripple = document.createElement('div');
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    width: 10px;
+                    height: 10px;
+                    background: rgba(255, 255, 255, 0.5);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    animation: ripple 0.6s ease-out;
+                    left: ${x}px;
+                    top: ${y}px;
+                    transform: translate(-50%, -50%);
+                `;
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+
+                openDrawerForModule(this, e);
+            });
+        });
+
+        // 抽屉关闭按钮：关闭并清除高亮
+        drawerCloseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeDrawer();
+        });
+
+        // 点击页面空白处关闭抽屉（参考指令详情的交互思路）
+        document.addEventListener('click', (e) => {
+            if (!drawerWrapper.classList.contains('open')) return;
+
+            const clickInDrawer = drawerElement.contains(e.target);
+            const clickOnModule = e.target.closest('.module');
+
+            // 点在抽屉内部或模块本身时，不关闭（模块点击已有单独逻辑）
+            if (clickInDrawer || clickOnModule) return;
+
+            closeDrawer();
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                from {
+                    transform: scale(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: scale(20);
+                    opacity: 0;
+                }
+            }
+
+            .module.active-module {
+                box-shadow: 0 0 0 1px rgba(255, 221, 138, 0.9), 0 0 22px rgba(255, 221, 138, 0.65);
+                border-color: rgba(255, 221, 138, 0.95);
+                background: linear-gradient(135deg, rgba(255, 221, 138, 0.25), rgba(94, 196, 196, 0.18));
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
