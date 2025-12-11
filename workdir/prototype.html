@@ -1339,8 +1339,9 @@
     const mockPersonRoles = [
       { id: 1, roleId: 1, roleName: '交易员', personIds: [1, 4], personNames: ['张三', '赵六'], description: '负责期货交易操作', status: 'enabled', remark: '', instructionTypeIds: [1, 6, 7] },
       { id: 2, roleId: 2, roleName: '制单员', personIds: [2, 5], personNames: ['李四', '钱七'], description: '负责合同制单', status: 'enabled', remark: '', instructionTypeIds: [2] },
-      { id: 3, roleId: 3, roleName: '业务经理', personIds: [3], personNames: ['王五'], description: '负责业务管理', status: 'enabled', remark: '', instructionTypeIds: [1, 2, 3, 8, 9, 10, 11] },
-      { id: 4, roleId: 4, roleName: '风控员', personIds: [6], personNames: ['孙八'], description: '负责风险控制', status: 'disabled', remark: '', instructionTypeIds: [] }
+      { id: 3, roleId: 3, roleName: '业务经理', personIds: [3, 1], personNames: ['王五', '张三'], description: '负责业务管理', status: 'enabled', remark: '', instructionTypeIds: [1, 2, 3, 8, 9, 10, 11] },
+      { id: 4, roleId: 4, roleName: '风控员', personIds: [6], personNames: ['孙八'], description: '负责风险控制', status: 'disabled', remark: '', instructionTypeIds: [] },
+      { id: 5, roleId: 5, roleName: '超级管理员', personIds: [1], personNames: ['张三'], description: '系统管理员，拥有所有权限', status: 'enabled', remark: '', instructionTypeIds: [] }
     ];
 
     const instructionWorkbenchOptions = [
@@ -20833,6 +20834,7 @@
       const [isMobile, setIsMobile] = useState(getIsMobile());
       const [sideMenuDrawerVisible, setSideMenuDrawerVisible] = useState(false);
       const [currentUser] = useState(mockPersons[0] || null);
+      const [selectedRole, setSelectedRole] = useState(null); // 当前选中的角色
 
       // 红点提醒：计算新告警数量
       const [newAlertCount, setNewAlertCount] = useState(0);
@@ -20872,16 +20874,49 @@
         return () => clearInterval(interval);
       }, []);
 
-      const currentUserRoles = useMemo(() => {
+      // 计算用户拥有的所有角色
+      const allUserRoles = useMemo(() => {
         if (!currentUser) return [];
         const roleSet = new Set();
         mockPersonRoles.forEach(pr => {
-          if (pr.personNames?.includes(currentUser.name)) {
+          if (pr.personNames?.includes(currentUser.name) && pr.status === 'enabled') {
             roleSet.add(pr.roleName);
           }
         });
-        return Array.from(roleSet);
+        // 对角色进行排序，优先显示"超级管理员"
+        const roles = Array.from(roleSet);
+        roles.sort((a, b) => {
+          if (a === '超级管理员') return -1;
+          if (b === '超级管理员') return 1;
+          return a.localeCompare(b);
+        });
+        return roles;
       }, [currentUser]);
+
+      // 初始化选中的角色（优先选择"超级管理员"，否则选择第一个）
+      useEffect(() => {
+        if (allUserRoles.length > 0 && !selectedRole) {
+          // 优先选择"超级管理员"角色
+          const superAdminRole = allUserRoles.find(role => role === '超级管理员');
+          setSelectedRole(superAdminRole || allUserRoles[0]);
+        } else if (allUserRoles.length === 0) {
+          setSelectedRole(null);
+        } else if (selectedRole && !allUserRoles.includes(selectedRole)) {
+          // 如果当前选中的角色不在可用角色列表中，优先选择"超级管理员"，否则选择第一个
+          const superAdminRole = allUserRoles.find(role => role === '超级管理员');
+          setSelectedRole(superAdminRole || allUserRoles[0]);
+        }
+      }, [allUserRoles, selectedRole]);
+
+      // 当前生效的角色（如果用户只有一个角色，直接使用；如果有多个角色，使用选中的角色）
+      const currentUserRoles = useMemo(() => {
+        if (allUserRoles.length === 0) return [];
+        if (allUserRoles.length === 1) return allUserRoles;
+        if (selectedRole && allUserRoles.includes(selectedRole)) {
+          return [selectedRole];
+        }
+        return allUserRoles.length > 0 ? [allUserRoles[0]] : [];
+      }, [allUserRoles, selectedRole]);
 
       const baseTopMenus = [
         { key: 'workbench', label: '工作台' },
@@ -21429,7 +21464,88 @@
                 ))}
               </div>
               <Space style={{ flexShrink: 0 }}>
-                <Avatar>用户</Avatar>
+                <Dropdown
+                  menu={{
+                    items: [
+                      {
+                        key: 'user-info',
+                        label: (
+                          <div style={{ padding: '4px 0' }}>
+                            <div style={{ fontWeight: 600 }}>{currentUser?.name || '未登录用户'}</div>
+                            <div style={{ fontSize: '12px', color: '#8a94a6', marginTop: '4px' }}>
+                              {allUserRoles.length > 0 ? `拥有角色：${allUserRoles.join('、')}` : '暂无角色'}
+                            </div>
+                            {allUserRoles.length > 0 && (
+                              <div style={{ fontSize: '12px', color: '#1677ff', marginTop: '4px', fontWeight: 500 }}>
+                                当前角色：{selectedRole || allUserRoles[0]}
+                              </div>
+                            )}
+                          </div>
+                        ),
+                        disabled: true
+                      },
+                      ...(allUserRoles.length > 1 ? [{
+                        type: 'divider'
+                      }] : []),
+                      ...(allUserRoles.length > 1 ? [{
+                        key: 'role-switch',
+                        label: '切换角色',
+                        type: 'group',
+                        children: allUserRoles.map(role => ({
+                          key: `role-${role}`,
+                          label: (
+                            <Space>
+                              {role}
+                              {selectedRole === role && (
+                                <span style={{ color: '#1677ff', fontWeight: 'bold' }}>✓</span>
+                              )}
+                            </Space>
+                          ),
+                          onClick: () => {
+                            setSelectedRole(role);
+                            message.success(`已切换到 ${role} 角色`);
+                            // 切换角色后，如果当前菜单不在新角色的权限范围内，切换到工作台
+                            const newAllowedMenus = roleTopMenuAccess[role] || ['workbench'];
+                            if (!newAllowedMenus.includes(topMenu)) {
+                              setTopMenu('workbench');
+                              setSideMenuKey('');
+                              setTabs([]);
+                              setActiveTab('');
+                            }
+                          }
+                        }))
+                      }] : allUserRoles.length === 1 ? [{
+                        type: 'divider'
+                      }, {
+                        key: 'current-role',
+                        label: (
+                          <div style={{ padding: '4px 0' }}>
+                            <div style={{ fontSize: '12px', color: '#8a94a6' }}>当前角色</div>
+                            <div style={{ fontSize: '14px', fontWeight: 500, marginTop: '4px' }}>
+                              {allUserRoles[0]}
+                            </div>
+                          </div>
+                        ),
+                        disabled: true
+                      }] : [])
+                    ]
+                  }}
+                  placement="bottomRight"
+                >
+                  <Space style={{ cursor: 'pointer', padding: '4px 8px', borderRadius: '4px', transition: 'background-color 0.2s' }} 
+                         onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.04)'}
+                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
+                    <Avatar>{currentUser?.name?.slice(-1) || '用'}</Avatar>
+                    <span style={{ fontSize: '14px' }}>
+                      {currentUser?.name || '用户'}
+                      {selectedRole && allUserRoles.length > 1 && (
+                        <span style={{ marginLeft: '4px', color: '#1677ff', fontSize: '12px', fontWeight: 500 }}>
+                          ({selectedRole})
+                        </span>
+                      )}
+                    </span>
+                  </Space>
+                </Dropdown>
               </Space>
             </Header>
             <div className="erp-main-layout">
