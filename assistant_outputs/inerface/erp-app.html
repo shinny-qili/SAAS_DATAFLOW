@@ -19,6 +19,7 @@
       --erp-bg-light: #f4f6fb;
       --erp-bg-dark: #1d232f;
       --header-height: 60px;
+      --top-menu-height: 48px;
       --tabs-height: 42px;
       font-feature-settings: "tnum";
     }
@@ -58,6 +59,19 @@
       border-bottom: none;
       padding: 0;
       margin: 0;
+    }
+
+    .erp-top-menu {
+      height: var(--top-menu-height);
+      min-height: var(--top-menu-height);
+      background: rgba(255, 255, 255, 0.9);
+      border-bottom: 1px solid rgba(140, 156, 187, 0.2);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      overflow-x: auto;
     }
 
     .erp-top-menu-item {
@@ -151,6 +165,24 @@
       overflow: hidden;
     }
 
+    .erp-sider {
+      width: 240px;
+      min-width: 240px;
+      background: rgba(255, 255, 255, 0.95);
+      border-right: 1px solid rgba(140, 156, 187, 0.2);
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex-shrink: 0;
+    }
+
+    .erp-content-area {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
     .erp-tabs-bar {
       height: var(--tabs-height);
       min-height: var(--tabs-height);
@@ -200,6 +232,7 @@
       gap: 12px;
       margin-bottom: 16px;
       flex-wrap: wrap;
+      width: 100%;
     }
 
     .erp-toolbar .actions {
@@ -571,6 +604,490 @@
 
     .erp-column-width-input {
       width: 80px;
+    }
+
+    .erp-tree-table-layout {
+      display: flex;
+      gap: 9px;
+      align-items: stretch;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .erp-tree-panel {
+      width: 220px;
+      min-width: 220px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      border: 1px solid rgba(22, 119, 255, 0.08);
+      box-shadow: 0 12px 30px rgba(22, 119, 255, 0.05);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .erp-tree-panel .tree-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .erp-tree-panel .ant-tree-node-content-wrapper {
+      width: 100%;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .erp-tree-panel .ant-tree-title {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .erp-table-panel {
+      flex: 1;
+      min-width: 0;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      border: 1px solid rgba(22, 119, 255, 0.08);
+      padding: 8px;
+      box-shadow: 0 12px 30px rgba(22, 119, 255, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .erp-table-wrapper {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .erp-fill-tabs {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .erp-fill-tabs .ant-tabs-content-holder,
+    .erp-fill-tabs .ant-tabs-content,
+    .erp-fill-tabs .ant-tabs-tabpane {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .erp-fill-tabs .ant-tabs-tabpane > div {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .erp-table-wrapper .ant-table-wrapper,
+    .erp-table-wrapper .ant-spin-nested-loading,
+    .erp-table-wrapper .ant-spin-container,
+    .erp-table-wrapper .ant-table,
+    .erp-table-wrapper .ant-table-container,
+    .erp-table-wrapper .ant-table-content {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* 套保未交收行标红样式 */
+    .hedge-undelivered-row {
+      background-color: #fff1f0 !important;
+    }
+    .hedge-undelivered-row:hover {
+      background-color: #ffe7e5 !important;
+    }
+
+    .erp-table-wrapper .ant-table-body {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .erp-filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 12px;
+      background: rgba(22, 119, 255, 0.03);
+      border-radius: 8px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .erp-filter-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .erp-filter-item label {
+      font-size: 13px;
+      color: #4b5565;
+      white-space: nowrap;
+    }
+
+    .erp-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .erp-status-badge.enabled {
+      background: rgba(80, 188, 97, 0.12);
+      color: #1d7b30;
+    }
+
+    .erp-status-badge.disabled {
+      background: rgba(244, 67, 54, 0.12);
+      color: #c62828;
+    }
+
+    .link-modal-container {
+      width: 1200px !important;
+    }
+
+    .link-modal-container .ant-modal-content {
+      height: 800px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .link-modal-container .ant-modal-body {
+      padding: 24px 24px 0 24px !important;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .link-modal-container .ant-modal-footer {
+      flex-shrink: 0;
+      margin: 0;
+      padding: 16px 24px;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    .link-modal-table-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .link-modal-table-wrapper * {
+      border-bottom: none !important;
+    }
+
+    .link-modal-table-wrapper .ant-table-container {
+      border: none !important;
+    }
+
+    .link-modal-container .ant-table-wrapper {
+      border: none !important;
+    }
+
+    .link-modal-container .ant-table-container {
+      border: none !important;
+    }
+
+    .link-modal-container .ant-table {
+      border: none !important;
+    }
+
+    .link-modal-container .ant-table-content {
+      border: none !important;
+    }
+
+    .link-modal-table {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .link-modal-table .ant-spin-nested-loading {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .link-modal-table .ant-spin-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .link-modal-table .ant-table {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      border: none !important;
+      border-bottom: none !important;
+    }
+
+    .link-modal-table .ant-table-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      border: none !important;
+    }
+
+    .link-modal-table .ant-table-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      border: none !important;
+    }
+
+    .link-modal-table .ant-table-body {
+      flex: 1;
+      overflow: auto !important;
+      border: none !important;
+    }
+
+    .link-modal-table-wrapper .ant-table-wrapper,
+    .link-modal-table-wrapper .ant-table,
+    .link-modal-table-wrapper .ant-table-container,
+    .link-modal-table-wrapper .ant-table-content,
+    .link-modal-table-wrapper .ant-table-body {
+      border: none !important;
+      border-top: none !important;
+      border-bottom: none !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
+
+    .link-modal-container .ant-table-wrapper,
+    .link-modal-container .ant-table,
+    .link-modal-container .ant-table-container,
+    .link-modal-container .ant-table-content,
+    .link-modal-container .ant-table-body,
+    .link-modal-container .ant-table-header,
+    .link-modal-container .ant-table-header table,
+    .link-modal-container .ant-table-body table {
+      border: none !important;
+      border-top: none !important;
+      border-bottom: none !important;
+      border-left: none !important;
+      border-right: none !important;
+    }
+
+    .link-modal-container .ant-table-tbody > tr:last-child > td {
+      border-bottom: none !important;
+    }
+
+    .link-modal-container .ant-table-thead > tr > th:first-child,
+    .link-modal-container .ant-table-tbody > tr > td:first-child {
+      border-left: none !important;
+    }
+
+    .link-modal-container .ant-table-thead > tr > th:last-child,
+    .link-modal-container .ant-table-tbody > tr > td:last-child {
+      border-right: none !important;
+    }
+
+    .link-modal-container .ant-table-wrapper {
+      border: none !important;
+    }
+
+    .link-modal-container .ant-table-container {
+      border: none !important;
+    }
+
+    .link-modal-container .ant-table {
+      border: none !important;
+    }
+
+    .link-modal-container .ant-table-content {
+      border: none !important;
+    }
+
+    .link-modal-container .ant-tabs {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .link-modal-container .ant-tabs-content-holder {
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .link-modal-container .ant-tabs-content {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .link-modal-container .ant-tabs-tabpane {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 0 !important;
+    }
+
+    .link-modal-container .ant-tabs-tabpane.ant-tabs-tabpane-hidden {
+      display: none !important;
+    }
+
+    .erp-kanban-grid .span-12 {
+      grid-column: span 12;
+    }
+
+    .erp-mobile-menu-btn {
+      border: none;
+      box-shadow: none;
+      padding: 4px;
+      display: none;
+    }
+
+    .mobile-workbench {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .mobile-workbench .user-card {
+      border-radius: 12px;
+    }
+
+    .mobile-workbench-card {
+      border-radius: 12px;
+      border: 1px solid rgba(22, 119, 255, 0.12);
+      box-shadow: 0 8px 20px rgba(22, 119, 255, 0.06);
+    }
+
+    .mobile-workbench-card .ant-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    @media (max-width: 1024px) {
+      body {
+        overflow: auto;
+      }
+
+      .erp-header {
+        padding: 0 12px;
+      }
+
+      .erp-mobile-menu-btn {
+        display: inline-flex;
+      }
+
+      .erp-title .name {
+        font-size: 14px;
+        max-width: 180px;
+      }
+
+      .erp-title .desc {
+        font-size: 9px;
+        max-width: 180px;
+      }
+
+      .erp-main-layout {
+        flex-direction: column;
+        height: auto;
+        min-height: calc(100vh - var(--header-height));
+      }
+
+      .erp-sider {
+        display: none;
+      }
+
+      .erp-content-area {
+        width: 100%;
+      }
+
+      .erp-tabs-bar {
+        overflow-x: auto;
+      }
+
+      .erp-tree-table-layout {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .erp-tree-panel,
+      .erp-table-panel {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        margin-bottom: 12px;
+      }
+
+      .erp-filter-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .erp-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .erp-tree-panel .tree-content {
+        max-height: 220px;
+        overflow-y: auto;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .erp-header {
+        flex-wrap: wrap;
+        gap: 8px;
+        height: auto;
+      }
+
+      .erp-top-menu {
+        order: 3;
+        width: 100%;
+        padding: 4px 0;
+      }
+
+      .erp-logo {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .erp-toolbar {
+        gap: 8px;
+      }
+
+      .erp-filter-bar {
+        gap: 8px;
+      }
     }
   </style>
 </head>
@@ -2752,12 +3269,18 @@ const TenantSwitcherNote = () => (
         const saved = localStorage.getItem(`${pageKey}-columns`);
         if (saved) {
           try {
-            return JSON.parse(saved);
+            const parsed = JSON.parse(saved);
+            // 确保返回的是数组
+            if (Array.isArray(parsed)) {
+              return parsed;
+            }
+            // 如果不是数组，回退到默认值
+            return Array.isArray(defaultVisibleColumns) ? defaultVisibleColumns : [];
           } catch (e) {
-            return defaultVisibleColumns;
+            return Array.isArray(defaultVisibleColumns) ? defaultVisibleColumns : [];
           }
         }
-        return defaultVisibleColumns;
+        return Array.isArray(defaultVisibleColumns) ? defaultVisibleColumns : [];
       });
 
       const [columnEditorVisible, setColumnEditorVisible] = useState(false);
@@ -2767,19 +3290,24 @@ const TenantSwitcherNote = () => (
       }, [visibleColumns, pageKey]);
 
       const handleColumnSave = (columns) => {
-        setVisibleColumns(columns);
+        const safeColumns = Array.isArray(columns) ? columns : [];
+        setVisibleColumns(safeColumns);
         setColumnEditorVisible(false);
         message.success('列设置已保存');
       };
 
       const handleColumnRestoreDefault = () => {
-        setVisibleColumns(defaultVisibleColumns);
+        const safeDefault = Array.isArray(defaultVisibleColumns) ? defaultVisibleColumns : [];
+        setVisibleColumns(safeDefault);
         setColumnEditorVisible(false);
         message.success('已恢复默认列设置');
       };
 
       // 构建表格列，添加序号列
       const tableColumns = useMemo(() => {
+        // 确保 visibleColumns 是数组
+        const safeVisibleColumns = Array.isArray(visibleColumns) ? visibleColumns : [];
+        
         return [
           {
             title: '序号',
@@ -2788,7 +3316,7 @@ const TenantSwitcherNote = () => (
             fixed: 'left',
             render: (_, __, index) => index + 1
           },
-          ...visibleColumns.map(col => {
+          ...safeVisibleColumns.map(col => {
             const def = allColumnDefinitions.find(d => d.key === col.key);
             const columnDef = {
               ...def,
@@ -2853,9 +3381,12 @@ const TenantSwitcherNote = () => (
           })
         ];
       }, [visibleColumns, allColumnDefinitions, onRowSelect, onCellClick]);
+      
+      // 确保 visibleColumns 始终是数组
+      const safeVisibleColumns = Array.isArray(visibleColumns) ? visibleColumns : [];
 
       return {
-        visibleColumns,
+        visibleColumns: safeVisibleColumns,
         tableColumns,
         columnEditorVisible,
         setColumnEditorVisible,
@@ -2869,7 +3400,8 @@ const TenantSwitcherNote = () => (
 
     // 列编辑器组件
     const ColumnEditor = ({ allColumns, visibleColumns, onSave, onCancel, onRestoreDefault }) => {
-      const [localVisibleColumns, setLocalVisibleColumns] = useState([...visibleColumns]);
+      const safeVisibleColumns = Array.isArray(visibleColumns) ? visibleColumns : [];
+      const [localVisibleColumns, setLocalVisibleColumns] = useState([...safeVisibleColumns]);
       const [widthInputs, setWidthInputs] = useState({});
       const [draggedIndex, setDraggedIndex] = useState(null);
       const [dragOverIndex, setDragOverIndex] = useState(null);

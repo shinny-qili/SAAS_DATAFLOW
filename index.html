@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS 数据流演示入口</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 60px 40px;
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 50px;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .demo-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 35px 25px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .demo-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .demo-card:nth-child(1) {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .demo-card:nth-child(2) {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .demo-card:nth-child(3) {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .demo-card:nth-child(4) {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .demo-card:nth-child(5) {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .demo-card h2 {
+            font-size: 1.6em;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .demo-card p {
+            font-size: 0.95em;
+            opacity: 0.95;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 期现业务管理平台</h1>
+        <p class="subtitle">核心交付物快速入口</p>
+        
+        <div class="demo-grid">
+            <a href="workdir/prototype.html" class="demo-card">
+                <span class="icon">💼</span>
+                <h2>原型系统</h2>
+                <p>期现业务管理平台完整原型<br>包含所有核心业务模块</p>
+            </a>
+            
+            <a href="assistant_outputs/inerface/erp-app.html" class="demo-card">
+                <span class="icon">🧩</span>
+                <h2>组件库演示</h2>
+                <p>ERP 组件库完整演示<br>Ant Design 组件模板</p>
+            </a>
+            
+            <a href="workdir/期现系统使用说明书.md" class="demo-card">
+                <span class="icon">📖</span>
+                <h2>使用说明书</h2>
+                <p>系统使用指南<br>功能说明与操作手册</p>
+            </a>
+            
+            <a href="3_V1版系统实现步骤/cursor整理的方案-定稿版/" class="demo-card">
+                <span class="icon">📋</span>
+                <h2>产品方案文档</h2>
+                <p>V1 版本完整产品方案<br>开发实施依据文档</p>
+            </a>
+            
+            <a href="对外演示/roadshow.html" class="demo-card">
+                <span class="icon">🎯</span>
+                <h2>路演展示</h2>
+                <p>产品路演展示页面<br>快期产业服务中心介绍</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
+
