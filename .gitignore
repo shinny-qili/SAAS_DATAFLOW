@@ -5,3 +5,4 @@ workdir/*
 !inerface/erp-app.html
 !inerface/vendor/
 !workdir/prototype.html
+!workdir/期现系统使用说明书.md
